@@ -156,6 +156,55 @@
     "xAxis": "<i>x</i> (light-seconds)",
     "yAxis": "<i>y</i> (light-seconds)"
   },
+  "thresholds": {
+    "reactionHeading": "Reaction",
+    "reactionNames": {
+      "antiproton": "Antiproton production (Bevatron, 1955)",
+      "pionProduction": "Pion production",
+      "photopion": "Pion photoproduction",
+      "associatedProduction": "Associated production of K⁰ and Λ",
+      "pairProductionNucleus": "Pair production near a nucleus",
+      "tripletProduction": "Pair production on a free electron",
+      "muonPair": "Muon pair production",
+      "annihilationOnePhoton": "Annihilation into one photon",
+      "annihilationTwoPhotons": "Annihilation into two photons"
+    },
+    "configurationHeading": "Accelerator",
+    "configurations": {
+      "fixedTarget": "Fixed target",
+      "collider": "Head-on collider"
+    },
+    "colliderUnavailable": "No collider version of this reaction",
+    "beamHeading": "Beam",
+    "beamEnergy": "Beam kinetic energy",
+    "beamEnergyEach": "Kinetic energy of each beam",
+    "goToThreshold": "Go to threshold",
+    "labFrame": "Lab frame",
+    "cmFrame": "Centre-of-momentum frame",
+    "before": "Before",
+    "after": "After",
+    "belowThreshold": "Not enough energy",
+    "forbidden": "Impossible at any energy",
+    "forbiddenReason": "One photon would need zero momentum in the CM frame",
+    "meterTitle": "Energy available to make particles",
+    "sqrtSLabel": "√s",
+    "finalMassLabel": "Σm<sub>f</sub>c²",
+    "readouts": {
+      "threshold": "Threshold kinetic energy",
+      "beam": "Beam kinetic energy",
+      "sqrtS": "Available energy √s",
+      "finalMass": "Rest energy of products",
+      "cmSpeed": "Speed of CM frame",
+      "tiedUp": "Kinetic energy of the CM motion"
+    },
+    "chartTitle": "Available energy against energy supplied",
+    "chartXAxis": "Kinetic energy supplied (MeV)",
+    "chartYAxis": "√<i>s</i> (MeV)",
+    "chartFixed": "fixed target",
+    "chartCollider": "collider",
+    "chartThreshold": "Σm<sub>f</sub>c²",
+    "infinity": "none"
+  },
   "a11y": {
     "accelerate": {
       "screenSummary": {
@@ -234,9 +283,21 @@
         "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
         "interactionHint": "Explora la simulación interactuando con sus controles."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "{{reaction}} with a {{configuration}}. Beam kinetic energy {{beam}}, threshold {{threshold}}. Available energy √s = {{sqrtS}}; the products need {{finalMass}}. {{verdict}}",
+      "verdicts": {
+        "allowed": "The reaction can happen.",
+        "belowThreshold": "Not enough energy: the reaction cannot happen.",
+        "forbidden": "The reaction is impossible at any energy."
+      },
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "reaction": "Reaction",
+        "reactionHelp": "Choose the particle reaction to study.",
+        "configuration": "Accelerator type",
+        "configurationHelp": "A fixed target sits at rest in the lab; in a collider two beams meet head-on with equal and opposite momenta.",
+        "beamEnergy": "Beam kinetic energy",
+        "beamEnergyHelp": "Sets the kinetic energy of the beam, from zero to three times the threshold.",
+        "goToThreshold": "Go to threshold",
+        "goToThresholdHelp": "Sets the beam exactly to the threshold energy."
       }
     }
   },

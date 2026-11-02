@@ -143,6 +143,13 @@ export class ChartFrameNode extends Node {
     const yStep = niceStep(yRange.getLength(), this.targetDivisions);
     this.xDecimals = decimalPlacesForStep(xStep);
     this.yDecimals = decimalPlacesForStep(yStep);
+    // Park every spacing at a huge value while the ranges change. Otherwise a range that
+    // grows by orders of magnitude (1 MeV to 17 GeV) is briefly drawn with the old, tiny
+    // spacing, creating tens of thousands of tick nodes.
+    const parked = Number.MAX_SAFE_INTEGER;
+    for (const set of [this.gridX, this.ticksX, this.labelsX, this.gridY, this.ticksY, this.labelsY]) {
+      set.setSpacing(parked);
+    }
     this.chartTransform.setModelXRange(new Range(xRange.min, xRange.max));
     this.chartTransform.setModelYRange(new Range(yRange.min, yRange.max));
     this.gridX.setSpacing(xStep);

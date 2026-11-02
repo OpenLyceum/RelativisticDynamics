@@ -119,6 +119,11 @@ export class StringManager {
     return stringProperties.collisions;
   }
 
+  /** Visible strings for the Thresholds screen. */
+  public getThresholdsStrings() {
+    return stringProperties.thresholds;
+  }
+
   /** Accessibility strings for the Accelerate screen. */
   public getAccelerateA11yStrings() {
     return stringProperties.a11y.accelerate;

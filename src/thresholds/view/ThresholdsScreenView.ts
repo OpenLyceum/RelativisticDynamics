@@ -1,160 +1,226 @@
 /**
  * ThresholdsScreenView.ts
  *
- * The top-level view for the simulation screen.
+ * Layout for the Thresholds screen:
  *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. RelativisticDynamicsControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ *   top     the reaction's name; the reaction before and after in the lab and CM frames
+ *   bottom  the √s meter and readouts; √s against energy supplied
+ *   right   reaction, fixed target or collider, beam energy; Reset All
  */
 
+import { DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
+import { Dimension2, Range, Vector2 } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
+import { Node, Text, VBox } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
+import { HSlider } from "scenerystack/sun";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/RelativisticDynamicsButtonOptions.js";
+import { RelativisticDynamicsPanel } from "../../common/RelativisticDynamicsPanel.js";
+import { formatEnergy } from "../../common/view/chartUtils.js";
+import { createPushButton, createRadioButtonGroup, createSectionHeader } from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { CONTROL_WIDTH, FONTS, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { BeamConfiguration, REACTIONS, type Reaction, type ReactionId } from "../model/reactions.js";
 import type { ThresholdsModel } from "../model/ThresholdsModel.js";
+import { AvailableEnergyChartNode } from "./AvailableEnergyChartNode.js";
+import { AvailableEnergyNode } from "./AvailableEnergyNode.js";
+import { REACTION_FRAME_WIDTH, ReactionFrameNode } from "./ReactionFrameNode.js";
 import { ThresholdsScreenSummaryContent } from "./ThresholdsScreenSummaryContent.js";
 
 export type ThresholdsScreenViewOptions = ScreenViewOptions;
 
+/** The reaction written out in particle symbols, e.g. "p + p → p + p + p + p̄". Notation, not translated. */
+export const reactionEquation = (r: Reaction): string =>
+  `${r.beam.symbol} + ${r.target.symbol} → ${r.products.map((p) => p.symbol).join(" + ")}`;
+
 export class ThresholdsScreenView extends ScreenView {
   public constructor(model: ThresholdsModel, providedOptions?: ThresholdsScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See ThresholdsScreenSummaryContent for the four content regions.
     const options = optionize<ThresholdsScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new ThresholdsScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new ThresholdsScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: RelativisticDynamicsColors.backgroundColorProperty,
-    });
-    this.addChild(backgroundRect);
+    const bounds = this.layoutBounds;
+    const sm = StringManager.getInstance();
+    const strings = sm.getThresholdsStrings();
+    const a11y = sm.getThresholdsA11yStrings().controls;
+    const names = strings.reactionNames;
+    const nameOf: Record<ReactionId, TReadOnlyProperty<string>> = {
+      antiproton: names.antiprotonStringProperty,
+      pionProduction: names.pionProductionStringProperty,
+      photopion: names.photopionStringProperty,
+      associatedProduction: names.associatedProductionStringProperty,
+      pairProductionNucleus: names.pairProductionNucleusStringProperty,
+      tripletProduction: names.tripletProductionStringProperty,
+      muonPair: names.muonPairStringProperty,
+      annihilationOnePhoton: names.annihilationOnePhotonStringProperty,
+      annihilationTwoPhotons: names.annihilationTwoPhotonsStringProperty,
+    };
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().thresholdsStringProperty, {
-      font: "bold 36px sans-serif",
+    // ── Title: name and equation of the current reaction ────────────────────────
+    const titleProperty = DerivedProperty.deriveAny(
+      [model.reactionProperty, ...Object.values(nameOf)],
+      () => `${nameOf[model.reactionProperty.value.id].value}:   ${reactionEquation(model.reactionProperty.value)}`,
+    );
+    const title = new Text(titleProperty, {
+      font: FONTS.BIG_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
-      center: this.layoutBounds.center,
+      maxWidth: 2 * REACTION_FRAME_WIDTH + 16,
+      left: bounds.minX + SCREEN_VIEW_MARGIN,
+      top: bounds.minY + SCREEN_VIEW_MARGIN,
     });
-    this.addChild(placeholderText);
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getThresholdsA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    // ── The reaction in the lab and in the CM frame ────────────────────────────
+    const labFrame = new ReactionFrameNode(
+      model,
+      strings.labFrameStringProperty,
+      new DerivedProperty([model.reactionProperty], () => Vector2.ZERO),
+      model.labProductsProperty,
+    );
+    const cmFrame = new ReactionFrameNode(
+      model,
+      strings.cmFrameStringProperty,
+      model.cmVelocityProperty,
+      model.cmProductsProperty,
+    );
+    labFrame.left = title.left;
+    labFrame.top = title.bottom + 10;
+    cmFrame.left = labFrame.right + 16;
+    cmFrame.top = labFrame.top;
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
+    // ── Meter and chart ────────────────────────────────────────────────────────
+    const meter = new AvailableEnergyNode(model);
+    meter.left = labFrame.left;
+    meter.top = labFrame.bottom + 18;
+    const chart = new AvailableEnergyChartNode(model);
+    chart.left = cmFrame.left + 42;
+    chart.top = labFrame.bottom + 18;
+
+    // ── Controls ───────────────────────────────────────────────────────────────
+    const reactionRadio = createRadioButtonGroup(
+      model.reactionIdProperty,
+      REACTIONS.map((r) => ({
+        value: r.id,
+        labelProperty: new DerivedProperty([nameOf[r.id]], () => reactionEquation(r)),
+        accessibleName: nameOf[r.id],
+      })),
+      { accessibleName: a11y.reactionStringProperty, accessibleHelpText: a11y.reactionHelpStringProperty },
+    );
+    const reactionPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [createSectionHeader(strings.reactionHeadingStringProperty), reactionRadio],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+
+    const configurationRadio = createRadioButtonGroup(
+      model.configurationProperty,
+      [
+        {
+          value: BeamConfiguration.FIXED_TARGET,
+          labelProperty: strings.configurations.fixedTargetStringProperty,
+          accessibleName: strings.configurations.fixedTargetStringProperty,
+        },
+        {
+          value: BeamConfiguration.COLLIDER,
+          labelProperty: strings.configurations.colliderStringProperty,
+          accessibleName: strings.configurations.colliderStringProperty,
+          enabledProperty: model.colliderAvailableProperty,
+        },
+      ],
+      { accessibleName: a11y.configurationStringProperty, accessibleHelpText: a11y.configurationHelpStringProperty },
+    );
+    const configurationPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [createSectionHeader(strings.configurationHeadingStringProperty), configurationRadio],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+
+    const beamTitleProperty = new DerivedProperty(
+      [model.configurationProperty, strings.beamEnergyStringProperty, strings.beamEnergyEachStringProperty],
+      (configuration, single, each) => (configuration === BeamConfiguration.COLLIDER ? each : single),
+    );
+    const beamValueProperty = new DerivedProperty([model.beamKineticEnergyProperty], (k) => formatEnergy(k, 4));
+    const beamSlider = new HSlider(model.energyFractionProperty, new Range(0, 1), {
+      trackSize: new Dimension2(CONTROL_WIDTH - 20, 4),
+      thumbSize: new Dimension2(14, 26),
+      thumbFill: RelativisticDynamicsColors.accentColorProperty,
+      trackFillEnabled: RelativisticDynamicsColors.textColorProperty,
+      keyboardStep: 1 / 60,
+      shiftKeyboardStep: 1 / 600,
+      pageKeyboardStep: 1 / 6,
+      accessibleName: a11y.beamEnergyStringProperty,
+      accessibleHelpText: a11y.beamEnergyHelpStringProperty,
+      pdomCreateAriaValueText: () => beamValueProperty.value,
+      pdomDependencies: [beamValueProperty],
+    });
+    // Tick at threshold (one third of the way along, by construction).
+    beamSlider.addMajorTick(1 / 3);
+    const thresholdButton = createPushButton(strings.goToThresholdStringProperty, {
+      accessibleName: a11y.goToThresholdStringProperty,
+      accessibleHelpText: a11y.goToThresholdHelpStringProperty,
+      listener: () => model.goToThreshold(),
+    });
+    const beamPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [
+          createSectionHeader(strings.beamHeadingStringProperty),
+          new Text(beamTitleProperty, {
+            font: FONTS.CONTROL_TITLE,
+            fill: RelativisticDynamicsColors.secondaryTextColorProperty,
+            maxWidth: CONTROL_WIDTH,
+          }),
+          new Text(beamValueProperty, {
+            font: FONTS.BIG_LABEL,
+            fill: RelativisticDynamicsColors.body1ColorProperty,
+            maxWidth: CONTROL_WIDTH,
+          }),
+          beamSlider,
+          thresholdButton,
+        ],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+
+    const rightColumn = new VBox({
+      spacing: 10,
+      align: "right",
+      children: [reactionPanel, configurationPanel, beamPanel],
+    });
+    rightColumn.right = bounds.maxX - SCREEN_VIEW_MARGIN;
+    rightColumn.top = bounds.minY + SCREEN_VIEW_MARGIN;
+
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
+        this.interruptSubtreeInput();
         model.reset();
-        this.reset();
       },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
+      right: bounds.maxX - SCREEN_VIEW_MARGIN,
+      bottom: bounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
+    this.children = [
+      title,
+      labFrame,
+      cmFrame,
+      meter,
+      chart,
+      rightColumn,
+      resetAllButton,
       new Node({
-        pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
-          resetAllButton,
-        ],
+        pdomOrder: [reactionRadio, configurationRadio, beamSlider, thresholdButton, resetAllButton],
       }),
-    );
+    ];
   }
-
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
-  }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeThresholdsScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in ThresholdsScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeThresholdsScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeThresholdsScreenView();
-  //   super.dispose();
-  // }
 }

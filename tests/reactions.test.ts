@@ -23,6 +23,7 @@ import {
   Verdict,
   verdictFor,
 } from "../src/thresholds/model/reactions.js";
+import { ThresholdsModel } from "../src/thresholds/model/ThresholdsModel.js";
 
 const FIXED = BeamConfiguration.FIXED_TARGET;
 const COLLIDER = BeamConfiguration.COLLIDER;
@@ -97,5 +98,33 @@ describe("final states", () => {
 
   it("returns no final state below threshold", () => {
     expect(symmetricFinalState([1, 1], 1.5)).toEqual([]);
+  });
+});
+
+describe("ThresholdsModel", () => {
+  it("is allowed exactly at threshold and below threshold just under it", () => {
+    const model = new ThresholdsModel();
+    model.goToThreshold();
+    expect(model.verdictProperty.value).toBe(Verdict.ALLOWED);
+    expect(model.beamKineticEnergyProperty.value).toBeCloseTo(6 * MASS_MEV.PROTON, 6);
+    // At threshold every product is at rest in the CM frame...
+    for (const p of model.cmProductsProperty.value) {
+      expect(p.momentumMagnitude).toBeLessThan(1e-3);
+    }
+    // ...so in the lab they all move with the CM velocity.
+    const cm = model.cmVelocityProperty.value;
+    for (const p of model.labProductsProperty.value) {
+      expect(p.velocity.x).toBeCloseTo(cm.x, 4);
+    }
+    model.energyFractionProperty.value *= 0.99;
+    expect(model.verdictProperty.value).toBe(Verdict.BELOW_THRESHOLD);
+    expect(model.labProductsProperty.value).toEqual([]);
+  });
+
+  it("falls back to a fixed target when the reaction has no collider version", () => {
+    const model = new ThresholdsModel();
+    model.configurationProperty.value = COLLIDER;
+    model.reactionIdProperty.value = "photopion";
+    expect(model.configurationProperty.value).toBe(FIXED);
   });
 });
