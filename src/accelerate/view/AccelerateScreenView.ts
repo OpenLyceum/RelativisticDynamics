@@ -1,160 +1,244 @@
 /**
  * AccelerateScreenView.ts
  *
- * The top-level view for the simulation screen.
+ * Layout for the Accelerate screen:
  *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. RelativisticDynamicsControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ *   top     the three-lane race along the track
+ *   bottom  speed (or momentum) against time; speed² against kinetic energy
+ *   right   particle, field, chart and data options, the worked example, readouts
+ *   foot    time controls and restart; Reset All
  */
 
+import { DerivedProperty } from "scenerystack/axon";
+import { Range } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
-import { ResetAllButton } from "scenerystack/scenery-phet";
+import { HBox, Node, VBox } from "scenerystack/scenery";
+import { ResetAllButton, RestartButton, TimeControlNode } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/RelativisticDynamicsButtonOptions.js";
+import {
+  FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,
+  FLAT_RECTANGULAR_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  TIME_CONTROL_SPEED_RADIO_OPTIONS,
+} from "../../common/RelativisticDynamicsButtonOptions.js";
+import { RelativisticDynamicsPanel } from "../../common/RelativisticDynamicsPanel.js";
+import { formatBeta, formatEnergy, formatSignificant } from "../../common/view/chartUtils.js";
+import {
+  createCheckbox,
+  createNumberControl,
+  createPushButton,
+  createRadioButtonGroup,
+  createReadoutRow,
+  createSectionHeader,
+} from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { ACCELERATE, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
 import type { AccelerateModel } from "../model/AccelerateModel.js";
+import { AccelerateChartsNode } from "./AccelerateChartsNode.js";
 import { AccelerateScreenSummaryContent } from "./AccelerateScreenSummaryContent.js";
+import { AccelerateTrackNode } from "./AccelerateTrackNode.js";
 
 export type AccelerateScreenViewOptions = ScreenViewOptions;
 
+/** Width of the play area to the left of the control column. */
+const PLAY_AREA_WIDTH = 720;
+
 export class AccelerateScreenView extends ScreenView {
   public constructor(model: AccelerateModel, providedOptions?: AccelerateScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See AccelerateScreenSummaryContent for the four content regions.
     const options = optionize<AccelerateScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new AccelerateScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new AccelerateScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: RelativisticDynamicsColors.backgroundColorProperty,
+    const bounds = this.layoutBounds;
+    const sm = StringManager.getInstance();
+    const common = sm.getCommonStrings();
+    const strings = sm.getAccelerateStrings();
+    const a11y = sm.getAccelerateA11yStrings().controls;
+
+    // ── Play area ──────────────────────────────────────────────────────────────
+    const track = new AccelerateTrackNode(model, PLAY_AREA_WIDTH);
+    track.left = bounds.minX + SCREEN_VIEW_MARGIN;
+    track.top = bounds.minY + SCREEN_VIEW_MARGIN + 6;
+
+    const charts = new AccelerateChartsNode(model);
+    charts.left = bounds.minX + SCREEN_VIEW_MARGIN + 55;
+    charts.top = track.bottom + 24;
+
+    // ── Controls ───────────────────────────────────────────────────────────────
+    const particleRadio = createRadioButtonGroup(
+      model.particleProperty,
+      [
+        {
+          value: "electron" as const,
+          labelProperty: common.particles.electronStringProperty,
+          accessibleName: common.particles.electronStringProperty,
+        },
+        {
+          value: "proton" as const,
+          labelProperty: common.particles.protonStringProperty,
+          accessibleName: common.particles.protonStringProperty,
+        },
+      ],
+      { accessibleName: a11y.particleStringProperty, accessibleHelpText: a11y.particleHelpStringProperty },
+    );
+    const fieldControl = createNumberControl(
+      model.fieldProperty,
+      new Range(ACCELERATE.FIELD_MIN_MV_PER_M, ACCELERATE.FIELD_MAX_MV_PER_M),
+      {
+        titleProperty: strings.fieldStringProperty,
+        valuePatternProperty: strings.fieldValuePatternStringProperty,
+        accessibleName: a11y.fieldStringProperty,
+        accessibleHelpText: a11y.fieldHelpStringProperty,
+        decimalPlaces: 2,
+        delta: 0.05,
+      },
+    );
+    const chartRadio = createRadioButtonGroup(
+      model.chartQuantityProperty,
+      [
+        {
+          value: "speed" as const,
+          labelProperty: strings.chartSpeedStringProperty,
+          accessibleName: strings.chartSpeedStringProperty,
+        },
+        {
+          value: "momentum" as const,
+          labelProperty: strings.chartMomentumStringProperty,
+          accessibleName: strings.chartMomentumStringProperty,
+        },
+      ],
+      { accessibleName: a11y.chartQuantityStringProperty, accessibleHelpText: a11y.chartQuantityHelpStringProperty },
+    );
+    const bertozziCheckbox = createCheckbox(
+      model.showBertozziProperty,
+      strings.showBertozziStringProperty,
+      a11y.showBertozziStringProperty,
+    );
+    bertozziCheckbox.enabledProperty = new DerivedProperty([model.particleProperty], (p) => p === "electron");
+    const workedExampleButton = createPushButton(strings.workedExampleStringProperty, {
+      accessibleName: a11y.workedExampleStringProperty,
+      accessibleHelpText: a11y.workedExampleHelpStringProperty,
+      listener: () => model.showWorkedExample(),
     });
-    this.addChild(backgroundRect);
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().accelerateStringProperty, {
-      font: "bold 36px sans-serif",
-      fill: RelativisticDynamicsColors.textColorProperty,
-      center: this.layoutBounds.center,
+    const controlPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [
+          createSectionHeader(strings.particleHeadingStringProperty),
+          particleRadio,
+          fieldControl,
+          createSectionHeader(strings.chartHeadingStringProperty),
+          chartRadio,
+          bertozziCheckbox,
+          workedExampleButton,
+        ],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+    controlPanel.right = bounds.maxX - SCREEN_VIEW_MARGIN;
+    controlPanel.top = bounds.minY + SCREEN_VIEW_MARGIN;
+
+    // ── Readouts for the real particle ─────────────────────────────────────────
+    const q = common.quantities;
+    const snapshot = model.snapshotProperty;
+    const readoutValues = {
+      time: new DerivedProperty([model.timeProperty], (t) => `${formatSignificant(t, 3)} ns`),
+      distance: new DerivedProperty([snapshot], (s) => `${formatSignificant(s.position, 3)} m`),
+      speed: new DerivedProperty([snapshot], (s) => `${formatBeta(s.beta)} c`),
+      gamma: new DerivedProperty([snapshot, model.massProperty], (s, m) =>
+        formatSignificant(1 + s.kineticEnergy / m, 4),
+      ),
+      momentum: new DerivedProperty([snapshot], (s) => formatEnergy(s.momentum, 4, "/c")),
+      kinetic: new DerivedProperty([snapshot], (s) => formatEnergy(s.kineticEnergy, 4)),
+    };
+    const readoutPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 3,
+        children: [
+          createSectionHeader(strings.readoutsHeadingStringProperty),
+          createReadoutRow(strings.timeStringProperty, readoutValues.time),
+          createReadoutRow(strings.distanceStringProperty, readoutValues.distance),
+          createReadoutRow(
+            q.speedStringProperty,
+            readoutValues.speed,
+            RelativisticDynamicsColors.relativisticColorProperty,
+          ),
+          createReadoutRow(q.gammaStringProperty, readoutValues.gamma),
+          createReadoutRow(
+            q.momentumStringProperty,
+            readoutValues.momentum,
+            RelativisticDynamicsColors.momentumColorProperty,
+          ),
+          createReadoutRow(
+            q.kineticEnergyStringProperty,
+            readoutValues.kinetic,
+            RelativisticDynamicsColors.kineticEnergyColorProperty,
+          ),
+        ],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+    readoutPanel.right = controlPanel.right;
+    readoutPanel.top = controlPanel.bottom + 10;
+
+    // ── Time controls ──────────────────────────────────────────────────────────
+    const timeControlNode = new TimeControlNode(model.isPlayingProperty, {
+      timeSpeedProperty: model.timeSpeedProperty,
+      ...TIME_CONTROL_SPEED_RADIO_OPTIONS,
+      playPauseStepButtonOptions: {
+        ...FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,
+        stepForwardButtonOptions: {
+          ...FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS.stepForwardButtonOptions,
+          listener: () => model.stepTime(1 / 30),
+        },
+      },
     });
-    this.addChild(placeholderText);
+    const restartButton = new RestartButton({
+      ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+      baseColor: RelativisticDynamicsColors.controlSurfaceColorProperty,
+      listener: () => model.restart(),
+      accessibleName: a11y.restartStringProperty,
+      accessibleHelpText: a11y.restartHelpStringProperty,
+    });
+    const timeRow = new HBox({ spacing: 18, children: [restartButton, timeControlNode] });
+    timeRow.centerX = bounds.minX + SCREEN_VIEW_MARGIN + PLAY_AREA_WIDTH / 2;
+    timeRow.bottom = bounds.maxY - SCREEN_VIEW_MARGIN;
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getAccelerateA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
-
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
+        this.interruptSubtreeInput();
         model.reset();
-        this.reset();
       },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
+      right: bounds.maxX - SCREEN_VIEW_MARGIN,
+      bottom: bounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
+    this.children = [
+      track,
+      charts,
+      controlPanel,
+      readoutPanel,
+      timeRow,
+      resetAllButton,
       new Node({
         pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
+          timeControlNode,
+          restartButton,
+          particleRadio,
+          fieldControl,
+          chartRadio,
+          bertozziCheckbox,
+          workedExampleButton,
           resetAllButton,
         ],
       }),
-    );
+    ];
   }
-
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
-  }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeAccelerateScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in AccelerateScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeAccelerateScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeAccelerateScreenView();
-  //   super.dispose();
-  // }
 }

@@ -104,6 +104,11 @@ export class StringManager {
     return stringProperties.common;
   }
 
+  /** Visible strings for the Accelerate screen. */
+  public getAccelerateStrings() {
+    return stringProperties.accelerate;
+  }
+
   /** Visible strings for the Energy–Momentum screen. */
   public getEnergyMomentumStrings() {
     return stringProperties.energyMomentum;

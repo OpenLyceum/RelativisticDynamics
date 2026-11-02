@@ -70,15 +70,40 @@ export const ACCELERATE = {
   /** Accelerating field range, MV/m (equivalently MeV per metre for a unit charge). */
   FIELD_MIN_MV_PER_M: 0.1,
   FIELD_MAX_MV_PER_M: 5,
-  FIELD_DEFAULT_MV_PER_M: 1,
-  /** Length of the accelerator track in metres; the run ends when the particle reaches it. */
+  FIELD_DEFAULT_MV_PER_M: 0.25,
+  /** Length of the accelerator track in metres; the run ends when the real particle reaches it. */
   TRACK_LENGTH_M: 20,
-  /** Simulated nanoseconds per wall-clock second at normal speed. */
-  NS_PER_SECOND: 25,
-  /** The worked example of Chapter 3: an electron through 2.00 MV. */
-  WORKED_EXAMPLE_POTENTIAL_MV: 2,
-  /** Range of the kinetic-energy axis on the β² against K chart, MeV. */
-  CHART_MAX_KINETIC_ENERGY_MEV: 16,
+  /** Wall-clock seconds a full run takes at normal speed, whatever the particle and field. */
+  RUN_DURATION_S: 6,
+  /** Playback slow-down factor for the "slow" time speed. */
+  SLOW_FACTOR: 0.25,
+  /** Highest β the speed-against-time chart shows; Newton's line leaves the top of it. */
+  CHART_MAX_BETA: 2,
+  /** For an electron the K axis always reaches at least this far, so all of Bertozzi's runs (to 15 MeV) show. */
+  ELECTRON_CHART_MIN_KINETIC_ENERGY_MEV: 16,
+  /** Highest β² the β²-against-K chart shows. */
+  CHART_MAX_BETA_SQUARED: 1.5,
+  /** The worked example of Chapter 3: an electron through 2.00 MV, so K = 2.00 MeV. */
+  WORKED_EXAMPLE_KINETIC_ENERGY_MEV: 2,
+} as const;
+
+/**
+ * W. Bertozzi, "Speed and kinetic energy of relativistic electrons," Am. J. Phys.
+ * 32, 551 (1964), Table I: electrons of kinetic energy E from a Van de Graaff and
+ * a linac, timed over an 8.4 m flight path. The speed of each run is computed
+ * from these raw numbers (β = L / ct) rather than copied from a secondary
+ * summary. The 15 MeV run comes out at β slightly above 1, inside the
+ * experiment's few-percent uncertainty; it is shown as measured.
+ */
+export const BERTOZZI = {
+  FLIGHT_PATH_M: 8.4,
+  RUNS: [
+    { kineticEnergyMeV: 0.5, flightTimeNs: 32.3 },
+    { kineticEnergyMeV: 1.0, flightTimeNs: 30.8 },
+    { kineticEnergyMeV: 1.5, flightTimeNs: 29.2 },
+    { kineticEnergyMeV: 4.5, flightTimeNs: 28.4 },
+    { kineticEnergyMeV: 15, flightTimeNs: 28.0 },
+  ],
 } as const;
 
 // ── Energy–Momentum screen ────────────────────────────────────────────────────
@@ -147,6 +172,7 @@ RelativisticDynamicsNamespace.register("RelativisticDynamicsConstants", {
   SPEED_OF_LIGHT_M_PER_NS,
   MASS_MEV,
   ACCELERATE,
+  BERTOZZI,
   ENERGY_MOMENTUM,
   COLLISIONS,
   THRESHOLDS,

@@ -39,6 +39,38 @@
     "speedValuePattern": "{{value}} c",
     "massValuePattern": "{{value}} MeV/c²"
   },
+  "accelerate": {
+    "particleHeading": "Particle",
+    "fieldHeading": "Accelerator",
+    "field": "Field",
+    "fieldValuePattern": "{{value}} MV/m",
+    "chartHeading": "Plot against time",
+    "chartSpeed": "Speed",
+    "chartMomentum": "Momentum",
+    "showBertozzi": "Bertozzi's data (1964)",
+    "workedExample": "Electron through 2.00 MV",
+    "restart": "Restart",
+    "lanes": {
+      "light": "Light pulse",
+      "newton": "Newton",
+      "relativity": "Relativity"
+    },
+    "trackAxis": "Distance along the track (m)",
+    "fasterThanLight": "faster than light!",
+    "readoutsHeading": "Relativistic particle",
+    "time": "Time t",
+    "distance": "Distance x",
+    "speedChartTitle": "Speed against time",
+    "momentumChartTitle": "Momentum against time",
+    "betaSquaredChartTitle": "Speed² against kinetic energy",
+    "timeAxis": "<i>t</i> (ns)",
+    "speedAxis": "<i>u</i> / <i>c</i>",
+    "momentumAxis": "<i>p</i> (MeV/<i>c</i>)",
+    "kineticEnergyAxis": "<i>K</i> (MeV)",
+    "betaSquaredAxis": "(<i>u</i> / <i>c</i>)²",
+    "momentumNote": "One line for both theories: p = Ft",
+    "speedOfLight": "c"
+  },
   "energyMomentum": {
     "particleHeading": "Particle",
     "customMass": "Mass",
@@ -68,13 +100,24 @@
   "a11y": {
     "accelerate": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a 20-metre accelerator track with three lanes: a light pulse, the particle as Newton predicts it, and the particle as relativity predicts it. All three start together. Below are two charts: speed (or momentum) against time, and speed squared against kinetic energy, with Bertozzi's 1964 measurements on electrons.",
+        "controlArea": "Choose an electron or a proton, set the accelerating field, choose what the left chart plots, and show or hide Bertozzi's data. A button jumps to the chapter's worked example, an electron accelerated through 2 megavolts. Play, pause, step and restart the run with the time controls.",
+        "interactionHint": "Press Play and watch the Newtonian particle overtake the light pulse while the real particle never does."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "At {{time}}, the {{particle}} has travelled {{distance}} with kinetic energy {{kinetic}} and speed {{speed}}. Newton would give it speed {{newtonSpeed}}.",
+      "currentDetailsAtStart": "The {{particle}} is at rest at the start of the track. Press Play to accelerate it.",
       "controls": {
-        "exampleControl": "Example control"
+        "particle": "Particle",
+        "particleHelp": "Choose which particle is accelerated.",
+        "field": "Accelerating field",
+        "fieldHelp": "Strength of the accelerating field in megavolts per metre; the force on the particle is its charge times this field.",
+        "chartQuantity": "Quantity plotted against time",
+        "chartQuantityHelp": "Plot speed or momentum against time.",
+        "showBertozzi": "Show Bertozzi's data",
+        "workedExample": "Show the worked example",
+        "workedExampleHelp": "Jumps to the moment an electron has been accelerated through 2.00 megavolts, so its kinetic energy is 2.00 MeV.",
+        "restart": "Restart",
+        "restartHelp": "Returns the particle to the start of the track."
       }
     },
     "energyMomentum": {

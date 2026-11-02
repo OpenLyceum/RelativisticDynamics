@@ -39,6 +39,38 @@
     "speedValuePattern": "{{value}} c",
     "massValuePattern": "{{value}} MeV/c²"
   },
+  "accelerate": {
+    "particleHeading": "Particle",
+    "fieldHeading": "Accelerator",
+    "field": "Field",
+    "fieldValuePattern": "{{value}} MV/m",
+    "chartHeading": "Plot against time",
+    "chartSpeed": "Speed",
+    "chartMomentum": "Momentum",
+    "showBertozzi": "Bertozzi's data (1964)",
+    "workedExample": "Electron through 2.00 MV",
+    "restart": "Restart",
+    "lanes": {
+      "light": "Light pulse",
+      "newton": "Newton",
+      "relativity": "Relativity"
+    },
+    "trackAxis": "Distance along the track (m)",
+    "fasterThanLight": "faster than light!",
+    "readoutsHeading": "Relativistic particle",
+    "time": "Time t",
+    "distance": "Distance x",
+    "speedChartTitle": "Speed against time",
+    "momentumChartTitle": "Momentum against time",
+    "betaSquaredChartTitle": "Speed² against kinetic energy",
+    "timeAxis": "<i>t</i> (ns)",
+    "speedAxis": "<i>u</i> / <i>c</i>",
+    "momentumAxis": "<i>p</i> (MeV/<i>c</i>)",
+    "kineticEnergyAxis": "<i>K</i> (MeV)",
+    "betaSquaredAxis": "(<i>u</i> / <i>c</i>)²",
+    "momentumNote": "One line for both theories: p = Ft",
+    "speedOfLight": "c"
+  },
   "energyMomentum": {
     "particleHeading": "Particle",
     "customMass": "Mass",
@@ -72,9 +104,20 @@
         "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
         "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
       },
-      "currentDetails": "La simulation est dans son état initial.",
+      "currentDetailsPattern": "At {{time}}, the {{particle}} has travelled {{distance}} with kinetic energy {{kinetic}} and speed {{speed}}. Newton would give it speed {{newtonSpeed}}.",
+      "currentDetailsAtStart": "The {{particle}} is at rest at the start of the track. Press Play to accelerate it.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "particle": "Particle",
+        "particleHelp": "Choose which particle is accelerated.",
+        "field": "Accelerating field",
+        "fieldHelp": "Strength of the accelerating field in megavolts per metre; the force on the particle is its charge times this field.",
+        "chartQuantity": "Quantity plotted against time",
+        "chartQuantityHelp": "Plot speed or momentum against time.",
+        "showBertozzi": "Show Bertozzi's data",
+        "workedExample": "Show the worked example",
+        "workedExampleHelp": "Jumps to the moment an electron has been accelerated through 2.00 megavolts, so its kinetic energy is 2.00 MeV.",
+        "restart": "Restart",
+        "restartHelp": "Returns the particle to the start of the track."
       }
     },
     "energyMomentum": {

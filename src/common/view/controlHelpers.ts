@@ -9,7 +9,7 @@
 
 import type { PhetioProperty, TReadOnlyProperty } from "scenerystack/axon";
 import { Dimension2, type Range } from "scenerystack/dot";
-import { HBox, type Node, Text, type TPaint } from "scenerystack/scenery";
+import { Node, Text, type TPaint } from "scenerystack/scenery";
 import { NumberControl } from "scenerystack/scenery-phet";
 import { Checkbox, RectangularPushButton, VerticalAquaRadioButtonGroup } from "scenerystack/sun";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
@@ -184,13 +184,19 @@ export const createReadoutRow = (
     fill: valueFill,
     maxWidth: width * 0.38,
   });
-  return new HBox({
-    children: [label, value],
-    spacing: 8,
-    preferredWidth: width,
-    justify: "spaceBetween",
-    align: "center",
-  });
+  // Explicit placement rather than a justified HBox: the value's right edge is pinned
+  // to the row width, so a column of rows lines up whatever the value's length.
+  const row = new Node({ children: [label, value] });
+  const place = (): void => {
+    label.left = 0;
+    label.centerY = 0;
+    value.right = width;
+    value.centerY = 0;
+  };
+  label.boundsProperty.lazyLink(place);
+  value.boundsProperty.lazyLink(place);
+  place();
+  return row;
 };
 
 /** A bold section heading inside a panel. */

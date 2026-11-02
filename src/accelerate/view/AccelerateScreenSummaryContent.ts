@@ -1,40 +1,53 @@
 /**
  * AccelerateScreenSummaryContent.ts
  *
- * The accessible screen summary read by screen readers (SceneryStack's
- * Interactive Description). It appears at the top of the parallel DOM and gives
- * a non-visual user a way to orient themselves and to re-read the simulation's
- * current state at any time.
- *
- * A summary has four regions (all optional, but provide at least the first
- * three in every sim for consistency across OpenLyceum):
- *   - playAreaContent       — what the play area contains
- *   - controlAreaContent    — what the controls do
- *   - currentDetailsContent — a LIVE paragraph describing current state
- *   - interactionHintContent — a short hint on how to get started
- *
- * ── Making "current details" live ─────────────────────────────────────────────
- * The template has no model state, so currentDetails is a static string. In a
- * real sim, build a DerivedProperty over the relevant model Properties and pass
- * it as `currentDetailsContent` so the paragraph updates as the sim runs.
- * See LunarLander/src/.../LunarLanderScreenSummaryContent.ts for the pattern.
- * If that DerivedProperty (or any Multilink) is owned by a short-lived object,
- * dispose it on teardown — see the commented dispose() stub in AccelerateScreenView.
+ * Screen summary for the Accelerate screen. "Current details" is live but coarse
+ * (three significant figures), so it changes in readable steps while a run plays.
  */
+
+import { DerivedProperty } from "scenerystack/axon";
+import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
+import { formatBeta, formatEnergy, formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { AccelerateModel } from "../model/AccelerateModel.js";
 
 export class AccelerateScreenSummaryContent extends ScreenSummaryContent {
-  // `model` is unused in the template but kept in the signature so real sims can
-  // derive a live currentDetailsContent from it without changing call sites.
-  public constructor(_model: AccelerateModel) {
-    const a11y = StringManager.getInstance().getAccelerateA11yStrings();
+  public constructor(model: AccelerateModel) {
+    const sm = StringManager.getInstance();
+    const a11y = sm.getAccelerateA11yStrings();
+    const particles = sm.getCommonStrings().particles;
+
+    const currentDetailsProperty = new DerivedProperty(
+      [
+        model.particleProperty,
+        model.timeProperty,
+        model.snapshotProperty,
+        a11y.currentDetailsPatternStringProperty,
+        a11y.currentDetailsAtStartStringProperty,
+        particles.electronStringProperty,
+        particles.protonStringProperty,
+      ],
+      (particle, time, snapshot, pattern, atStart, electron, proton) => {
+        const name = (particle === "electron" ? electron : proton).toLowerCase();
+        if (time === 0) {
+          return StringUtils.fillIn(atStart, { particle: name });
+        }
+        return StringUtils.fillIn(pattern, {
+          time: `${formatSignificant(time, 3)} ns`,
+          particle: name,
+          distance: `${formatSignificant(snapshot.position, 3)} m`,
+          kinetic: formatEnergy(snapshot.kineticEnergy, 3),
+          speed: `${formatBeta(snapshot.beta)} c`,
+          newtonSpeed: `${formatSignificant(snapshot.newtonianBeta, 3)} c`,
+        });
+      },
+    );
 
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: a11y.currentDetailsStringProperty,
+      currentDetailsContent: currentDetailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }
