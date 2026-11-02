@@ -114,6 +114,11 @@ export class StringManager {
     return stringProperties.energyMomentum;
   }
 
+  /** Visible strings for the Collisions screen. */
+  public getCollisionsStrings() {
+    return stringProperties.collisions;
+  }
+
   /** Accessibility strings for the Accelerate screen. */
   public getAccelerateA11yStrings() {
     return stringProperties.a11y.accelerate;

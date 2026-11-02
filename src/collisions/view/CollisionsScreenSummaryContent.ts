@@ -1,40 +1,68 @@
 /**
  * CollisionsScreenSummaryContent.ts
  *
- * The accessible screen summary read by screen readers (SceneryStack's
- * Interactive Description). It appears at the top of the parallel DOM and gives
- * a non-visual user a way to orient themselves and to re-read the simulation's
- * current state at any time.
- *
- * A summary has four regions (all optional, but provide at least the first
- * three in every sim for consistency across OpenLyceum):
- *   - playAreaContent       — what the play area contains
- *   - controlAreaContent    — what the controls do
- *   - currentDetailsContent — a LIVE paragraph describing current state
- *   - interactionHintContent — a short hint on how to get started
- *
- * ── Making "current details" live ─────────────────────────────────────────────
- * The template has no model state, so currentDetails is a static string. In a
- * real sim, build a DerivedProperty over the relevant model Properties and pass
- * it as `currentDetailsContent` so the paragraph updates as the sim runs.
- * See LunarLander/src/.../LunarLanderScreenSummaryContent.ts for the pattern.
- * If that DerivedProperty (or any Multilink) is owned by a short-lived object,
- * dispose it on teardown — see the commented dispose() stub in CollisionsScreenView.
+ * Screen summary for the Collisions screen. "Current details" states the viewing
+ * frame, the relativistic totals before and after, and the invariant mass, plus
+ * Newton's momentum when it is shown, so a screen-reader user can make the same
+ * before/after comparison the bars make.
  */
+
+import { DerivedProperty } from "scenerystack/axon";
+import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
+import { formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 
+const f = (value: number): string => formatSignificant(Math.abs(value) < 1e-9 ? 0 : value, 3);
+
 export class CollisionsScreenSummaryContent extends ScreenSummaryContent {
-  // `model` is unused in the template but kept in the signature so real sims can
-  // derive a live currentDetailsContent from it without changing call sites.
-  public constructor(_model: CollisionsModel) {
-    const a11y = StringManager.getInstance().getCollisionsA11yStrings();
+  public constructor(model: CollisionsModel) {
+    const sm = StringManager.getInstance();
+    const a11y = sm.getCollisionsA11yStrings();
+    const frames = sm.getCollisionsStrings().frames;
+
+    const currentDetailsProperty = new DerivedProperty(
+      [
+        model.frameProperty,
+        model.totalsBeforeProperty,
+        model.totalsAfterProperty,
+        model.invariantMassProperty,
+        model.showNewtonProperty,
+        a11y.currentDetailsPatternStringProperty,
+        a11y.newtonDetailsPatternStringProperty,
+        frames.labStringProperty,
+        frames.centerOfMomentumStringProperty,
+        frames.movingStringProperty,
+      ],
+      (frame, before, after, sqrtS, showNewton, pattern, newtonPattern, lab, cm, moving) => {
+        const frameName = (frame === "lab" ? lab : frame === "centerOfMomentum" ? cm : moving).toLowerCase();
+        const text = StringUtils.fillIn(pattern, {
+          frame: frameName,
+          px: f(before.momentum.x),
+          py: f(before.momentum.y),
+          energy: f(before.energy),
+          pxAfter: f(after.momentum.x),
+          pyAfter: f(after.momentum.y),
+          energyAfter: f(after.energy),
+          sqrtS: f(sqrtS),
+        });
+        if (!showNewton) {
+          return text;
+        }
+        return `${text} ${StringUtils.fillIn(newtonPattern, {
+          nx: f(before.newtonianMomentum.x),
+          ny: f(before.newtonianMomentum.y),
+          nxAfter: f(after.newtonianMomentum.x),
+          nyAfter: f(after.newtonianMomentum.y),
+        })}`;
+      },
+    );
 
     super({
       playAreaContent: a11y.screenSummary.playAreaStringProperty,
       controlAreaContent: a11y.screenSummary.controlAreaStringProperty,
-      currentDetailsContent: a11y.currentDetailsStringProperty,
+      currentDetailsContent: currentDetailsProperty,
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }

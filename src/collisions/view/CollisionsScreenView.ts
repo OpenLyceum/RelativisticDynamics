@@ -1,160 +1,349 @@
 /**
  * CollisionsScreenView.ts
  *
- * The top-level view for the simulation screen.
+ * Layout for the Collisions screen:
  *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. RelativisticDynamicsControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ *   left    the collision in the viewing frame; momentum diagram and invariants below it
+ *   middle  before/after totals; the two bodies' masses and velocity pads
+ *   right   presets; collision type and angle; viewing frame
+ *   foot    time controls and restart; Reset All
  */
 
+import { DerivedProperty, type TReadOnlyProperty } from "scenerystack/axon";
+import { Range } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
-import { ResetAllButton } from "scenerystack/scenery-phet";
+import { StringUtils } from "scenerystack/phetcommon";
+import { HBox, Node, VBox } from "scenerystack/scenery";
+import { ResetAllButton, RestartButton, TimeControlNode } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/RelativisticDynamicsButtonOptions.js";
+import {
+  FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,
+  FLAT_RECTANGULAR_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  TIME_CONTROL_SPEED_RADIO_OPTIONS,
+} from "../../common/RelativisticDynamicsButtonOptions.js";
+import { RelativisticDynamicsPanel } from "../../common/RelativisticDynamicsPanel.js";
+import { formatSignificant } from "../../common/view/chartUtils.js";
+import {
+  createNumberControl,
+  createPushButton,
+  createRadioButtonGroup,
+  createReadoutRow,
+  createSectionHeader,
+} from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
 import type { CollisionsModel } from "../model/CollisionsModel.js";
+import { openingAngle } from "../model/collisionGeometry.js";
+import { CollisionPlayAreaNode } from "./CollisionPlayAreaNode.js";
 import { CollisionsScreenSummaryContent } from "./CollisionsScreenSummaryContent.js";
+import { ConservationPanel } from "./ConservationPanel.js";
+import { MomentumDiagramNode } from "./MomentumDiagramNode.js";
+import { VelocityPadNode } from "./VelocityPadNode.js";
 
 export type CollisionsScreenViewOptions = ScreenViewOptions;
 
+const PLAY_WIDTH = 340;
+const PLAY_HEIGHT = 245;
+const DIAGRAM_SIZE = 150;
+/** Width of the narrow readout column under the play area. */
+const READOUT_WIDTH = 215;
+/** Width of each body's mass control, so the two sit side by side under their pads. */
+const MASS_CONTROL_WIDTH = 125;
+
 export class CollisionsScreenView extends ScreenView {
   public constructor(model: CollisionsModel, providedOptions?: CollisionsScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See CollisionsScreenSummaryContent for the four content regions.
     const options = optionize<CollisionsScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new CollisionsScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new CollisionsScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: RelativisticDynamicsColors.backgroundColorProperty,
+    const bounds = this.layoutBounds;
+    const sm = StringManager.getInstance();
+    const strings = sm.getCollisionsStrings();
+    const a11y = sm.getCollisionsA11yStrings().controls;
+
+    // ── Left column: play area, momentum diagram, invariants ─────────────────
+    const playArea = new CollisionPlayAreaNode(model, PLAY_WIDTH, PLAY_HEIGHT);
+    playArea.left = bounds.minX + SCREEN_VIEW_MARGIN + 42;
+    playArea.top = bounds.minY + SCREEN_VIEW_MARGIN;
+
+    const momentumDiagram = new MomentumDiagramNode(model, DIAGRAM_SIZE);
+    momentumDiagram.left = bounds.minX + SCREEN_VIEW_MARGIN;
+    momentumDiagram.top = playArea.bottom + 22;
+
+    const sqrtSText = new DerivedProperty([model.invariantMassProperty], (m) => formatSignificant(m, 4));
+    const openingText = new DerivedProperty([model.viewStateProperty], (state) => {
+      const angle = openingAngle(state.outgoing);
+      return angle === null ? "—" : `${formatSignificant((angle * 180) / Math.PI, 3)}°`;
     });
-    this.addChild(backgroundRect);
+    const compositeText = new DerivedProperty(
+      [model.labStateProperty, model.mass1Property, model.mass2Property],
+      (s, m1, m2) => `${formatSignificant(s.outgoing[0]?.mass ?? 0, 4)} (${formatSignificant(m1 + m2, 3)})`,
+    );
+    const newtonReferenceVisible = new DerivedProperty(
+      [model.modeProperty, model.mass1Property, model.mass2Property, model.velocity2Property, model.frameProperty],
+      (mode, m1, m2, u2, frame) => mode === "elastic" && m1 === m2 && u2.magnitude === 0 && frame === "lab",
+    );
+    const openingRow = createReadoutRow(strings.openingAngleStringProperty, openingText, undefined, READOUT_WIDTH);
+    openingRow.visibleProperty = new DerivedProperty([model.modeProperty], (mode) => mode === "elastic");
+    const newtonRow = createReadoutRow(
+      strings.newtonOpeningAngleStringProperty,
+      new DerivedProperty([strings.degreesPatternStringProperty], (p) => StringUtils.fillIn(p, { value: 90 })),
+      RelativisticDynamicsColors.newtonianColorProperty,
+      READOUT_WIDTH,
+    );
+    newtonRow.visibleProperty = newtonReferenceVisible;
+    const compositeRow = createReadoutRow(strings.compositeMassStringProperty, compositeText, undefined, READOUT_WIDTH);
+    compositeRow.visibleProperty = new DerivedProperty([model.modeProperty], (mode) => mode === "inelastic");
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().collisionsStringProperty, {
-      font: "bold 36px sans-serif",
-      fill: RelativisticDynamicsColors.textColorProperty,
-      center: this.layoutBounds.center,
+    const readouts = new VBox({
+      align: "left",
+      spacing: 6,
+      children: [
+        createSectionHeader(strings.readoutsHeadingStringProperty),
+        createReadoutRow(
+          strings.invariantMassStringProperty,
+          sqrtSText,
+          RelativisticDynamicsColors.invariantColorProperty,
+          READOUT_WIDTH,
+        ),
+        openingRow,
+        newtonRow,
+        compositeRow,
+      ],
     });
-    this.addChild(placeholderText);
+    readouts.left = momentumDiagram.right + 22;
+    readouts.top = momentumDiagram.top - 18;
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getCollisionsA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    // ── Middle column: conservation, bodies ──────────────────────────────────
+    const conservation = new ConservationPanel(model);
+    conservation.left = playArea.right + 16;
+    conservation.top = bounds.minY + SCREEN_VIEW_MARGIN;
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
-    const resetAllButton = new ResetAllButton({
-      ...FLAT_RESET_ALL_BUTTON_OPTIONS,
-      listener: () => {
-        model.reset();
-        this.reset();
-      },
-      right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
-    });
-    this.addChild(resetAllButton);
-
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
-    this.addChild(
-      new Node({
-        pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
-          resetAllButton,
+    const massControl = (
+      property: typeof model.mass1Property,
+      title: TReadOnlyProperty<string>,
+      body: TReadOnlyProperty<string>,
+    ) =>
+      createNumberControl(property, new Range(COLLISIONS.MASS_MIN, COLLISIONS.MASS_MAX), {
+        titleProperty: title,
+        valuePatternProperty: strings.massValuePatternStringProperty,
+        accessibleName: new DerivedProperty([a11y.massStringProperty, body], (pattern, name) =>
+          StringUtils.fillIn(pattern, { body: name }),
+        ),
+        accessibleHelpText: a11y.massHelpStringProperty,
+        decimalPlaces: 1,
+        delta: 0.1,
+        width: MASS_CONTROL_WIDTH,
+      });
+    const mass1Control = massControl(model.mass1Property, strings.mass1StringProperty, strings.body1StringProperty);
+    const mass2Control = massControl(model.mass2Property, strings.mass2StringProperty, strings.body2StringProperty);
+    const velocityName = (body: TReadOnlyProperty<string>) =>
+      new DerivedProperty([a11y.velocityStringProperty, body], (pattern, name) =>
+        StringUtils.fillIn(pattern, { body: name }),
+      );
+    const pad1 = new VelocityPadNode(
+      model.velocity1Property,
+      RelativisticDynamicsColors.body1ColorProperty,
+      strings.body1StringProperty,
+      velocityName(strings.body1StringProperty),
+    );
+    const pad2 = new VelocityPadNode(
+      model.velocity2Property,
+      RelativisticDynamicsColors.body2ColorProperty,
+      strings.body2StringProperty,
+      velocityName(strings.body2StringProperty),
+    );
+    const bodiesPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [
+          createSectionHeader(strings.bodiesHeadingStringProperty),
+          new HBox({
+            spacing: 14,
+            align: "top",
+            children: [
+              new VBox({ spacing: 8, children: [pad1, mass1Control] }),
+              new VBox({ spacing: 8, children: [pad2, mass2Control] }),
+            ],
+          }),
         ],
       }),
     );
-  }
+    bodiesPanel.left = conservation.left;
+    bodiesPanel.top = conservation.bottom + 10;
 
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
-  }
+    // ── Right column: presets, collision, frame ──────────────────────────────
+    const presetButtons = [
+      createPushButton(strings.presets.derivationStringProperty, {
+        accessibleName: strings.presets.derivationStringProperty,
+        accessibleHelpText: a11y.presetHelpStringProperty,
+        listener: () => model.applyDerivationPreset(),
+      }),
+      createPushButton(strings.presets.targetAtRestStringProperty, {
+        accessibleName: strings.presets.targetAtRestStringProperty,
+        accessibleHelpText: a11y.presetHelpStringProperty,
+        listener: () => model.applyTargetAtRestPreset(),
+      }),
+      createPushButton(strings.presets.headOnStringProperty, {
+        accessibleName: strings.presets.headOnStringProperty,
+        accessibleHelpText: a11y.presetHelpStringProperty,
+        listener: () => model.applyHeadOnPreset(),
+      }),
+    ];
+    const presetPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 6,
+        children: [createSectionHeader(strings.presetsHeadingStringProperty), ...presetButtons],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
 
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
+    const modeRadio = createRadioButtonGroup(
+      model.modeProperty,
+      [
+        {
+          value: "elastic" as const,
+          labelProperty: strings.modes.elasticStringProperty,
+          accessibleName: strings.modes.elasticStringProperty,
+        },
+        {
+          value: "inelastic" as const,
+          labelProperty: strings.modes.inelasticStringProperty,
+          accessibleName: strings.modes.inelasticStringProperty,
+        },
+      ],
+      { accessibleName: a11y.modeStringProperty, accessibleHelpText: a11y.modeHelpStringProperty },
+    );
+    const angleControl = createNumberControl(model.cmAngleProperty, new Range(-180, 180), {
+      titleProperty: strings.cmAngleStringProperty,
+      valuePatternProperty: strings.degreesPatternStringProperty,
+      accessibleName: a11y.cmAngleStringProperty,
+      accessibleHelpText: a11y.cmAngleHelpStringProperty,
+      decimalPlaces: 0,
+      delta: 1,
+    });
+    angleControl.enabledProperty = new DerivedProperty([model.modeProperty], (mode) => mode === "elastic");
+    const collisionPanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [createSectionHeader(strings.collisionHeadingStringProperty), modeRadio, angleControl],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
 
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeCollisionsScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in CollisionsScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeCollisionsScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeCollisionsScreenView();
-  //   super.dispose();
-  // }
+    const frameRadio = createRadioButtonGroup(
+      model.frameProperty,
+      [
+        {
+          value: "lab" as const,
+          labelProperty: strings.frames.labStringProperty,
+          accessibleName: strings.frames.labStringProperty,
+        },
+        {
+          value: "centerOfMomentum" as const,
+          labelProperty: strings.frames.centerOfMomentumStringProperty,
+          accessibleName: strings.frames.centerOfMomentumStringProperty,
+        },
+        {
+          value: "moving" as const,
+          labelProperty: strings.frames.movingStringProperty,
+          accessibleName: strings.frames.movingStringProperty,
+        },
+      ],
+      { accessibleName: a11y.frameStringProperty, accessibleHelpText: a11y.frameHelpStringProperty },
+    );
+    const frameSpeedControl = createNumberControl(
+      model.frameBetaProperty,
+      new Range(-COLLISIONS.MAX_FRAME_BETA, COLLISIONS.MAX_FRAME_BETA),
+      {
+        titleProperty: strings.frameSpeedStringProperty,
+        valuePatternProperty: sm.getCommonStrings().speedValuePatternStringProperty,
+        accessibleName: a11y.frameSpeedStringProperty,
+        accessibleHelpText: a11y.frameSpeedHelpStringProperty,
+        decimalPlaces: 2,
+        delta: 0.01,
+      },
+    );
+    frameSpeedControl.enabledProperty = new DerivedProperty([model.frameProperty], (frame) => frame === "moving");
+    const framePanel = new RelativisticDynamicsPanel(
+      new VBox({
+        align: "left",
+        spacing: 8,
+        children: [createSectionHeader(strings.frameHeadingStringProperty), frameRadio, frameSpeedControl],
+      }),
+      { minWidth: CONTROL_WIDTH + 24 },
+    );
+
+    const rightColumn = new VBox({ spacing: 10, align: "right", children: [presetPanel, collisionPanel, framePanel] });
+    rightColumn.right = bounds.maxX - SCREEN_VIEW_MARGIN;
+    rightColumn.top = bounds.minY + SCREEN_VIEW_MARGIN;
+
+    // ── Time controls ──────────────────────────────────────────────────────────
+    const timeControlNode = new TimeControlNode(model.isPlayingProperty, {
+      timeSpeedProperty: model.timeSpeedProperty,
+      ...TIME_CONTROL_SPEED_RADIO_OPTIONS,
+      playPauseStepButtonOptions: {
+        ...FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,
+        stepForwardButtonOptions: {
+          ...FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS.stepForwardButtonOptions,
+          listener: () => model.stepTime(1 / 15),
+        },
+      },
+    });
+    const restartButton = new RestartButton({
+      ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
+      baseColor: RelativisticDynamicsColors.controlSurfaceColorProperty,
+      listener: () => model.restart(),
+      accessibleName: a11y.restartStringProperty,
+      accessibleHelpText: a11y.restartHelpStringProperty,
+    });
+    const timeRow = new HBox({ spacing: 16, children: [restartButton, timeControlNode] });
+    timeRow.centerX = playArea.centerX;
+    timeRow.bottom = bounds.maxY - SCREEN_VIEW_MARGIN;
+
+    const resetAllButton = new ResetAllButton({
+      ...FLAT_RESET_ALL_BUTTON_OPTIONS,
+      listener: () => {
+        this.interruptSubtreeInput();
+        model.reset();
+      },
+      right: bounds.maxX - SCREEN_VIEW_MARGIN,
+      bottom: bounds.maxY - SCREEN_VIEW_MARGIN,
+    });
+
+    this.children = [
+      playArea,
+      momentumDiagram,
+      readouts,
+      conservation,
+      bodiesPanel,
+      rightColumn,
+      timeRow,
+      resetAllButton,
+      new Node({
+        pdomOrder: [
+          timeControlNode,
+          restartButton,
+          ...presetButtons,
+          pad1.handle,
+          pad2.handle,
+          mass1Control,
+          mass2Control,
+          modeRadio,
+          angleControl,
+          frameRadio,
+          frameSpeedControl,
+          conservation.newtonCheckbox,
+          resetAllButton,
+        ],
+      }),
+    ];
+  }
 }

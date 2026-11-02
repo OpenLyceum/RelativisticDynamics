@@ -97,6 +97,65 @@
       "massless": "Massless: E = pc"
     }
   },
+  "collisions": {
+    "presetsHeading": "Start from",
+    "presets": {
+      "derivation": "The chapter's derivation",
+      "targetAtRest": "Target at rest",
+      "headOn": "Head-on, sticking"
+    },
+    "bodiesHeading": "Bodies (lab frame)",
+    "body1": "Body 1",
+    "body2": "Body 2",
+    "mass1": "Mass 1",
+    "mass2": "Mass 2",
+    "massValuePattern": "{{value}} m₀",
+    "velocityPadHint": "Drag to set the velocity; the circle is the speed of light.",
+    "collisionHeading": "Collision",
+    "modes": {
+      "elastic": "Elastic (bounce)",
+      "inelastic": "Perfectly inelastic (stick)"
+    },
+    "cmAngle": "Angle in CM frame",
+    "degreesPattern": "{{value}}°",
+    "frameHeading": "Viewed from",
+    "frames": {
+      "lab": "Lab frame",
+      "centerOfMomentum": "Centre-of-momentum frame",
+      "moving": "Frame moving at"
+    },
+    "frameSpeed": "Frame speed",
+    "showNewton": "Show Newton's Σmu",
+    "conservationHeading": "Before and after",
+    "before": "before",
+    "after": "after",
+    "rows": {
+      "momentumX": "Σγmu<sub>x</sub>",
+      "momentumY": "Σγmu<sub>y</sub>",
+      "energy": "ΣE",
+      "restEnergy": "Σmc²",
+      "kineticEnergy": "ΣK",
+      "newtonX": "Σmu<sub>x</sub>",
+      "newtonY": "Σmu<sub>y</sub>"
+    },
+    "conserved": "conserved",
+    "notConserved": "not conserved",
+    "momentumDiagramTitle": "Momentum vectors γmu",
+    "readoutsHeading": "Invariants and angles",
+    "invariantMass": "√s (same in every frame)",
+    "openingAngle": "Opening angle",
+    "newtonOpeningAngle": "Newton's prediction",
+    "compositeMass": "Mass after sticking",
+    "unitsNote": "Masses in m₀, energies in m₀c², momenta in m₀c",
+    "viewingLabel": "Viewed from: {{frame}}",
+    "frameNames": {
+      "lab": "lab",
+      "centerOfMomentum": "CM frame",
+      "moving": "frame at {{beta}} c"
+    },
+    "xAxis": "<i>x</i> (light-seconds)",
+    "yAxis": "<i>y</i> (light-seconds)"
+  },
   "a11y": {
     "accelerate": {
       "screenSummary": {
@@ -143,13 +202,30 @@
     },
     "collisions": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows two bodies colliding at the centre of a grid, viewed from the selected frame, with velocity arrows. Beside it, bars compare totals before and after the collision: relativistic momentum Σγmu in x and y, total energy, rest energy and kinetic energy, and optionally Newton's momentum Σmu. A momentum diagram adds the γmu vectors head to tail.",
+        "controlArea": "Start from a preset, set each body's mass and lab velocity, choose an elastic or a sticking collision and the scattering angle, and choose the frame to view it from: the lab, the centre-of-momentum frame, or a frame moving at a chosen speed. Play, pause, step and restart the run with the time controls.",
+        "interactionHint": "Choose the chapter's derivation, show Newton's Σmu, and switch between the lab and the moving frame: Newton's y momentum changes in the collision, the relativistic one never does."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Viewed from the {{frame}}. Before: Σγmu = ({{px}}, {{py}}), total energy {{energy}}. After: Σγmu = ({{pxAfter}}, {{pyAfter}}), total energy {{energyAfter}}. Invariant mass {{sqrtS}}.",
+      "newtonDetailsPattern": "Newton's Σmu goes from ({{nx}}, {{ny}}) to ({{nxAfter}}, {{nyAfter}}).",
       "controls": {
-        "exampleControl": "Example control"
+        "presetHelp": "Sets the masses, velocities, collision type and frame to a ready-made example.",
+        "mass": "Mass of {{body}}",
+        "massHelp": "Rest mass of the body, in units of m₀.",
+        "velocity": "Velocity of {{body}}",
+        "velocityHelp": "Use the arrow keys to change the body's lab-frame velocity. The speed is limited to below the speed of light.",
+        "velocityValue": "{{speed}} c at {{angle}} degrees",
+        "mode": "Collision type",
+        "modeHelp": "An elastic collision keeps the masses; a perfectly inelastic one leaves a single composite body.",
+        "cmAngle": "Scattering angle",
+        "cmAngleHelp": "Angle through which the bodies turn, measured in the centre-of-momentum frame.",
+        "frame": "Viewing frame",
+        "frameHelp": "Choose the inertial frame the collision is drawn and totalled in.",
+        "frameSpeed": "Frame speed",
+        "frameSpeedHelp": "Velocity of the moving frame along x, as a fraction of c.",
+        "showNewton": "Show Newton's momentum",
+        "restart": "Restart",
+        "restartHelp": "Returns the bodies to the start of the run."
       }
     },
     "thresholds": {

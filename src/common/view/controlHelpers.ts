@@ -25,7 +25,15 @@ export type NumberControlConfig = {
   delta: number;
   /** A sub-range of `range` the value is currently allowed into, when that depends on the model. */
   enabledRangeProperty?: TReadOnlyProperty<Range>;
+  /**
+   * Overall width the control should fit; defaults to CONTROL_WIDTH. A narrow
+   * control puts its title on a row of its own so the title is not squeezed.
+   */
+  width?: number;
 };
+
+/** Below this width the title gets its own row. */
+const NARROW_CONTROL_WIDTH = 170;
 
 /**
  * A themed NumberControl: title above, value in a box, slider below.
@@ -36,12 +44,19 @@ export const createNumberControl = (
   config: NumberControlConfig,
 ): NumberControl =>
   new NumberControl(config.titleProperty, property, range, {
-    layoutFunction: NumberControl.createLayoutFunction2({ ySpacing: 10 }),
+    layoutFunction:
+      (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
+        ? NumberControl.createLayoutFunction3({ ySpacing: 6 })
+        : NumberControl.createLayoutFunction2({ ySpacing: 10 }),
     delta: config.delta,
     titleNodeOptions: {
       font: FONTS.CONTROL_TITLE,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: CONTROL_WIDTH - 70,
+      // In the wide layout the value box and its two arrow buttons share the title's row.
+      maxWidth:
+        (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
+          ? (config.width ?? CONTROL_WIDTH)
+          : (config.width ?? CONTROL_WIDTH) - 110,
     },
     numberDisplayOptions: {
       valuePattern: config.valuePatternProperty,
@@ -55,7 +70,7 @@ export const createNumberControl = (
     },
     arrowButtonOptions: FLAT_RECTANGULAR_BUTTON_OPTIONS,
     sliderOptions: {
-      trackSize: new Dimension2(CONTROL_WIDTH - 40, 4),
+      trackSize: new Dimension2((config.width ?? CONTROL_WIDTH) - 40, 4),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       majorTickLength: 10,
     },
