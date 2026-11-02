@@ -88,14 +88,23 @@ export const ENERGY_MOMENTUM = {
   CUSTOM_MASS_MIN_MEV: 0,
   CUSTOM_MASS_MAX_MEV: 2000,
   CUSTOM_MASS_DEFAULT_MEV: 500,
-  /** Range of the frame-boost rapidity slider. */
-  MAX_BOOST_RAPIDITY: 2.5,
-  /** Above this many rest energies of kinetic energy, the particle is labelled ultrarelativistic. */
-  ULTRARELATIVISTIC_RATIO: 10,
+  /** Largest observer speed (fraction of c). */
+  MAX_FRAME_BETA: 0.95,
+  /** Largest x = pc/S the controls reach (γ ≈ 10.05, β ≈ 0.995 for a massive particle). */
+  MAX_SCALED_MOMENTUM: 10,
+  /** The scale energy S used for massless particles, MeV. */
+  PHOTON_SCALE_MEV: 1,
+  /** From this γ up the particle is labelled ultrarelativistic (E and pc then differ by under 2 %). */
+  ULTRARELATIVISTIC_GAMMA: 5,
   /** Below this β (and m > 0), the particle is labelled at rest. */
   AT_REST_BETA: 1e-3,
-  /** Size of the (pc, E) diagram in pixels (it is square: equal scales keep photons at 45°). */
-  DIAGRAM_SIZE: 330,
+  /**
+   * The (pc, E) diagram: pc ∈ [−P, P], E ∈ [0, P] in units of mc² (or MeV for a
+   * photon), drawn with equal pixel scales so the light line sits at 45°. P steps
+   * through these zoom levels to keep the points on the chart.
+   */
+  DIAGRAM_ZOOM_LEVELS: [3, 6, 12, 24],
+  DIAGRAM_VIEW_WIDTH: 420,
 } as const;
 
 // ── Collisions screen ─────────────────────────────────────────────────────────

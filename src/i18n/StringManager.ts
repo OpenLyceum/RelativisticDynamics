@@ -46,25 +46,8 @@ const stringProperties = LocalizedString.getNestedStringProperties({
 });
 
 /**
- * Explicit `a11y` shape exposed by {@link StringManager.getA11yStrings}.
- * Keep this in sync with the `a11y` key in `strings_en.json` — a locale key
- * rename that is not mirrored here fails at the getter return (not silently).
- */
-export type RelativisticDynamicsA11yStrings = {
-  readonly screenSummary: {
-    readonly playAreaStringProperty: ReadOnlyProperty<string>;
-    readonly controlAreaStringProperty: ReadOnlyProperty<string>;
-    readonly interactionHintStringProperty: ReadOnlyProperty<string>;
-  };
-  readonly currentDetailsStringProperty: ReadOnlyProperty<string>;
-  readonly controls: {
-    readonly exampleControlStringProperty: ReadOnlyProperty<string>;
-  };
-};
-
-/**
  * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Same sync rule as {@link RelativisticDynamicsA11yStrings}.
+ * Keep in sync with the `preferences` key in `strings_en.json`.
  */
 export type RelativisticDynamicsPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
@@ -114,6 +97,16 @@ export class StringManager {
       collisionsStringProperty: stringProperties.screens.collisionsStringProperty,
       thresholdsStringProperty: stringProperties.screens.thresholdsStringProperty,
     };
+  }
+
+  /** Vocabulary shared by every screen: quantity names, particle names, value patterns. */
+  public getCommonStrings() {
+    return stringProperties.common;
+  }
+
+  /** Visible strings for the Energy–Momentum screen. */
+  public getEnergyMomentumStrings() {
+    return stringProperties.energyMomentum;
   }
 
   /** Accessibility strings for the Accelerate screen. */

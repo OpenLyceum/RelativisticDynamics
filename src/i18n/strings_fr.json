@@ -6,6 +6,65 @@
     "collisions": "Collisions",
     "thresholds": "Thresholds"
   },
+  "common": {
+    "quantities": {
+      "speed": "Speed β",
+      "gamma": "Lorentz factor γ",
+      "momentum": "Momentum p",
+      "kineticEnergy": "Kinetic energy K",
+      "totalEnergy": "Total energy E",
+      "restEnergy": "Rest energy mc²",
+      "invariantMass": "Invariant mass m"
+    },
+    "particles": {
+      "electron": "Electron",
+      "positron": "Positron",
+      "muon": "Muon",
+      "antimuon": "Antimuon",
+      "pion": "Pion (π⁺)",
+      "pionPlus": "Positive pion",
+      "pionMinus": "Negative pion",
+      "pionZero": "Neutral pion",
+      "kaonZero": "Neutral kaon",
+      "proton": "Proton",
+      "antiproton": "Antiproton",
+      "neutron": "Neutron",
+      "lambda": "Lambda",
+      "leadNucleus": "Lead nucleus",
+      "photon": "Photon",
+      "custom": "Custom"
+    },
+    "relativity": "Relativity",
+    "newton": "Newton",
+    "speedValuePattern": "{{value}} c",
+    "massValuePattern": "{{value}} MeV/c²"
+  },
+  "energyMomentum": {
+    "particleHeading": "Particle",
+    "customMass": "Mass",
+    "setHeading": "Set",
+    "observerHeading": "Observer",
+    "observerSpeed": "Observer speed",
+    "triangleTitle": "E² = (pc)² + (mc²)²",
+    "energyBarTitle": "Where the energy is",
+    "newtonianBar": "Newton's ½mu²",
+    "diagramTitle": "Energy against momentum",
+    "labColumn": "Lab",
+    "frameColumn": "Observer",
+    "massShell": "mass shell",
+    "lightLine": "E = pc",
+    "labPoint": "lab",
+    "framePoint": "observer",
+    "scaledMomentumAxis": "<i>pc</i> / <i>mc</i>²",
+    "scaledEnergyAxis": "<i>E</i> / <i>mc</i>²",
+    "photonMomentumAxis": "<i>pc</i> (MeV)",
+    "photonEnergyAxis": "<i>E</i> (MeV)",
+    "limits": {
+      "atRest": "At rest: E = mc²",
+      "ultrarelativistic": "Ultrarelativistic: E ≈ pc",
+      "massless": "Massless: E = pc"
+    }
+  },
   "a11y": {
     "accelerate": {
       "screenSummary": {
@@ -24,9 +83,19 @@
         "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
         "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
       },
-      "currentDetails": "La simulation est dans son état initial.",
+      "currentDetailsPattern": "{{particle}} with momentum {{momentum}}, kinetic energy {{kinetic}}, total energy {{energy}}, moving at {{speed}}. Invariant mass {{mass}}.",
+      "frameDetailsPattern": "An observer moving at {{frameSpeed}} measures total energy {{energy}} and momentum {{momentum}}; the invariant mass is the same.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "particle": "Particle",
+        "particleHelp": "Choose the particle whose energy and momentum are shown.",
+        "customMass": "Custom particle mass",
+        "customMassHelp": "Rest energy of the custom particle, in MeV.",
+        "setQuantity": "Quantity to set",
+        "setQuantityHelp": "Choose which quantity the slider below controls; the others follow.",
+        "quantitySlider": "Value of the chosen quantity",
+        "quantitySliderHelp": "Sets the particle's motion through the chosen quantity.",
+        "observerSpeed": "Observer speed",
+        "observerSpeedHelp": "Speed of an observer moving along the particle's direction, as a fraction of c. Positive means moving the same way as the particle."
       }
     },
     "collisions": {

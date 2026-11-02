@@ -6,6 +6,65 @@
     "collisions": "Collisions",
     "thresholds": "Thresholds"
   },
+  "common": {
+    "quantities": {
+      "speed": "Speed β",
+      "gamma": "Lorentz factor γ",
+      "momentum": "Momentum p",
+      "kineticEnergy": "Kinetic energy K",
+      "totalEnergy": "Total energy E",
+      "restEnergy": "Rest energy mc²",
+      "invariantMass": "Invariant mass m"
+    },
+    "particles": {
+      "electron": "Electron",
+      "positron": "Positron",
+      "muon": "Muon",
+      "antimuon": "Antimuon",
+      "pion": "Pion (π⁺)",
+      "pionPlus": "Positive pion",
+      "pionMinus": "Negative pion",
+      "pionZero": "Neutral pion",
+      "kaonZero": "Neutral kaon",
+      "proton": "Proton",
+      "antiproton": "Antiproton",
+      "neutron": "Neutron",
+      "lambda": "Lambda",
+      "leadNucleus": "Lead nucleus",
+      "photon": "Photon",
+      "custom": "Custom"
+    },
+    "relativity": "Relativity",
+    "newton": "Newton",
+    "speedValuePattern": "{{value}} c",
+    "massValuePattern": "{{value}} MeV/c²"
+  },
+  "energyMomentum": {
+    "particleHeading": "Particle",
+    "customMass": "Mass",
+    "setHeading": "Set",
+    "observerHeading": "Observer",
+    "observerSpeed": "Observer speed",
+    "triangleTitle": "E² = (pc)² + (mc²)²",
+    "energyBarTitle": "Where the energy is",
+    "newtonianBar": "Newton's ½mu²",
+    "diagramTitle": "Energy against momentum",
+    "labColumn": "Lab",
+    "frameColumn": "Observer",
+    "massShell": "mass shell",
+    "lightLine": "E = pc",
+    "labPoint": "lab",
+    "framePoint": "observer",
+    "scaledMomentumAxis": "<i>pc</i> / <i>mc</i>²",
+    "scaledEnergyAxis": "<i>E</i> / <i>mc</i>²",
+    "photonMomentumAxis": "<i>pc</i> (MeV)",
+    "photonEnergyAxis": "<i>E</i> (MeV)",
+    "limits": {
+      "atRest": "At rest: E = mc²",
+      "ultrarelativistic": "Ultrarelativistic: E ≈ pc",
+      "massless": "Massless: E = pc"
+    }
+  },
   "a11y": {
     "accelerate": {
       "screenSummary": {
@@ -20,13 +79,23 @@
     },
     "energyMomentum": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a right triangle whose legs are the momentum pc and the rest energy mc² and whose hypotenuse is the total energy E, a bar splitting the total energy into rest energy and kinetic energy, and a graph of energy against momentum with the particle's mass shell and the light line E = pc. A table lists speed, Lorentz factor, momentum, kinetic energy, total energy and invariant mass in the lab and for a moving observer.",
+        "controlArea": "Choose a particle, choose which quantity to set (speed, momentum, kinetic energy or total energy), and set it with the slider. A second slider sets the speed of an observer moving along the particle's direction.",
+        "interactionHint": "Push the speed slider towards its maximum and watch the momentum and energy grow without limit."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "{{particle}} with momentum {{momentum}}, kinetic energy {{kinetic}}, total energy {{energy}}, moving at {{speed}}. Invariant mass {{mass}}.",
+      "frameDetailsPattern": "An observer moving at {{frameSpeed}} measures total energy {{energy}} and momentum {{momentum}}; the invariant mass is the same.",
       "controls": {
-        "exampleControl": "Example control"
+        "particle": "Particle",
+        "particleHelp": "Choose the particle whose energy and momentum are shown.",
+        "customMass": "Custom particle mass",
+        "customMassHelp": "Rest energy of the custom particle, in MeV.",
+        "setQuantity": "Quantity to set",
+        "setQuantityHelp": "Choose which quantity the slider below controls; the others follow.",
+        "quantitySlider": "Value of the chosen quantity",
+        "quantitySliderHelp": "Sets the particle's motion through the chosen quantity.",
+        "observerSpeed": "Observer speed",
+        "observerSpeedHelp": "Speed of an observer moving along the particle's direction, as a fraction of c. Positive means moving the same way as the particle."
       }
     },
     "collisions": {
