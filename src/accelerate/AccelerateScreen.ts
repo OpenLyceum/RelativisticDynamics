@@ -14,6 +14,7 @@ import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
 import { createAccelerateIcon } from "../common/RelativisticDynamicsScreenIcons.js";
+import type { RelativisticDynamicsPreferencesModel } from "../preferences/RelativisticDynamicsPreferencesModel.js";
 import RelativisticDynamicsColors from "../RelativisticDynamicsColors.js";
 import { AccelerateModel } from "./model/AccelerateModel.js";
 import { AccelerateKeyboardHelpContent } from "./view/AccelerateKeyboardHelpContent.js";
@@ -23,13 +24,13 @@ import { AccelerateScreenView } from "./view/AccelerateScreenView.js";
 type AccelerateScreenOptions = ScreenOptions & { tandem: Tandem };
 
 export class AccelerateScreen extends Screen<AccelerateModel, AccelerateScreenView> {
-  public constructor(options: AccelerateScreenOptions) {
+  public constructor(preferences: RelativisticDynamicsPreferencesModel, options: AccelerateScreenOptions) {
     super(
       // Model factory — called once when the screen is first shown
       () => new AccelerateModel(),
       // View factory — receives the model instance
       (model) =>
-        new AccelerateScreenView(model, {
+        new AccelerateScreenView(model, preferences, {
           tandem: options.tandem.createTandem("view"),
         }),
       optionize<AccelerateScreenOptions, EmptySelfOptions, ScreenOptions>()(

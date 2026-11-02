@@ -214,6 +214,11 @@ export class EnergyMomentumDiagramNode extends Node {
 
   public override dispose(): void {
     this.disposeDiagram();
+    // Children (titles, axis labels, tick labels) listen to localized strings; take them down too.
+    const children = this.children;
     super.dispose();
+    for (const child of children) {
+      child.disposeSubtree();
+    }
   }
 }

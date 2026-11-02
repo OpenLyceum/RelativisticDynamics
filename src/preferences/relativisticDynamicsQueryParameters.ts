@@ -1,17 +1,9 @@
 /**
  * relativisticDynamicsQueryParameters.ts
  *
- * Sim-specific startup query parameters. This is the single place where every
- * sim-specific query parameter is declared and documented. Public-facing
- * parameters (intended for end users / sharing links) must set `public: true`.
+ * Simulation-specific query parameters, read once at startup.
  *
- * ── How to add a query parameter ──────────────────────────────────────────────
- * 1. Add an entry below with a `type`, `defaultValue`, and (if user-facing)
- *    `public: true`. Add `isValidValue` to bound numeric ranges.
- * 2. If it should also be user-editable at runtime, surface it as a preference
- *    in RelativisticDynamicsPreferencesModel (initialize that Property from this query parameter).
- *
- * Usage: append e.g. `?exampleToggle=true` to the sim URL.
+ * Usage: append e.g. `?hideNewton` to the sim URL.
  */
 
 import { logGlobal } from "scenerystack/phet-core";
@@ -20,12 +12,12 @@ import RelativisticDynamicsNamespace from "../RelativisticDynamicsNamespace.js";
 
 const relativisticDynamicsQueryParameters = QueryStringMachine.getAll({
   /**
-   * Example public boolean parameter. Replace with real sim-specific parameters,
-   * or remove if the sim has none.
+   * Start with Newton's predictions hidden: the ghost particle and Newtonian curves on
+   * the Accelerate screen and the ½mu² bar on the Energy–Momentum screen. Useful once a
+   * class has seen the comparison and wants the relativistic picture alone.
    */
-  exampleToggle: {
-    type: "boolean",
-    defaultValue: false,
+  hideNewton: {
+    type: "flag",
     public: true,
   },
 });

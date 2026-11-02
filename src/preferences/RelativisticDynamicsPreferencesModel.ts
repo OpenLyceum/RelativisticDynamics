@@ -1,12 +1,8 @@
 /**
  * RelativisticDynamicsPreferencesModel.ts
  *
- * Model for the simulation-specific preferences shown in Preferences →
- * Simulation. Each preference Property takes its initial value from the
- * corresponding query parameter in relativisticDynamicsQueryParameters.
- *
- * Remove the example preference (and its query parameter / UI control) if the
- * sim has no sim-specific preferences.
+ * Simulation-wide preferences, shown in Preferences → Simulation and shared by
+ * every screen.
  */
 
 import { BooleanProperty } from "scenerystack/axon";
@@ -15,18 +11,22 @@ import RelativisticDynamicsNamespace from "../RelativisticDynamicsNamespace.js";
 import relativisticDynamicsQueryParameters from "./relativisticDynamicsQueryParameters.js";
 
 export class RelativisticDynamicsPreferencesModel {
-  /** Example preference; initial value comes from the `exampleToggle` query parameter. */
-  public readonly exampleToggleProperty: BooleanProperty;
+  /**
+   * Whether Newton's predictions are drawn beside relativity's on the Accelerate and
+   * Energy–Momentum screens. (The Collisions screen has its own Σmu toggle, because
+   * there the comparison is the lesson rather than a backdrop.)
+   */
+  public readonly showNewtonProperty: BooleanProperty;
 
   public constructor(tandem?: Tandem) {
-    this.exampleToggleProperty = new BooleanProperty(
-      relativisticDynamicsQueryParameters.exampleToggle,
-      tandem ? { tandem: tandem.createTandem("exampleToggleProperty") } : undefined,
+    this.showNewtonProperty = new BooleanProperty(
+      !relativisticDynamicsQueryParameters.hideNewton,
+      tandem ? { tandem: tandem.createTandem("showNewtonProperty") } : undefined,
     );
   }
 
   public reset(): void {
-    this.exampleToggleProperty.reset();
+    this.showNewtonProperty.reset();
   }
 }
 

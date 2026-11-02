@@ -37,7 +37,10 @@ const SAMPLES = 120;
 const MARKER_RADIUS = 5;
 
 export class AccelerateChartsNode extends Node {
-  public constructor(model: AccelerateModel) {
+  /**
+   * @param showNewtonProperty - whether Newton's curves and marker are drawn (a simulation preference)
+   */
+  public constructor(model: AccelerateModel, showNewtonProperty: TReadOnlyProperty<boolean>) {
     super();
     const strings = StringManager.getInstance().getAccelerateStrings();
 
@@ -125,6 +128,9 @@ export class AccelerateChartsNode extends Node {
     });
     const relativityMarker = new Circle(MARKER_RADIUS, { fill: RelativisticDynamicsColors.relativisticColorProperty });
     energyChart.overlayLayer.children = [newtonMarker, relativityMarker];
+    for (const node of [tNewton, kNewton, newtonMarker]) {
+      node.visibleProperty = showNewtonProperty;
+    }
 
     const titled = (titleProperty: TReadOnlyProperty<string>, chart: ChartFrameNode): VBox =>
       new VBox({

@@ -32,6 +32,7 @@ import {
   createSectionHeader,
 } from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import type { RelativisticDynamicsPreferencesModel } from "../../preferences/RelativisticDynamicsPreferencesModel.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
 import { ACCELERATE, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
 import type { AccelerateModel } from "../model/AccelerateModel.js";
@@ -45,7 +46,11 @@ export type AccelerateScreenViewOptions = ScreenViewOptions;
 const PLAY_AREA_WIDTH = 720;
 
 export class AccelerateScreenView extends ScreenView {
-  public constructor(model: AccelerateModel, providedOptions?: AccelerateScreenViewOptions) {
+  public constructor(
+    model: AccelerateModel,
+    preferences: RelativisticDynamicsPreferencesModel,
+    providedOptions?: AccelerateScreenViewOptions,
+  ) {
     const options = optionize<AccelerateScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       { screenSummaryContent: new AccelerateScreenSummaryContent(model) },
       providedOptions,
@@ -59,11 +64,11 @@ export class AccelerateScreenView extends ScreenView {
     const a11y = sm.getAccelerateA11yStrings().controls;
 
     // ── Play area ──────────────────────────────────────────────────────────────
-    const track = new AccelerateTrackNode(model, PLAY_AREA_WIDTH);
+    const track = new AccelerateTrackNode(model, preferences.showNewtonProperty, PLAY_AREA_WIDTH);
     track.left = bounds.minX + SCREEN_VIEW_MARGIN;
     track.top = bounds.minY + SCREEN_VIEW_MARGIN + 6;
 
-    const charts = new AccelerateChartsNode(model);
+    const charts = new AccelerateChartsNode(model, preferences.showNewtonProperty);
     charts.left = bounds.minX + SCREEN_VIEW_MARGIN + 55;
     charts.top = track.bottom + 24;
 

@@ -23,7 +23,10 @@ const MARKER_RADIUS = 9;
 const TICK_SPACING_M = 2;
 
 export class AccelerateTrackNode extends Node {
-  public constructor(model: AccelerateModel, width: number) {
+  /**
+   * @param showNewtonProperty - whether the Newtonian lane is drawn (a simulation preference)
+   */
+  public constructor(model: AccelerateModel, showNewtonProperty: TReadOnlyProperty<boolean>, width: number) {
     super();
     const strings = StringManager.getInstance().getAccelerateStrings();
     const trackLeft = LABEL_COLUMN;
@@ -32,7 +35,13 @@ export class AccelerateTrackNode extends Node {
       trackLeft + (Math.max(0, Math.min(ACCELERATE.TRACK_LENGTH_M, metres)) / ACCELERATE.TRACK_LENGTH_M) * trackWidth;
 
     type Lane = { marker: Node; readout: Text };
-    const makeLane = (index: number, labelProperty: TReadOnlyProperty<string>, color: TPaint, marker: Node): Lane => {
+    const makeLane = (
+      index: number,
+      labelProperty: TReadOnlyProperty<string>,
+      color: TPaint,
+      marker: Node,
+      visibleProperty?: TReadOnlyProperty<boolean>,
+    ): Lane => {
       const y = index * LANE_HEIGHT + LANE_HEIGHT / 2;
       const label = new Text(labelProperty, {
         font: FONTS.READOUT_VALUE,
@@ -53,6 +62,11 @@ export class AccelerateTrackNode extends Node {
         centerY: y,
       });
       marker.centerY = y;
+      if (visibleProperty) {
+        for (const node of [label, lane, readout, marker]) {
+          node.visibleProperty = visibleProperty;
+        }
+      }
       this.addChild(label);
       this.addChild(lane);
       this.addChild(readout);
@@ -75,6 +89,7 @@ export class AccelerateTrackNode extends Node {
         lineWidth: 2.5,
         lineDash: [4, 3],
       }),
+      showNewtonProperty,
     );
     const relativity = makeLane(
       2,

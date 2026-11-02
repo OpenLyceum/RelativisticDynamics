@@ -29,7 +29,10 @@ const BAR_WIDTH = 210;
 const BAR_HEIGHT = 14;
 
 export class EnergyTriangleNode extends Node {
-  public constructor(model: EnergyMomentumModel) {
+  /**
+   * @param showNewtonProperty - whether Newton's ½mu² bar is drawn (a simulation preference)
+   */
+  public constructor(model: EnergyMomentumModel, showNewtonProperty: TReadOnlyProperty<boolean>) {
     super();
     const strings = StringManager.getInstance().getEnergyMomentumStrings();
 
@@ -121,7 +124,7 @@ export class EnergyTriangleNode extends Node {
       }),
     ];
 
-    Multilink.multilink([model.labStateProperty], (state) => {
+    Multilink.multilink([model.labStateProperty, showNewtonProperty], (state, showNewton) => {
       const pc = state.momentum;
       const mc2 = state.mass;
       const longest = Math.max(pc, mc2);
@@ -153,7 +156,7 @@ export class EnergyTriangleNode extends Node {
       newtonBar.setRectWidth(newtonEnergy * unit);
       newtonLabel.left = newtonEnergy * unit + 6;
       newtonLabel.centerY = BAR_HEIGHT / 2;
-      newtonRow.visible = mc2 > 0;
+      newtonRow.visible = mc2 > 0 && showNewton;
 
       const massless = mc2 === 0;
       const atRest = !massless && state.beta < ENERGY_MOMENTUM.AT_REST_BETA;

@@ -13,6 +13,7 @@ import { Node } from "scenerystack/scenery";
 import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/RelativisticDynamicsButtonOptions.js";
+import type { RelativisticDynamicsPreferencesModel } from "../../preferences/RelativisticDynamicsPreferencesModel.js";
 import { SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
 import type { EnergyMomentumModel } from "../model/EnergyMomentumModel.js";
 import { EnergyMomentumControls } from "./EnergyMomentumControls.js";
@@ -27,7 +28,11 @@ export type EnergyMomentumScreenViewOptions = ScreenViewOptions;
 const DIAGRAM_LEFT = 305;
 
 export class EnergyMomentumScreenView extends ScreenView {
-  public constructor(model: EnergyMomentumModel, providedOptions?: EnergyMomentumScreenViewOptions) {
+  public constructor(
+    model: EnergyMomentumModel,
+    preferences: RelativisticDynamicsPreferencesModel,
+    providedOptions?: EnergyMomentumScreenViewOptions,
+  ) {
     const options = optionize<EnergyMomentumScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       {
         screenSummaryContent: new EnergyMomentumScreenSummaryContent(model),
@@ -38,7 +43,7 @@ export class EnergyMomentumScreenView extends ScreenView {
 
     const bounds = this.layoutBounds;
 
-    const triangle = new EnergyTriangleNode(model);
+    const triangle = new EnergyTriangleNode(model, preferences.showNewtonProperty);
     triangle.left = bounds.minX + SCREEN_VIEW_MARGIN;
     triangle.top = bounds.minY + SCREEN_VIEW_MARGIN;
 

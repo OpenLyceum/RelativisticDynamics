@@ -27,9 +27,9 @@ export class RelativisticDynamicsPreferencesNode extends VBox {
       fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
     });
 
-    const exampleToggleCheckbox = new Checkbox(
-      preferencesModel.exampleToggleProperty,
-      new Text(prefStrings.exampleToggleStringProperty, {
+    const showNewtonCheckbox = new Checkbox(
+      preferencesModel.showNewtonProperty,
+      new Text(prefStrings.showNewtonStringProperty, {
         font: new PhetFont(14),
         fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
       }),
@@ -37,14 +37,14 @@ export class RelativisticDynamicsPreferencesNode extends VBox {
         checkboxColor: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: RelativisticDynamicsColors.controlSurfaceColorProperty,
         spacing: 8,
-        ...(tandem && { tandem: tandem.createTandem("exampleToggleCheckbox") }),
+        ...(tandem && { tandem: tandem.createTandem("showNewtonCheckbox") }),
       },
     );
 
     super({
       align: "left",
       spacing: 12,
-      children: [header, exampleToggleCheckbox],
+      children: [header, showNewtonCheckbox],
     });
   }
 }

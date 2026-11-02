@@ -37,12 +37,12 @@ onReadyToLaunch(() => {
   const simPreferences = new RelativisticDynamicsPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
   const screens = [
-    new AccelerateScreen({
+    new AccelerateScreen(simPreferences, {
       name: stringManager.getScreenNames().accelerateStringProperty,
       tandem: Tandem.ROOT.createTandem("accelerateScreen"),
       backgroundColorProperty: RelativisticDynamicsColors.backgroundColorProperty,
     }),
-    new EnergyMomentumScreen({
+    new EnergyMomentumScreen(simPreferences, {
       name: stringManager.getScreenNames().energyMomentumStringProperty,
       tandem: Tandem.ROOT.createTandem("energyMomentumScreen"),
       backgroundColorProperty: RelativisticDynamicsColors.backgroundColorProperty,

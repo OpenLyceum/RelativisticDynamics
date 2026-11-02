@@ -7,9 +7,21 @@
  * collected after dispose() and leaves no survivors across repeated cycles
  * (idempotentDispose: true also checks a second dispose()). Add sim-specific leak
  * tests below using forceGC().
+ *
+ * This sim creates nothing at runtime: every view lives as long as its screen. The
+ * cases below are the view nodes that implement dispose(), each built against one
+ * long-lived model shared by every cycle, so a listener left on the model would keep
+ * the node reachable and fail the test.
  */
 
-import { TimeModel } from "../src/common/TimeModel.js";
+import { EnergyMomentumModel } from "../src/energy-momentum/model/EnergyMomentumModel.js";
+import { EnergyMomentumDiagramNode } from "../src/energy-momentum/view/EnergyMomentumDiagramNode.js";
+import { EnergyMomentumReadoutNode } from "../src/energy-momentum/view/EnergyMomentumReadoutNode.js";
 import { describeDisposalLeaks } from "./helpers/memoryLeak.js";
 
-describeDisposalLeaks([{ name: "TimeModel", create: () => new TimeModel(), idempotentDispose: true }]);
+const sharedModel = new EnergyMomentumModel();
+
+describeDisposalLeaks([
+  { name: "EnergyMomentumDiagramNode", create: () => new EnergyMomentumDiagramNode(sharedModel) },
+  { name: "EnergyMomentumReadoutNode", create: () => new EnergyMomentumReadoutNode(sharedModel) },
+]);

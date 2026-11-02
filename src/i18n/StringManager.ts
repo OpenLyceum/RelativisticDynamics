@@ -51,7 +51,7 @@ const stringProperties = LocalizedString.getNestedStringProperties({
  */
 export type RelativisticDynamicsPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
-  readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
+  readonly showNewtonStringProperty: ReadOnlyProperty<string>;
 };
 
 /**

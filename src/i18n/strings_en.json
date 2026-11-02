@@ -303,6 +303,6 @@
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Example Toggle"
+    "showNewton": "Show Newton's predictions"
   }
 }

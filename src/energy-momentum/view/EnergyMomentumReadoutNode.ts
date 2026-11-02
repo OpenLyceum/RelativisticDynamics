@@ -107,6 +107,9 @@ export class EnergyMomentumReadoutNode extends RelativisticDynamicsPanel {
     super(grid);
 
     this.disposeReadout = () => {
+      // The label and value Texts listen to localized strings and to the DerivedProperties
+      // below; disposing the panel alone would leave them linked.
+      grid.disposeSubtree();
       for (const d of disposables) {
         d.dispose();
       }

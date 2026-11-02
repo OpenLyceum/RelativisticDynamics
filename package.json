@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "A SceneryStack simulation: Relativistic Dynamics.",
+  "description": "Relativistic dynamics in four screens: a particle pushed toward c against Newton's prediction and Bertozzi's 1964 data, the energy–momentum triangle and mass shell seen by moving observers, two-body collisions viewed from any frame, and threshold energies for fixed-target and collider reactions.",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
@@ -12,8 +12,12 @@
   "keywords": [
     "simulation",
     "SceneryStack",
-    "interactive",
     "physics",
+    "special relativity",
+    "relativistic momentum",
+    "four-vector",
+    "collisions",
+    "threshold energy",
     "education",
     "pwa"
   ],
