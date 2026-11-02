@@ -18,30 +18,18 @@
     },
     "particles": {
       "electron": "Electron",
-      "positron": "Positron",
       "muon": "Muon",
-      "antimuon": "Antimuon",
       "pion": "Pion (π⁺)",
-      "pionPlus": "Positive pion",
-      "pionMinus": "Negative pion",
-      "pionZero": "Neutral pion",
-      "kaonZero": "Neutral kaon",
       "proton": "Proton",
       "antiproton": "Antiproton",
-      "neutron": "Neutron",
-      "lambda": "Lambda",
-      "leadNucleus": "Lead nucleus",
       "photon": "Photon",
       "custom": "Custom"
     },
-    "relativity": "Relativity",
-    "newton": "Newton",
     "speedValuePattern": "{{value}} c",
     "massValuePattern": "{{value}} MeV/c²"
   },
   "accelerate": {
     "particleHeading": "Particle",
-    "fieldHeading": "Accelerator",
     "field": "Field",
     "fieldValuePattern": "{{value}} MV/m",
     "chartHeading": "Plot against time",
@@ -49,7 +37,6 @@
     "chartMomentum": "Momentum",
     "showBertozzi": "Bertozzi's data (1964)",
     "workedExample": "Electron through 2.00 MV",
-    "restart": "Restart",
     "lanes": {
       "light": "Light pulse",
       "newton": "Newton",
@@ -110,7 +97,6 @@
     "mass1": "Mass 1",
     "mass2": "Mass 2",
     "massValuePattern": "{{value}} m₀",
-    "velocityPadHint": "Drag to set the velocity; the circle is the speed of light.",
     "collisionHeading": "Collision",
     "modes": {
       "elastic": "Elastic (bounce)",
@@ -138,15 +124,12 @@
       "newtonX": "Σmu<sub>x</sub>",
       "newtonY": "Σmu<sub>y</sub>"
     },
-    "conserved": "conserved",
-    "notConserved": "not conserved",
     "momentumDiagramTitle": "Momentum vectors γmu",
     "readoutsHeading": "Invariants and angles",
     "invariantMass": "√s (same in every frame)",
     "openingAngle": "Opening angle",
     "newtonOpeningAngle": "Newton's prediction",
     "compositeMass": "Mass after sticking",
-    "unitsNote": "Masses in m₀, energies in m₀c², momenta in m₀c",
     "viewingLabel": "Viewed from: {{frame}}",
     "frameNames": {
       "lab": "lab",
@@ -174,7 +157,6 @@
       "fixedTarget": "Fixed target",
       "collider": "Head-on collider"
     },
-    "colliderUnavailable": "No collider version of this reaction",
     "beamHeading": "Beam",
     "beamEnergy": "Beam kinetic energy",
     "beamEnergyEach": "Kinetic energy of each beam",
@@ -212,8 +194,8 @@
         "controlArea": "Choose an electron or a proton, set the accelerating field, choose what the left chart plots, and show or hide Bertozzi's data. A button jumps to the chapter's worked example, an electron accelerated through 2 megavolts. Play, pause, step and restart the run with the time controls.",
         "interactionHint": "Press Play and watch the Newtonian particle overtake the light pulse while the real particle never does."
       },
-      "currentDetailsPattern": "At {{time}}, the {{particle}} has travelled {{distance}} with kinetic energy {{kinetic}} and speed {{speed}}. Newton would give it speed {{newtonSpeed}}.",
-      "currentDetailsAtStart": "The {{particle}} is at rest at the start of the track. Press Play to accelerate it.",
+      "currentDetailsPattern": "At {{time}} — {{particle}}: travelled {{distance}}, kinetic energy {{kinetic}}, speed {{speed}}. Newton would give it speed {{newtonSpeed}}.",
+      "currentDetailsAtStart": "{{particle}}: at rest at the start of the track. Press Play to accelerate it.",
       "controls": {
         "particle": "Particle",
         "particleHelp": "Choose which particle is accelerated.",

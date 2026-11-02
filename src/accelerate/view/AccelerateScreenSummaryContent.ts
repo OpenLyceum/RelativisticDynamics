@@ -29,7 +29,7 @@ export class AccelerateScreenSummaryContent extends ScreenSummaryContent {
         particles.protonStringProperty,
       ],
       (particle, time, snapshot, pattern, atStart, electron, proton) => {
-        const name = (particle === "electron" ? electron : proton).toLowerCase();
+        const name = particle === "electron" ? electron : proton;
         if (time === 0) {
           return StringUtils.fillIn(atStart, { particle: name });
         }

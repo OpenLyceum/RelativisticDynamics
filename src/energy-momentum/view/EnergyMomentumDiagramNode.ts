@@ -165,11 +165,12 @@ export class EnergyMomentumDiagramNode extends Node {
       }
       massShell.setDataSet(points);
       // "E = pc" sits below the left branch, in the empty region no particle can reach;
-      // "mass shell" sits above the right branch, clear of the points that ride on it.
+      // "mass shell" sits above the left branch: the lab point is always on the right
+      // branch (p ≥ 0), so only a fast-moving observer's point ever comes near it.
       lightLabel.right = transform.modelToViewX(-0.55 * range) - 2;
       lightLabel.top = transform.modelToViewY(0.55 * range) + 6;
-      const shellP = 0.55 * range;
-      massShellLabel.right = transform.modelToViewX(shellP) - 8;
+      const shellP = -0.55 * range;
+      massShellLabel.left = transform.modelToViewX(shellP) + 8;
       massShellLabel.bottom = transform.modelToViewY(Math.hypot(shellP, 1)) - 4;
     };
     setZoom(P);
