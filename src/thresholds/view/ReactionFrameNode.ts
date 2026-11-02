@@ -134,7 +134,10 @@ export class ReactionFrameNode extends Node {
       sprite.label.left = position.x + sprite.disk.radius + 2;
       sprite.label.bottom = position.y - 2;
       const tip = position.plus(new Vector2(velocity.x, -velocity.y).timesScalar(ARROW_LENGTH));
-      sprite.arrow.setTailAndTip(position.x, position.y, tip.x, tip.y);
+      // ArrowNode cannot draw a zero-length arrow (it normalizes the direction); skip it when hidden.
+      if (sprite.arrow.visible) {
+        sprite.arrow.setTailAndTip(position.x, position.y, tip.x, tip.y);
+      }
     };
 
     Multilink.multilink(

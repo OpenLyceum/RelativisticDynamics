@@ -110,7 +110,10 @@ export class CollisionPlayAreaNode extends Node {
       sprite.disk.center = center;
       // View y points down, so flip the arrow's vertical component.
       const tip = center.plus(new Vector2(body.velocity.x, -body.velocity.y).timesScalar(ARROW_SCALE));
-      sprite.arrow.setTailAndTip(center.x, center.y, tip.x, tip.y);
+      // ArrowNode cannot draw a zero-length arrow (it normalizes the direction); skip it when hidden.
+      if (sprite.arrow.visible) {
+        sprite.arrow.setTailAndTip(center.x, center.y, tip.x, tip.y);
+      }
     };
 
     Multilink.multilink(

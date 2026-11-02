@@ -87,7 +87,10 @@ export class MomentumDiagramNode extends Node {
         const a = toView(from);
         const b = toView(to);
         arrow.visible = visible && a.distance(b) > 2;
-        arrow.setTailAndTip(a.x, a.y, b.x, b.y);
+        // ArrowNode cannot draw a zero-length arrow (it normalizes the direction); skip it when hidden.
+        if (arrow.visible) {
+          arrow.setTailAndTip(a.x, a.y, b.x, b.y);
+        }
       };
       set(in1, Vector2.ZERO, inMid, true);
       set(in2, inMid, sum, true);
