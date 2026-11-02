@@ -2,23 +2,44 @@
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-A reusable SceneryStack simulation template for one or N screens, built with
-[SceneryStack](https://scenerystack.org/), Vite 8, TypeScript 7, and Biome 2.
+Relativistic momentum and energy for a first course in modern physics: push a particle towards
+the speed of light and watch Newton's prediction overtake light while the real particle never
+does, read E² = (pc)² + (mc²)² off a live triangle and mass shell, collide two bodies and view the
+collision from any frame, and find the threshold energy of particle reactions on a fixed target
+and in a collider. It accompanies Chapter 3 of the
+[Modern Physics](https://github.com/QuadriviumPress/modernPhysics) textbook. Built with
+[SceneryStack](https://scenerystack.org/); runs offline as a Progressive Web App.
 
 ## Features
 
-- SceneryStack scaffold with model/view separation (`rename` + `scaffold-screens` for one or N screens)
-- English, Spanish, and French localization via `StringManager`
-- Default and projector color profiles
-- Progressive Web App (installable, offline-capable)
-- Git hooks for Biome pre-commit checks
-- Shared GitHub Actions CI via `OpenLyceum/Baton`
+- **Accelerate.** An electron or proton pushed by a constant force along a 20 m track races a
+  light pulse and its own Newtonian prediction. Speed or momentum against time (both theories
+  share p = Ft; they disagree about what it means for speed), and speed² against kinetic energy
+  with W. Bertozzi's 1964 electron runs, their speeds computed from his measured flight times.
+  A button jumps to the chapter's worked example: an electron through 2.00 MV, β = 0.979.
+- **Energy–Momentum.** Choose an electron, muon, pion, proton, photon or a custom mass and set
+  β, p, K or E with one slider; the triangle E² = (pc)² + (mc²)², an energy bar beside Newton's
+  ½mu², and the (pc, E) mass shell update together. An observer moving along the particle slides
+  its point along the hyperbola while the invariant mass stays fixed; for a photon this is the
+  relativistic Doppler shift.
+- **Collisions.** Two bodies, each with a mass and a velocity set on a pad bounded by c, meet
+  elastically (any centre-of-momentum scattering angle) or stick. View the collision from the lab,
+  the centre-of-momentum frame or a frame moving at any speed; before-and-after bars show that
+  Σγmu and ΣE are conserved in every frame while Newton's Σmu is not. Presets reproduce the
+  chapter's derivation of p = γmu, the sub-90° opening angle of equal masses, and kinetic energy
+  becoming rest mass.
+- **Thresholds.** Nine reactions, from antiproton production at the Bevatron to e⁺e⁻
+  annihilation, on a fixed target or a head-on collider. The reaction before and after in the lab
+  and in the CM frame (at threshold the products sit still in the CM frame and move off together
+  in the lab), a √s meter, and √s against the energy supplied for both kinds of accelerator.
+- **Accessible:** every control works from the keyboard; live screen summaries; keyboard-help
+  dialogs. English, French and Spanish; default and projector colour profiles; installable PWA.
+  A preference (or `?hideNewton`) hides the Newtonian comparisons.
 
 ## Quick Start
 
 ```bash
 npm install
-npm run icons    # generate PNG icons from public/icons/icon.svg
 npm start        # dev server → http://localhost:5173
 ```
 
@@ -39,12 +60,8 @@ npm start        # dev server → http://localhost:5173
 | `npm run format` | Auto-format all files |
 | `npm run fix` | Lint + auto-fix |
 | `npm run icons` | Regenerate PNG icons from `public/icons/icon.svg` |
-| `npm run rename` | Sim-level fork/rename (`--id`, `--name`) |
-| `npm run scaffold-screens` | Emit N fleet-named screen packages from `accelerate/` (`--shared-model` optional) |
 | `npm run release` | `check && lint && build && test`, then version patch + push tags |
 | `npm run clean` | Remove `dist/` |
-
-New sims start at `version: "0.0.0"` in `package.json`. Bump only when cutting a release (for example `npm version patch` and a matching git tag). Keep `name` in kebab-case; it is separate from the SceneryStack sim identifier in `src/init.ts`, which reads its `version` from `package.json`.
 
 ## Tech Stack
 
