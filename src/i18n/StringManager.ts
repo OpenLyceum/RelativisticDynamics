@@ -50,7 +50,7 @@ const stringProperties = LocalizedString.getNestedStringProperties({
  * Keep this in sync with the `a11y` key in `strings_en.json` — a locale key
  * rename that is not mirrored here fails at the getter return (not silently).
  */
-export type SimA11yStrings = {
+export type RelativisticDynamicsA11yStrings = {
   readonly screenSummary: {
     readonly playAreaStringProperty: ReadOnlyProperty<string>;
     readonly controlAreaStringProperty: ReadOnlyProperty<string>;
@@ -64,9 +64,9 @@ export type SimA11yStrings = {
 
 /**
  * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Same sync rule as {@link SimA11yStrings}.
+ * Same sync rule as {@link RelativisticDynamicsA11yStrings}.
  */
-export type SimPreferenceStrings = {
+export type RelativisticDynamicsPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
   readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
 };
@@ -103,34 +103,43 @@ export class StringManager {
    * Each property updates automatically when the locale changes.
    */
   public getScreenNames(): {
-    readonly simStringProperty: ReadOnlyProperty<string>;
+    readonly accelerateStringProperty: ReadOnlyProperty<string>;
+    readonly energyMomentumStringProperty: ReadOnlyProperty<string>;
+    readonly collisionsStringProperty: ReadOnlyProperty<string>;
+    readonly thresholdsStringProperty: ReadOnlyProperty<string>;
   } {
     return {
-      simStringProperty: stringProperties.screens.simStringProperty,
+      accelerateStringProperty: stringProperties.screens.accelerateStringProperty,
+      energyMomentumStringProperty: stringProperties.screens.energyMomentumStringProperty,
+      collisionsStringProperty: stringProperties.screens.collisionsStringProperty,
+      thresholdsStringProperty: stringProperties.screens.thresholdsStringProperty,
     };
   }
 
-  /**
-   * Accessibility (Interactive Description) StringProperties.
-   *
-   * Returns the reactive `a11y` string tree used by the parallel DOM:
-   *   - `screenSummary.*` — play-area / control-area overview and an interaction
-   *     hint, read by `SimScreenSummaryContent`.
-   *   - `currentDetails` — a paragraph describing the simulation's current state.
-   *     In a real sim, derive a live version from model Properties (see
-   *     LunarLander's ScreenSummaryContent for the canonical pattern).
-   *
-   * Add `accessibleName` / `accessibleHelpText` strings for individual controls
-   * to the `a11y` group too, then read them through this same nested tree.
-   */
-  public getA11yStrings(): SimA11yStrings {
-    return stringProperties.a11y;
+  /** Accessibility strings for the Accelerate screen. */
+  public getAccelerateA11yStrings() {
+    return stringProperties.a11y.accelerate;
+  }
+
+  /** Accessibility strings for the Energy–Momentum screen. */
+  public getEnergyMomentumA11yStrings() {
+    return stringProperties.a11y.energyMomentum;
+  }
+
+  /** Accessibility strings for the Collisions screen. */
+  public getCollisionsA11yStrings() {
+    return stringProperties.a11y.collisions;
+  }
+
+  /** Accessibility strings for the Thresholds screen. */
+  public getThresholdsA11yStrings() {
+    return stringProperties.a11y.thresholds;
   }
 
   /**
    * Simulation-specific preference labels shown in Preferences → Simulation.
    */
-  public getPreferences(): SimPreferenceStrings {
+  public getPreferences() {
     return stringProperties.preferences;
   }
 }
