@@ -32,8 +32,8 @@ Physics, data and references: [`doc/model.md`](doc/model.md). Architecture and d
   change breaks one, the change is wrong.
 - **Bertozzi's data are raw.** `BERTOZZI` in the Constants file holds his Table I flight times and
   the 8.4 m path; β is computed from them. Do not replace them with derived values.
-- **Agent shells may default to Node 24**: run `source ~/.nvm/nvm.sh && nvm use 26` before npm or
-  git commit (the pre-commit hook runs npm).
+- **Node >=26** is required (`engines` / `devEngines`). If `node -v` is older, run
+  `source ~/.nvm/nvm.sh && nvm use 26` before npm or git commit (the pre-commit hook runs npm).
 
 ## Key files
 
