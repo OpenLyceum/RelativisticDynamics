@@ -61,5 +61,8 @@ export const PARTICLES: Readonly<Record<ParticleId, Particle>> = {
 /** Total rest energy of a list of particles. */
 export const totalMass = (particles: readonly Particle[]): number => particles.reduce((sum, p) => sum + p.mass, 0);
 
-/** Total charge of a list of particles. */
+/**
+ * Total charge of a list of particles.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const totalCharge = (particles: readonly Particle[]): number => particles.reduce((sum, p) => sum + p.charge, 0);

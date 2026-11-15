@@ -54,7 +54,10 @@ export const gammaOfBeta = (beta: number): number => {
   return 1 / Math.sqrt(1 - b * b);
 };
 
-/** The speed β = √(1 − 1/γ²) for a Lorentz factor γ ≥ 1. */
+/**
+ * The speed β = √(1 − 1/γ²) for a Lorentz factor γ ≥ 1.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const betaOfGamma = (gamma: number): number => (gamma <= 1 ? 0 : Math.sqrt(1 - 1 / (gamma * gamma)));
 
 // ── Single-particle relations (all scalar, mass m ≥ 0) ─────────────────────────
@@ -72,7 +75,10 @@ const momentumOfBeta = (mass: number, beta: number): number => {
   return gammaOfBeta(b) * mass * Math.abs(b);
 };
 
-/** Newtonian speed a particle would have for the given kinetic energy: u = √(2K/m). */
+/**
+ * Newtonian speed a particle would have for the given kinetic energy: u = √(2K/m).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const newtonianBetaOfKineticEnergy = (mass: number, kineticEnergy: number): number =>
   mass <= 0 ? Number.POSITIVE_INFINITY : Math.sqrt((2 * Math.max(0, kineticEnergy)) / mass);
 
@@ -104,11 +110,17 @@ export const particleStateFromMomentum = (mass: number, momentum: number): Parti
   };
 };
 
-/** The full state of a particle of mass m with kinetic energy K. */
+/**
+ * The full state of a particle of mass m with kinetic energy K.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const particleStateFromKineticEnergy = (mass: number, kineticEnergy: number): ParticleState =>
   particleStateFromMomentum(mass, momentumOfEnergy(mass, mass + Math.max(0, kineticEnergy)));
 
-/** The full state of a massive particle moving at speed β. */
+/**
+ * The full state of a massive particle moving at speed β.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const particleStateFromBeta = (mass: number, beta: number): ParticleState =>
   particleStateFromMomentum(mass, momentumOfBeta(mass, beta));
 
@@ -271,7 +283,10 @@ export const totalFourMomentum = (momenta: readonly FourMomentum[]): FourMomentu
 export const transformVelocity = (u: Vector2, frameVelocity: Vector2): Vector2 =>
   FourMomentum.fromMassAndVelocity(1, u.x, u.y).boostedBy(frameVelocity).velocity;
 
-/** Σ(γ m u) and Σ(m u): relativistic and Newtonian total momentum of a list of massive bodies. */
+/**
+ * Σ(γ m u) and Σ(m u): relativistic and Newtonian total momentum of a list of massive bodies.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const momentumTotals = (
   bodies: readonly { readonly mass: number; readonly velocity: Vector2 }[],
 ): { relativistic: Vector2; newtonian: Vector2; energy: number } => {
@@ -293,7 +308,10 @@ export const momentumTotals = (
 
 // ── Two-body collisions ────────────────────────────────────────────────────────
 
-/** Magnitude of each particle's momentum in the CM frame of a two-body state of invariant mass √s. */
+/**
+ * Magnitude of each particle's momentum in the CM frame of a two-body state of invariant mass √s.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const twoBodyMomentum = (sqrtS: number, m1: number, m2: number): number => {
   const s = sqrtS * sqrtS;
   const lambda = (s - (m1 + m2) ** 2) * (s - (m1 - m2) ** 2);
@@ -334,6 +352,7 @@ export const perfectlyInelasticCollision = (p1: FourMomentum, p2: FourMomentum):
  * lab scattering angles for any elastic collision is 2/(γ + 1), with γ the
  * incident particle's Lorentz factor. Newtonian mechanics gives 1 (the famous
  * 90° opening angle); relativity closes the angle.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const equalMassOpeningAngleProduct = (incidentGamma: number): number => 2 / (incidentGamma + 1);
 

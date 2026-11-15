@@ -28,7 +28,10 @@ export const nanosecondsToMetres = (t: number): number => t * SPEED_OF_LIGHT_M_P
 export const relativisticTimeToTravel = (mass: number, force: number, length: number): number =>
   force <= 0 ? Number.POSITIVE_INFINITY : momentumOfEnergy(mass, mass + force * length) / force;
 
-/** Time (as c·t, metres) for the Newtonian particle to cover the track: L = Ft²/(2m). */
+/**
+ * Time (as c·t, metres) for the Newtonian particle to cover the track: L = Ft²/(2m).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const newtonianTimeToTravel = (mass: number, force: number, length: number): number =>
   force <= 0 ? Number.POSITIVE_INFINITY : Math.sqrt((2 * mass * length) / force);
 
