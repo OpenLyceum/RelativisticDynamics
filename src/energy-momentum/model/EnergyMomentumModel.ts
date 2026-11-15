@@ -25,7 +25,7 @@ import { ENERGY_MOMENTUM, MASS_MEV } from "../../RelativisticDynamicsConstants.j
 export const ParticleChoiceValues = ["electron", "muon", "pion", "proton", "photon", "custom"] as const;
 export type ParticleChoice = (typeof ParticleChoiceValues)[number];
 
-export const DrivingQuantityValues = ["speed", "momentum", "kineticEnergy", "totalEnergy"] as const;
+const DrivingQuantityValues = ["speed", "momentum", "kineticEnergy", "totalEnergy"] as const;
 export type DrivingQuantity = (typeof DrivingQuantityValues)[number];
 
 const PRESET_MASS: Readonly<Record<Exclude<ParticleChoice, "custom">, number>> = {

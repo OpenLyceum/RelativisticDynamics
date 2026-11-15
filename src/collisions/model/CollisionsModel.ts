@@ -36,10 +36,10 @@ import {
   viewFromFrame,
 } from "./collisionGeometry.js";
 
-export const FrameChoiceValues = ["lab", "centerOfMomentum", "moving"] as const;
+const FrameChoiceValues = ["lab", "centerOfMomentum", "moving"] as const;
 export type FrameChoice = (typeof FrameChoiceValues)[number];
 
-export const CollisionModeValues = ["elastic", "inelastic"] as const satisfies readonly CollisionMode[];
+const CollisionModeValues = ["elastic", "inelastic"] as const satisfies readonly CollisionMode[];
 
 const T = COLLISIONS.RUN_HALF_DURATION;
 

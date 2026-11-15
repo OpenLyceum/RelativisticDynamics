@@ -70,7 +70,7 @@ export const formatSignificant = (value: number, digits = 3): string => {
  * (units are SI symbols and are not translated). A `suffix` such as "/c" turns
  * the unit into a momentum unit.
  */
-export const formatEnergyParts = (valueMeV: number, digits = 4): { value: string; unit: string } => {
+const formatEnergyParts = (valueMeV: number, digits = 4): { value: string; unit: string } => {
   if (!Number.isFinite(valueMeV)) {
     return { value: "∞", unit: "MeV" };
   }

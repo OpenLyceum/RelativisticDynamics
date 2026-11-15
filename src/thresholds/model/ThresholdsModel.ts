@@ -33,8 +33,8 @@ import {
   verdictFor,
 } from "./reactions.js";
 
-export const ReactionIdValues = REACTIONS.map((r) => r.id);
-export const BeamConfigurationValues = [BeamConfiguration.FIXED_TARGET, BeamConfiguration.COLLIDER] as const;
+const ReactionIdValues = REACTIONS.map((r) => r.id);
+const BeamConfigurationValues = [BeamConfiguration.FIXED_TARGET, BeamConfiguration.COLLIDER] as const;
 
 /** Initial slider position: one and a half times threshold. */
 const DEFAULT_FRACTION = 0.5;

@@ -31,10 +31,10 @@ import {
   timeToReachKineticEnergy,
 } from "./acceleration.js";
 
-export const AccelerateParticleValues = ["electron", "proton"] as const;
+const AccelerateParticleValues = ["electron", "proton"] as const;
 export type AccelerateParticle = (typeof AccelerateParticleValues)[number];
 
-export const ChartQuantityValues = ["speed", "momentum"] as const;
+const ChartQuantityValues = ["speed", "momentum"] as const;
 export type ChartQuantity = (typeof ChartQuantityValues)[number];
 
 const MASSES: Readonly<Record<AccelerateParticle, number>> = {

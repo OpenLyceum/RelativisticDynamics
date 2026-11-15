@@ -38,10 +38,10 @@ import { Vector2 } from "scenerystack/dot";
  * well beyond anything the sim draws, while 1 − β² is still far above
  * double-precision roundoff.
  */
-export const MAX_BETA = 1 - 1e-8;
+const MAX_BETA = 1 - 1e-8;
 
 /** Clamps |β| below {@link MAX_BETA} and maps non-finite input to 0. */
-export const sanitizeBeta = (beta: number): number => {
+const sanitizeBeta = (beta: number): number => {
   if (!Number.isFinite(beta)) {
     return 0;
   }
@@ -67,22 +67,10 @@ export const momentumOfEnergy = (mass: number, energy: number): number =>
   energy <= mass ? 0 : Math.sqrt((energy - mass) * (energy + mass));
 
 /** Momentum magnitude from speed: p = γmβ. Undefined for a photon (returns 0). */
-export const momentumOfBeta = (mass: number, beta: number): number => {
+const momentumOfBeta = (mass: number, beta: number): number => {
   const b = sanitizeBeta(beta);
   return gammaOfBeta(b) * mass * Math.abs(b);
 };
-
-/** Speed from momentum: β = p/E. A photon (m = 0, p > 0) gives exactly 1. */
-export const betaOfMomentum = (mass: number, momentum: number): number => {
-  const energy = energyOfMomentum(mass, momentum);
-  return energy === 0 ? 0 : Math.abs(momentum) / energy;
-};
-
-/** Newtonian momentum mu for the same speed (what Newton would call the momentum). */
-export const newtonianMomentum = (mass: number, beta: number): number => mass * beta;
-
-/** Newtonian kinetic energy ½mu² for the same speed. */
-export const newtonianKineticEnergy = (mass: number, beta: number): number => 0.5 * mass * beta * beta;
 
 /** Newtonian speed a particle would have for the given kinetic energy: u = √(2K/m). */
 export const newtonianBetaOfKineticEnergy = (mass: number, kineticEnergy: number): number =>
@@ -273,10 +261,6 @@ export class FourMomentum {
 /** The sum of a list of four-momenta. */
 export const totalFourMomentum = (momenta: readonly FourMomentum[]): FourMomentum =>
   momenta.reduce((sum, p) => sum.plus(p), FourMomentum.ZERO);
-
-/** Velocity of the centre-of-momentum frame of a system: β_cm = p_total / E_total. */
-export const centerOfMomentumVelocity = (momenta: readonly FourMomentum[]): Vector2 =>
-  totalFourMomentum(momenta).velocity;
 
 /**
  * Velocity transformation for a particle with velocity u, viewed from a frame

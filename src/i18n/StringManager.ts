@@ -46,15 +46,6 @@ const stringProperties = LocalizedString.getNestedStringProperties({
 });
 
 /**
- * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Keep in sync with the `preferences` key in `strings_en.json`.
- */
-export type RelativisticDynamicsPreferenceStrings = {
-  readonly titleStringProperty: ReadOnlyProperty<string>;
-  readonly showNewtonStringProperty: ReadOnlyProperty<string>;
-};
-
-/**
  * StringManager is a singleton that provides typed access to all localized
  * strings. Use `StringManager.getInstance()` everywhere — never construct it
  * directly.

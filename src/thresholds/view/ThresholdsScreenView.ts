@@ -32,7 +32,7 @@ import { ThresholdsScreenSummaryContent } from "./ThresholdsScreenSummaryContent
 export type ThresholdsScreenViewOptions = ScreenViewOptions;
 
 /** The reaction written out in particle symbols, e.g. "p + p → p + p + p + p̄". Notation, not translated. */
-export const reactionEquation = (r: Reaction): string =>
+const reactionEquation = (r: Reaction): string =>
   `${r.beam.symbol} + ${r.target.symbol} → ${r.products.map((p) => p.symbol).join(" + ")}`;
 
 export class ThresholdsScreenView extends ScreenView {

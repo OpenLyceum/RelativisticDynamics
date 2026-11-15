@@ -221,11 +221,3 @@ export const createSectionHeader = (labelProperty: TReadOnlyProperty<string>): N
     fill: RelativisticDynamicsColors.textColorProperty,
     maxWidth: CONTROL_WIDTH,
   });
-
-/** A quieter heading for a group of rows inside a section. */
-export const createSubHeader = (labelProperty: TReadOnlyProperty<string>): Node =>
-  new Text(labelProperty, {
-    font: FONTS.CONTROL_TITLE,
-    fill: RelativisticDynamicsColors.secondaryTextColorProperty,
-    maxWidth: CONTROL_WIDTH,
-  });
