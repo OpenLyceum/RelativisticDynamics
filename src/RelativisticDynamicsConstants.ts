@@ -396,11 +396,13 @@ export const RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS = {
   CREATE_ACCELERATE_ICON_LINE_DASH_DASH: 16, // px
   CREATE_ENERGY_MOMENTUM_ICON_LINE_DASH_DASH: 14, // px
   CREATE_ENERGY_MOMENTUM_ICON_X_FACTOR: 0.9, // dimensionless
-  CREATE_ENERGY_MOMENTUM_ICON_Y: 0.9, // px
+  /** Momentum coordinate on the mass-shell icon (dimensionless; paired with rest mass = 1). */
+  CREATE_ENERGY_MOMENTUM_ICON_Y: 0.9, // dimensionless
   CREATE_COLLISIONS_ICON_X_OFFSET: 120, // px
   CREATE_COLLISIONS_ICON_Y_OFFSET: 85, // px
   PRODUCTS_X_OFFSET: 120, // px
-  PRODUCTS_Y_FACTOR: 62, // dimensionless
+  /** Vertical pitch between threshold-product markers (px). */
+  PRODUCTS_Y_PITCH: 62, // px
   CREATE_THRESHOLDS_ICON_X_OFFSET: 40, // px
 
   ARROW_HEAD_WIDTH: 40,

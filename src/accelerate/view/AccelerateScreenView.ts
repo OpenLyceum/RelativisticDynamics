@@ -16,6 +16,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { HBox, Node, VBox } from "scenerystack/scenery";
 import { ResetAllButton, RestartButton, TimeControlNode } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
+import { gammaOfBeta } from "../../common/model/kinematics.js";
 import {
   FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS,
   FLAT_RECTANGULAR_BUTTON_OPTIONS,
@@ -162,8 +163,8 @@ export class AccelerateScreenView extends ScreenView {
         (s) => `${formatSignificant(s.position, ACCELERATE_SCREEN_VIEW_SETTINGS.POSITION_FORMAT_SIGNIFICANT_DIGITS)} m`,
       ),
       speed: new DerivedProperty([snapshot], (s) => `${formatBeta(s.beta)} c`),
-      gamma: new DerivedProperty([snapshot, model.massProperty], (s, m) =>
-        formatSignificant(1 + s.kineticEnergy / m, ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS_SEGMENT_2),
+      gamma: new DerivedProperty([snapshot], (s) =>
+        formatSignificant(gammaOfBeta(s.beta), ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS_SEGMENT_2),
       ),
       momentum: new DerivedProperty([snapshot], (s) =>
         formatEnergy(s.momentum, ACCELERATE_SCREEN_VIEW_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS, "/c"),

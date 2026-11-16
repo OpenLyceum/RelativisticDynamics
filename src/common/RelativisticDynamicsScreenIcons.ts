@@ -200,12 +200,18 @@ export function createThresholdsIcon(): ScreenIcon {
     (k) =>
       new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_RADIUS, {
         x: tx + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_X_OFFSET,
-        y: cy + k * RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_Y_FACTOR,
+        y: cy + k * RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_Y_PITCH,
         fill: RelativisticDynamicsColors.compositeColorProperty,
       }),
   );
   const productArrows = [-1.5, -0.5, 0.5, 1.5].map((k) =>
-    arrow(tx + 150, cy + k * 62, tx + 230, cy + k * 62, RelativisticDynamicsColors.compositeColorProperty),
+    arrow(
+      tx + 150,
+      cy + k * RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_Y_PITCH,
+      tx + 230,
+      cy + k * RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_Y_PITCH,
+      RelativisticDynamicsColors.compositeColorProperty,
+    ),
   );
   return iconFrom(
     new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_THRESHOLDS_ICON_RADIUS, {
