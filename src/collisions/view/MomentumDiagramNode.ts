@@ -1,4 +1,3 @@
-import { MOMENTUM_DIAGRAM_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * MomentumDiagramNode.ts
  *
@@ -19,14 +18,15 @@ import { ArrowNode } from "scenerystack/scenery-phet";
 import { FourMomentum } from "../../common/model/kinematics.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 import type { Body } from "../model/collisionGeometry.js";
 
 const ARROW_OPTIONS = {
-  headWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_HEAD_WIDTH,
-  headHeight: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_HEAD_HEIGHT,
-  tailWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_TAIL_WIDTH,
+  headWidth: COLLISIONS_VIEW.MOMENTUM_ARROW_HEAD_WIDTH,
+  headHeight: COLLISIONS_VIEW.MOMENTUM_ARROW_HEAD_HEIGHT,
+  tailWidth: COLLISIONS_VIEW.MOMENTUM_ARROW_TAIL_WIDTH,
 };
 
 export class MomentumDiagramNode extends Node {
@@ -43,7 +43,7 @@ export class MomentumDiagramNode extends Node {
       fill: RelativisticDynamicsColors.textColorProperty,
       maxWidth: size,
       left: 0,
-      bottom: MOMENTUM_DIAGRAM_NODE_SETTINGS.TITLE_BOTTOM,
+      bottom: COLLISIONS_VIEW.MOMENTUM_TITLE_BOTTOM,
     });
 
     const solid = (fill: TPaint): ArrowNode => new ArrowNode(0, 0, 1, 0, { ...ARROW_OPTIONS, fill, stroke: null });
@@ -52,7 +52,7 @@ export class MomentumDiagramNode extends Node {
         ...ARROW_OPTIONS,
         fill: null,
         stroke: fill,
-        lineWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.OUTLINE_LINE_WIDTH,
+        lineWidth: COLLISIONS_VIEW.MOMENTUM_OUTLINE_LINE_WIDTH,
       });
 
     const in1 = solid(RelativisticDynamicsColors.body1ColorProperty);
@@ -64,9 +64,9 @@ export class MomentumDiagramNode extends Node {
       ...ARROW_OPTIONS,
       fill: RelativisticDynamicsColors.invariantColorProperty,
       stroke: null,
-      opacity: MOMENTUM_DIAGRAM_NODE_SETTINGS.TOTAL_OPACITY,
+      opacity: COLLISIONS_VIEW.MOMENTUM_TOTAL_OPACITY,
     });
-    const origin = new Circle(MOMENTUM_DIAGRAM_NODE_SETTINGS.ORIGIN_RADIUS, {
+    const origin = new Circle(COLLISIONS_VIEW.MOMENTUM_ORIGIN_RADIUS, {
       fill: RelativisticDynamicsColors.textColorProperty,
     });
     const arrows = new Node({ children: [total, in1, in2, out1, out2, outComposite, origin] });

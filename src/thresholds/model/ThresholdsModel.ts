@@ -1,4 +1,3 @@
-import { THRESHOLDS_MODEL_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ThresholdsModel.ts
  *
@@ -17,6 +16,7 @@ import { Range, type Vector2 } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
 import type { FourMomentum } from "../../common/model/kinematics.js";
 import { THRESHOLDS } from "../../RelativisticDynamicsConstants.js";
+
 import {
   availableEnergy,
   BeamConfiguration,
@@ -38,10 +38,10 @@ const ReactionIdValues = REACTIONS.map((r) => r.id);
 const BeamConfigurationValues = [BeamConfiguration.FIXED_TARGET, BeamConfiguration.COLLIDER] as const;
 
 /** Initial slider position: one and a half times threshold. */
-const DEFAULT_FRACTION: number = THRESHOLDS_MODEL_SETTINGS.DEFAULT_FRACTION;
+const DEFAULT_FRACTION: number = THRESHOLDS.DEFAULT_FRACTION;
 
 /** Beam range used when the threshold is zero or does not exist: this many beam rest energies (or MeV for a photon). */
-const FALLBACK_RANGE_FACTOR: number = THRESHOLDS_MODEL_SETTINGS.FALLBACK_RANGE_FACTOR;
+const FALLBACK_RANGE_FACTOR: number = THRESHOLDS.FALLBACK_RANGE_FACTOR;
 
 export class ThresholdsModel implements TModel {
   public readonly reactionIdProperty: StringUnionProperty<ReactionId>;

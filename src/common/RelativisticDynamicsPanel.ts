@@ -1,4 +1,3 @@
-import { RELATIVISTIC_DYNAMICS_PANEL_SETTINGS } from "../RelativisticDynamicsConstants.js";
 /**
  * RelativisticDynamicsPanel.ts
  *
@@ -30,7 +29,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { Node } from "scenerystack/scenery";
 import { Panel, type PanelOptions } from "scenerystack/sun";
 import RelativisticDynamicsColors from "../RelativisticDynamicsColors.js";
-import { PANEL_CORNER_RADIUS } from "../RelativisticDynamicsConstants.js";
+import { PANEL, PANEL_CORNER_RADIUS } from "../RelativisticDynamicsConstants.js";
 
 export type RelativisticDynamicsPanelOptions = PanelOptions;
 
@@ -41,8 +40,8 @@ export class RelativisticDynamicsPanel extends Panel {
         fill: RelativisticDynamicsColors.panelBackgroundColorProperty,
         stroke: RelativisticDynamicsColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: RELATIVISTIC_DYNAMICS_PANEL_SETTINGS.OPTIONS_X_MARGIN,
-        yMargin: RELATIVISTIC_DYNAMICS_PANEL_SETTINGS.OPTIONS_Y_MARGIN,
+        xMargin: PANEL.X_MARGIN,
+        yMargin: PANEL.Y_MARGIN,
       },
       providedOptions,
     );

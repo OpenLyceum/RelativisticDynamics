@@ -1,4 +1,3 @@
-import { COLLISION_NUMERICS } from "../../RelativisticDynamicsConstants.js";
 /**
  * collisionGeometry.ts
  *
@@ -28,6 +27,7 @@ import {
   totalFourMomentum,
   transformVelocity,
 } from "../../common/model/kinematics.js";
+import { COLLISIONS } from "../../RelativisticDynamicsConstants.js";
 
 export const CollisionMode = {
   ELASTIC: "elastic",
@@ -118,8 +118,8 @@ export const openingAngle = (outgoing: readonly Body[]): number | null => {
   const [a, b] = outgoing;
   if (
     !(a && b) ||
-    a.velocity.magnitude < COLLISION_NUMERICS.MIN_DIRECTION_SPEED ||
-    b.velocity.magnitude < COLLISION_NUMERICS.MIN_DIRECTION_SPEED
+    a.velocity.magnitude < COLLISIONS.MIN_DIRECTION_SPEED ||
+    b.velocity.magnitude < COLLISIONS.MIN_DIRECTION_SPEED
   ) {
     return null;
   }

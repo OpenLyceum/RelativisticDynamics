@@ -1,4 +1,3 @@
-import { COLLISIONS_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * CollisionsScreenSummaryContent.ts
  *
@@ -13,10 +12,11 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import { COLLISIONS_VIEW } from "../../RelativisticDynamicsConstants.js";
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 
 const f = (value: number): string =>
-  formatSignificant(Math.abs(value) < 1e-9 ? 0 : value, COLLISIONS_SCREEN_SUMMARY_CONTENT_SETTINGS.F_DIGITS);
+  formatSignificant(Math.abs(value) < 1e-9 ? 0 : value, COLLISIONS_VIEW.SUMMARY_DIGITS);
 
 export class CollisionsScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: CollisionsModel) {

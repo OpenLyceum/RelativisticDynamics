@@ -1,4 +1,3 @@
-import { ACCELERATE_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateScreenView.ts
  *
@@ -36,7 +35,8 @@ import {
 import { StringManager } from "../../i18n/StringManager.js";
 import type { RelativisticDynamicsPreferencesModel } from "../../preferences/RelativisticDynamicsPreferencesModel.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { ACCELERATE, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { ACCELERATE, ACCELERATE_VIEW, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+
 import type { AccelerateModel } from "../model/AccelerateModel.js";
 import { AccelerateChartsNode } from "./AccelerateChartsNode.js";
 import { AccelerateScreenSummaryContent } from "./AccelerateScreenSummaryContent.js";
@@ -45,7 +45,7 @@ import { AccelerateTrackNode } from "./AccelerateTrackNode.js";
 export type AccelerateScreenViewOptions = ScreenViewOptions;
 
 /** Width of the play area to the left of the control column. */
-const PLAY_AREA_WIDTH: number = ACCELERATE_SCREEN_VIEW_SETTINGS.PLAY_AREA_WIDTH;
+const PLAY_AREA_WIDTH: number = ACCELERATE_VIEW.PLAY_AREA_WIDTH;
 
 export class AccelerateScreenView extends ScreenView {
   public constructor(
@@ -68,10 +68,10 @@ export class AccelerateScreenView extends ScreenView {
     // ── Play area ──────────────────────────────────────────────────────────────
     const track = new AccelerateTrackNode(model, preferences.showNewtonProperty, PLAY_AREA_WIDTH);
     track.left = bounds.minX + SCREEN_VIEW_MARGIN;
-    track.top = bounds.minY + SCREEN_VIEW_MARGIN + ACCELERATE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+    track.top = bounds.minY + SCREEN_VIEW_MARGIN + ACCELERATE_VIEW.TRACK_TOP_INSET;
 
     const charts = new AccelerateChartsNode(model, preferences.showNewtonProperty);
-    charts.left = bounds.minX + SCREEN_VIEW_MARGIN + ACCELERATE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
+    charts.left = bounds.minX + SCREEN_VIEW_MARGIN + ACCELERATE_VIEW.CHARTS_LEFT_INSET;
     charts.top = track.bottom + 24;
 
     // ── Controls ───────────────────────────────────────────────────────────────
@@ -99,8 +99,8 @@ export class AccelerateScreenView extends ScreenView {
         valuePatternProperty: strings.fieldValuePatternStringProperty,
         accessibleName: a11y.fieldStringProperty,
         accessibleHelpText: a11y.fieldHelpStringProperty,
-        decimalPlaces: ACCELERATE_SCREEN_VIEW_SETTINGS.FIELD_CONTROL_DECIMAL_PLACES,
-        delta: ACCELERATE_SCREEN_VIEW_SETTINGS.FIELD_CONTROL_DELTA,
+        decimalPlaces: ACCELERATE_VIEW.FIELD_DECIMAL_PLACES,
+        delta: ACCELERATE_VIEW.FIELD_DELTA,
       },
     );
     const chartRadio = createRadioButtonGroup(
@@ -134,7 +134,7 @@ export class AccelerateScreenView extends ScreenView {
     const controlPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.CONTROL_PANEL_SPACING,
+        spacing: ACCELERATE_VIEW.CONTROL_PANEL_SPACING,
         children: [
           createSectionHeader(strings.particleHeadingStringProperty),
           particleRadio,
@@ -145,7 +145,7 @@ export class AccelerateScreenView extends ScreenView {
           workedExampleButton,
         ],
       }),
-      { minWidth: CONTROL_WIDTH + ACCELERATE_SCREEN_VIEW_SETTINGS.CONTROL_PANEL_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + ACCELERATE_VIEW.CONTROL_PANEL_WIDTH_PAD },
     );
     controlPanel.right = bounds.maxX - SCREEN_VIEW_MARGIN;
     controlPanel.top = bounds.minY + SCREEN_VIEW_MARGIN;
@@ -156,27 +156,25 @@ export class AccelerateScreenView extends ScreenView {
     const readoutValues = {
       time: new DerivedProperty(
         [model.timeProperty],
-        (t) => `${formatSignificant(t, ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS)} ns`,
+        (t) => `${formatSignificant(t, ACCELERATE_VIEW.READOUT_DIGITS)} ns`,
       ),
       distance: new DerivedProperty(
         [snapshot],
-        (s) => `${formatSignificant(s.position, ACCELERATE_SCREEN_VIEW_SETTINGS.POSITION_FORMAT_SIGNIFICANT_DIGITS)} m`,
+        (s) => `${formatSignificant(s.position, ACCELERATE_VIEW.POSITION_DIGITS)} m`,
       ),
       speed: new DerivedProperty([snapshot], (s) => `${formatBeta(s.beta)} c`),
       gamma: new DerivedProperty([snapshot], (s) =>
-        formatSignificant(gammaOfBeta(s.beta), ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS_SEGMENT_2),
+        formatSignificant(gammaOfBeta(s.beta), ACCELERATE_VIEW.GAMMA_DIGITS),
       ),
-      momentum: new DerivedProperty([snapshot], (s) =>
-        formatEnergy(s.momentum, ACCELERATE_SCREEN_VIEW_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS, "/c"),
-      ),
+      momentum: new DerivedProperty([snapshot], (s) => formatEnergy(s.momentum, ACCELERATE_VIEW.MOMENTUM_DIGITS, "/c")),
       kinetic: new DerivedProperty([snapshot], (s) =>
-        formatEnergy(s.kineticEnergy, ACCELERATE_SCREEN_VIEW_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS),
+        formatEnergy(s.kineticEnergy, ACCELERATE_VIEW.KINETIC_ENERGY_DIGITS),
       ),
     };
     const readoutPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
+        spacing: ACCELERATE_VIEW.READOUT_PANEL_SPACING,
         children: [
           createSectionHeader(strings.readoutsHeadingStringProperty),
           createReadoutRow(strings.timeStringProperty, readoutValues.time),
@@ -199,7 +197,7 @@ export class AccelerateScreenView extends ScreenView {
           ),
         ],
       }),
-      { minWidth: CONTROL_WIDTH + ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_PANEL_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + ACCELERATE_VIEW.READOUT_PANEL_WIDTH_PAD },
     );
     readoutPanel.right = controlPanel.right;
     readoutPanel.top = controlPanel.bottom + 10;
@@ -224,7 +222,7 @@ export class AccelerateScreenView extends ScreenView {
       accessibleHelpText: a11y.restartHelpStringProperty,
     });
     const timeRow = new HBox({
-      spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.TIME_ROW_SPACING,
+      spacing: ACCELERATE_VIEW.TIME_ROW_SPACING,
       children: [restartButton, timeControlNode],
     });
     timeRow.centerX = bounds.minX + SCREEN_VIEW_MARGIN + PLAY_AREA_WIDTH / 2;

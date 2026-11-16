@@ -1,4 +1,3 @@
-import { ACCELERATE_TRACK_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateTrackNode.ts
  *
@@ -14,14 +13,15 @@ import { Circle, Line, Node, Rectangle, Text, type TPaint } from "scenerystack/s
 import { formatBeta, formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { ACCELERATE, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { ACCELERATE, ACCELERATE_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { AccelerateModel } from "../model/AccelerateModel.js";
 
-const LANE_HEIGHT: number = ACCELERATE_TRACK_NODE_SETTINGS.LANE_HEIGHT;
-const LABEL_COLUMN: number = ACCELERATE_TRACK_NODE_SETTINGS.LABEL_COLUMN;
-const READOUT_COLUMN: number = ACCELERATE_TRACK_NODE_SETTINGS.READOUT_COLUMN;
-const MARKER_RADIUS: number = ACCELERATE_TRACK_NODE_SETTINGS.MARKER_RADIUS;
-const TICK_SPACING_M: number = ACCELERATE_TRACK_NODE_SETTINGS.TICK_SPACING_M;
+const LANE_HEIGHT: number = ACCELERATE_VIEW.LANE_HEIGHT;
+const LABEL_COLUMN: number = ACCELERATE_VIEW.LABEL_COLUMN;
+const READOUT_COLUMN: number = ACCELERATE_VIEW.READOUT_COLUMN;
+const MARKER_RADIUS: number = ACCELERATE_VIEW.TRACK_MARKER_RADIUS;
+const TICK_SPACING_M: number = ACCELERATE_VIEW.TICK_SPACING_M;
 
 export class AccelerateTrackNode extends Node {
   /**
@@ -47,19 +47,19 @@ export class AccelerateTrackNode extends Node {
       const label = new Text(labelProperty, {
         font: FONTS.READOUT_VALUE,
         fill: color,
-        maxWidth: LABEL_COLUMN - ACCELERATE_TRACK_NODE_SETTINGS.LABEL_MAX_WIDTH_OFFSET,
-        right: trackLeft - ACCELERATE_TRACK_NODE_SETTINGS.LABEL_RIGHT_OFFSET,
+        maxWidth: LABEL_COLUMN - ACCELERATE_VIEW.TRACK_LABEL_WIDTH_INSET,
+        right: trackLeft - ACCELERATE_VIEW.TRACK_LABEL_RIGHT_GAP,
         centerY: y,
       });
       const lane = new Line(trackLeft, y, trackLeft + trackWidth, y, {
         stroke: RelativisticDynamicsColors.chartGridColorProperty,
-        lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.LANE_LINE_WIDTH,
+        lineWidth: ACCELERATE_VIEW.LANE_LINE_WIDTH,
       });
       const readout = new Text("", {
         font: FONTS.READOUT_VALUE,
         fill: color,
-        maxWidth: READOUT_COLUMN - ACCELERATE_TRACK_NODE_SETTINGS.READOUT_MAX_WIDTH_OFFSET,
-        left: trackLeft + trackWidth + ACCELERATE_TRACK_NODE_SETTINGS.READOUT_LEFT_OFFSET,
+        maxWidth: READOUT_COLUMN - ACCELERATE_VIEW.TRACK_READOUT_WIDTH_INSET,
+        left: trackLeft + trackWidth + ACCELERATE_VIEW.TRACK_READOUT_LEFT_GAP,
         centerY: y,
       });
       marker.centerY = y;
@@ -79,13 +79,13 @@ export class AccelerateTrackNode extends Node {
       strings.lanes.lightStringProperty,
       RelativisticDynamicsColors.lightColorProperty,
       new Rectangle(
-        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_X,
-        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_Y,
-        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_WIDTH,
-        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_HEIGHT,
+        ACCELERATE_VIEW.LIGHT_PULSE_X,
+        ACCELERATE_VIEW.LIGHT_PULSE_Y,
+        ACCELERATE_VIEW.LIGHT_PULSE_WIDTH,
+        ACCELERATE_VIEW.LIGHT_PULSE_HEIGHT,
         {
           fill: RelativisticDynamicsColors.lightColorProperty,
-          cornerRadius: ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_CORNER_RADIUS,
+          cornerRadius: ACCELERATE_VIEW.LIGHT_PULSE_CORNER_RADIUS,
         },
       ),
     );
@@ -96,11 +96,8 @@ export class AccelerateTrackNode extends Node {
       new Circle(MARKER_RADIUS, {
         fill: null,
         stroke: RelativisticDynamicsColors.newtonianColorProperty,
-        lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.NEWTON_LINE_WIDTH,
-        lineDash: [
-          ACCELERATE_TRACK_NODE_SETTINGS.NEWTON_LINE_DASH_DASH,
-          ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_NEWTON_LINE_DASH_DASH,
-        ],
+        lineWidth: ACCELERATE_VIEW.TRACK_NEWTON_LINE_WIDTH,
+        lineDash: [ACCELERATE_VIEW.TRACK_NEWTON_DASH, ACCELERATE_VIEW.TRACK_NEWTON_GAP],
       }),
       showNewtonProperty,
     );
@@ -117,7 +114,7 @@ export class AccelerateTrackNode extends Node {
       this.addChild(
         new Line(toView(metres), 0, toView(metres), bottom, {
           stroke: RelativisticDynamicsColors.chartAxisColorProperty,
-          lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_LINE_WIDTH,
+          lineWidth: ACCELERATE_VIEW.TRACK_RELATIVITY_LINE_WIDTH,
         }),
       );
     }
@@ -129,7 +126,7 @@ export class AccelerateTrackNode extends Node {
           font: FONTS.TICK_LABEL,
           fill: RelativisticDynamicsColors.textColorProperty,
           centerX: x,
-          top: bottom + ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET,
+          top: bottom + ACCELERATE_VIEW.TRACK_LANE_LABEL_TOP_GAP,
         }),
       );
     }
@@ -160,7 +157,7 @@ export class AccelerateTrackNode extends Node {
         const newtonBeta = snapshot.newtonianBeta;
         newton.readout.string =
           newtonBeta > 1
-            ? `u = ${formatSignificant(newtonBeta, ACCELERATE_TRACK_NODE_SETTINGS.FORMAT_SIGNIFICANT_DIGITS)} c, ${fasterThanLight}`
+            ? `u = ${formatSignificant(newtonBeta, ACCELERATE_VIEW.TRACK_READOUT_DIGITS)} c, ${fasterThanLight}`
             : `u = ${formatBeta(newtonBeta)} c`;
       },
     );

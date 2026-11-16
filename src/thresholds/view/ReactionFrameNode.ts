@@ -1,4 +1,3 @@
-import { REACTION_FRAME_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ReactionFrameNode.ts
  *
@@ -22,20 +21,21 @@ import type { FourMomentum } from "../../common/model/kinematics.js";
 import type { Particle } from "../../common/model/particles.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { FONTS, THRESHOLDS_VIEW } from "../../RelativisticDynamicsConstants.js";
+
 import { Verdict } from "../model/reactions.js";
 import type { ThresholdsModel } from "../model/ThresholdsModel.js";
 
-export const REACTION_FRAME_WIDTH: number = REACTION_FRAME_NODE_SETTINGS.REACTION_FRAME_WIDTH;
-const HEIGHT: number = REACTION_FRAME_NODE_SETTINGS.HEIGHT;
-const BEFORE_Y: number = REACTION_FRAME_NODE_SETTINGS.BEFORE_Y;
-const AFTER_Y: number = REACTION_FRAME_NODE_SETTINGS.AFTER_Y;
+export const REACTION_FRAME_WIDTH: number = THRESHOLDS_VIEW.FRAME_WIDTH;
+const HEIGHT: number = THRESHOLDS_VIEW.FRAME_HEIGHT;
+const BEFORE_Y: number = THRESHOLDS_VIEW.BEFORE_Y;
+const AFTER_Y: number = THRESHOLDS_VIEW.AFTER_Y;
 /** Arrow length for a speed of c, px. */
-const ARROW_LENGTH: number = REACTION_FRAME_NODE_SETTINGS.ARROW_LENGTH;
+const ARROW_LENGTH: number = THRESHOLDS_VIEW.ARROW_LENGTH;
 /** Distance of a product from the centre of its cluster, px. */
-const CLUSTER_RADIUS: number = REACTION_FRAME_NODE_SETTINGS.CLUSTER_RADIUS;
+const CLUSTER_RADIUS: number = THRESHOLDS_VIEW.CLUSTER_RADIUS;
 /** The most product sprites any reaction needs. */
-const MAX_PRODUCTS: number = REACTION_FRAME_NODE_SETTINGS.MAX_PRODUCTS;
+const MAX_PRODUCTS: number = THRESHOLDS_VIEW.MAX_PRODUCTS;
 
 type Sprite = { disk: Circle; arrow: ArrowNode; label: Text; baseFill: TPaint };
 
@@ -58,8 +58,8 @@ export class ReactionFrameNode extends Node {
       0,
       REACTION_FRAME_WIDTH,
       HEIGHT,
-      REACTION_FRAME_NODE_SETTINGS.BACKGROUND_CORNER_X,
-      REACTION_FRAME_NODE_SETTINGS.BACKGROUND_CORNER_Y,
+      THRESHOLDS_VIEW.FRAME_CORNER_X,
+      THRESHOLDS_VIEW.FRAME_CORNER_Y,
       {
         fill: RelativisticDynamicsColors.chartBackgroundColorProperty,
         stroke: RelativisticDynamicsColors.chartAxisColorProperty,
@@ -68,48 +68,45 @@ export class ReactionFrameNode extends Node {
     const title = new Text(titleProperty, {
       font: FONTS.CHART_TITLE,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: REACTION_FRAME_WIDTH - REACTION_FRAME_NODE_SETTINGS.TITLE_MAX_WIDTH_OFFSET,
-      left: REACTION_FRAME_NODE_SETTINGS.TITLE_LEFT,
-      top: REACTION_FRAME_NODE_SETTINGS.TITLE_TOP,
+      maxWidth: REACTION_FRAME_WIDTH - THRESHOLDS_VIEW.FRAME_TITLE_WIDTH_INSET,
+      left: THRESHOLDS_VIEW.FRAME_TITLE_LEFT,
+      top: THRESHOLDS_VIEW.FRAME_TITLE_TOP,
     });
     const sectionLabel = (labelProperty: TReadOnlyProperty<string>, y: number): Text =>
       new Text(labelProperty, {
         font: FONTS.TICK_LABEL,
         fill: RelativisticDynamicsColors.secondaryTextColorProperty,
-        maxWidth: REACTION_FRAME_NODE_SETTINGS.SECTION_LABEL_MAX_WIDTH,
-        left: REACTION_FRAME_NODE_SETTINGS.SECTION_LABEL_LEFT,
+        maxWidth: THRESHOLDS_VIEW.SECTION_LABEL_MAX_WIDTH,
+        left: THRESHOLDS_VIEW.SECTION_LABEL_LEFT,
         centerY: y,
       });
     const divider = new Line(
-      REACTION_FRAME_NODE_SETTINGS.DIVIDER_START_X,
+      THRESHOLDS_VIEW.DIVIDER_START_X,
       (BEFORE_Y + AFTER_Y) / 2 + 4,
       REACTION_FRAME_WIDTH - 8,
       (BEFORE_Y + AFTER_Y) / 2 + 4,
       {
         stroke: RelativisticDynamicsColors.chartGridColorProperty,
-        lineDash: [
-          REACTION_FRAME_NODE_SETTINGS.DIVIDER_LINE_DASH_DASH,
-          REACTION_FRAME_NODE_SETTINGS.DIVIDER_LINE_DASH_DASH,
-        ],
+        lineDash: [THRESHOLDS_VIEW.FRAME_DIVIDER_DASH, THRESHOLDS_VIEW.FRAME_DIVIDER_DASH],
       },
     );
 
     const makeSprite = (fill: TPaint): Sprite => ({
-      disk: new Circle(REACTION_FRAME_NODE_SETTINGS.MAKE_SPRITE_RADIUS, {
+      disk: new Circle(THRESHOLDS_VIEW.SPRITE_RADIUS, {
         fill,
         stroke: RelativisticDynamicsColors.backgroundColorProperty,
       }),
       arrow: new ArrowNode(0, 0, 1, 0, {
         fill,
         stroke: null,
-        headWidth: REACTION_FRAME_NODE_SETTINGS.MAKE_SPRITE_HEAD_WIDTH,
-        headHeight: REACTION_FRAME_NODE_SETTINGS.MAKE_SPRITE_HEAD_HEIGHT,
-        tailWidth: REACTION_FRAME_NODE_SETTINGS.MAKE_SPRITE_TAIL_WIDTH,
+        headWidth: THRESHOLDS_VIEW.SPRITE_HEAD_WIDTH,
+        headHeight: THRESHOLDS_VIEW.SPRITE_HEAD_HEIGHT,
+        tailWidth: THRESHOLDS_VIEW.SPRITE_TAIL_WIDTH,
       }),
       label: new Text("", {
         font: FONTS.PARTICLE_LABEL,
         fill,
-        maxWidth: REACTION_FRAME_NODE_SETTINGS.MAKE_SPRITE_MAX_WIDTH,
+        maxWidth: THRESHOLDS_VIEW.SPRITE_MAX_WIDTH,
       }),
       baseFill: fill,
     });
@@ -124,7 +121,7 @@ export class ReactionFrameNode extends Node {
       font: FONTS.READOUT_VALUE,
       fill: RelativisticDynamicsColors.forbiddenColorProperty,
       align: "center",
-      maxWidth: REACTION_FRAME_WIDTH - REACTION_FRAME_NODE_SETTINGS.MESSAGE_MAX_WIDTH_OFFSET,
+      maxWidth: REACTION_FRAME_WIDTH - THRESHOLDS_VIEW.FRAME_MESSAGE_WIDTH_INSET,
     });
 
     const spriteNodes = (s: Sprite): Node[] => [s.arrow, s.disk, s.label];
@@ -155,9 +152,9 @@ export class ReactionFrameNode extends Node {
       }
       sprite.disk.radius =
         particle.id === "leadNucleus"
-          ? REACTION_FRAME_NODE_SETTINGS.PLACE_RADIUS
+          ? THRESHOLDS_VIEW.PRODUCT_DISK_RADIUS
           : particle.mass === 0
-            ? REACTION_FRAME_NODE_SETTINGS.CONSTRUCTOR_PLACE_RADIUS
+            ? THRESHOLDS_VIEW.REACTANT_DISK_RADIUS
             : 8;
       // Photons are always drawn in the colour of light.
       const fill = particle.mass === 0 ? RelativisticDynamicsColors.lightColorProperty : sprite.baseFill;

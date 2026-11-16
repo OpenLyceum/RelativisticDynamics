@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumScreenSummaryContent.ts
  *
@@ -14,6 +13,7 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { formatBeta, formatEnergy } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import { ENERGY_MOMENTUM_VIEW } from "../../RelativisticDynamicsConstants.js";
 import type { EnergyMomentumModel, ParticleChoice } from "../model/EnergyMomentumModel.js";
 
 export class EnergyMomentumScreenSummaryContent extends ScreenSummaryContent {
@@ -49,37 +49,19 @@ export class EnergyMomentumScreenSummaryContent extends ScreenSummaryContent {
       (particle, lab, frame, frameMomentum, frameBeta, pattern, framePattern) => {
         const labText = StringUtils.fillIn(pattern, {
           particle: names[particle].value,
-          momentum: formatEnergy(
-            lab.momentum,
-            ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS,
-            "/c",
-          ),
-          kinetic: formatEnergy(
-            lab.kineticEnergy,
-            ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS,
-          ),
-          energy: formatEnergy(lab.energy, ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS),
+          momentum: formatEnergy(lab.momentum, ENERGY_MOMENTUM_VIEW.SUMMARY_MOMENTUM_DIGITS, "/c"),
+          kinetic: formatEnergy(lab.kineticEnergy, ENERGY_MOMENTUM_VIEW.SUMMARY_KINETIC_DIGITS),
+          energy: formatEnergy(lab.energy, ENERGY_MOMENTUM_VIEW.SUMMARY_ENERGY_DIGITS),
           speed: `${formatBeta(lab.beta)} c`,
-          mass: formatEnergy(
-            lab.mass,
-            ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.MASS_FORMAT_ENERGY_DIGITS,
-            "/c²",
-          ),
+          mass: formatEnergy(lab.mass, ENERGY_MOMENTUM_VIEW.SUMMARY_MASS_DIGITS, "/c²"),
         });
         if (frameBeta === 0) {
           return labText;
         }
         const frameText = StringUtils.fillIn(framePattern, {
           frameSpeed: `${formatBeta(Math.abs(frameBeta))} c`,
-          energy: formatEnergy(
-            frame.energy,
-            ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS,
-          ),
-          momentum: formatEnergy(
-            frameMomentum.px,
-            ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS.PX_FORMAT_ENERGY_DIGITS,
-            "/c",
-          ),
+          energy: formatEnergy(frame.energy, ENERGY_MOMENTUM_VIEW.SUMMARY_ENERGY_DIGITS),
+          momentum: formatEnergy(frameMomentum.px, ENERGY_MOMENTUM_VIEW.SUMMARY_PX_DIGITS, "/c"),
         });
         return `${labText} ${frameText}`;
       },

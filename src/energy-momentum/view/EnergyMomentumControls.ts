@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_CONTROLS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumControls.ts
  *
@@ -22,7 +21,8 @@ import { formatBeta, formatEnergy } from "../../common/view/chartUtils.js";
 import { createNumberControl, createRadioButtonGroup, createSectionHeader } from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { CONTROL_WIDTH, ENERGY_MOMENTUM, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { CONTROL_WIDTH, ENERGY_MOMENTUM, ENERGY_MOMENTUM_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import {
   type DrivingQuantity,
   EnergyMomentumModel,
@@ -31,7 +31,7 @@ import {
 } from "../model/EnergyMomentumModel.js";
 
 /** Keyboard step of the "Set" slider, as a fraction of its range. */
-const SLIDER_STEP: number = ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_STEP;
+const SLIDER_STEP: number = ENERGY_MOMENTUM_VIEW.SLIDER_STEP;
 
 export class EnergyMomentumControls {
   public readonly particlePanel: Node;
@@ -76,7 +76,7 @@ export class EnergyMomentumControls {
         accessibleName: a11y.customMassStringProperty,
         accessibleHelpText: a11y.customMassHelpStringProperty,
         decimalPlaces: 0,
-        delta: ENERGY_MOMENTUM_CONTROLS_SETTINGS.CUSTOM_MASS_CONTROL_DELTA,
+        delta: ENERGY_MOMENTUM_VIEW.CUSTOM_MASS_DELTA,
       },
     );
     customMassControl.visibleProperty = new DerivedProperty([model.particleProperty], (p) => p === "custom");
@@ -84,10 +84,10 @@ export class EnergyMomentumControls {
     this.particlePanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.PARTICLE_PANEL_SPACING,
+        spacing: ENERGY_MOMENTUM_VIEW.PARTICLE_PANEL_SPACING,
         children: [createSectionHeader(strings.particleHeadingStringProperty), particleRadio, customMassControl],
       }),
-      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_VIEW.PANEL_WIDTH_PAD },
     );
 
     // ── Set ───────────────────────────────────────────────────────────────────
@@ -154,14 +154,11 @@ export class EnergyMomentumControls {
           case "speed":
             return `${formatBeta(state.beta)} c`;
           case "momentum":
-            return formatEnergy(state.momentum, ENERGY_MOMENTUM_CONTROLS_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS, "/c");
+            return formatEnergy(state.momentum, ENERGY_MOMENTUM_VIEW.MOMENTUM_DIGITS, "/c");
           case "kineticEnergy":
-            return formatEnergy(
-              state.kineticEnergy,
-              ENERGY_MOMENTUM_CONTROLS_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS,
-            );
+            return formatEnergy(state.kineticEnergy, ENERGY_MOMENTUM_VIEW.KINETIC_DIGITS);
           case "totalEnergy":
-            return formatEnergy(state.energy, ENERGY_MOMENTUM_CONTROLS_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS);
+            return formatEnergy(state.energy, ENERGY_MOMENTUM_VIEW.ENERGY_DIGITS);
         }
       },
     );
@@ -172,11 +169,8 @@ export class EnergyMomentumControls {
     });
 
     const slider = new HSlider(fractionProperty, new Range(0, 1), {
-      trackSize: new Dimension2(CONTROL_WIDTH - 20, ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_HEIGHT),
-      thumbSize: new Dimension2(
-        ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_WIDTH,
-        ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_WIDTH_DIMENSION2_HEIGHT,
-      ),
+      trackSize: new Dimension2(CONTROL_WIDTH - 20, ENERGY_MOMENTUM_VIEW.SLIDER_TRACK_HEIGHT),
+      thumbSize: new Dimension2(ENERGY_MOMENTUM_VIEW.SLIDER_THUMB_WIDTH, ENERGY_MOMENTUM_VIEW.SLIDER_THUMB_HEIGHT),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       trackFillEnabled: RelativisticDynamicsColors.textColorProperty,
       keyboardStep: SLIDER_STEP,
@@ -191,10 +185,10 @@ export class EnergyMomentumControls {
     this.setPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.SET_PANEL_SPACING,
+        spacing: ENERGY_MOMENTUM_VIEW.SET_PANEL_SPACING,
         children: [createSectionHeader(strings.setHeadingStringProperty), quantityRadio, selectedValueText, slider],
       }),
-      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_VIEW.PANEL_WIDTH_PAD },
     );
 
     // ── Observer ──────────────────────────────────────────────────────────────
@@ -206,17 +200,17 @@ export class EnergyMomentumControls {
         valuePatternProperty: common.speedValuePatternStringProperty,
         accessibleName: a11y.observerSpeedStringProperty,
         accessibleHelpText: a11y.observerSpeedHelpStringProperty,
-        decimalPlaces: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_CONTROL_DECIMAL_PLACES,
-        delta: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_CONTROL_DELTA,
+        decimalPlaces: ENERGY_MOMENTUM_VIEW.OBSERVER_DECIMAL_PLACES,
+        delta: ENERGY_MOMENTUM_VIEW.OBSERVER_DELTA,
       },
     );
     this.observerPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_PANEL_SPACING,
+        spacing: ENERGY_MOMENTUM_VIEW.OBSERVER_PANEL_SPACING,
         children: [createSectionHeader(strings.observerHeadingStringProperty), observerControl],
       }),
-      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_VIEW.PANEL_WIDTH_PAD },
     );
 
     this.traversalOrder = [particleRadio, customMassControl, quantityRadio, slider, observerControl];

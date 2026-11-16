@@ -1,4 +1,3 @@
-import { AVAILABLE_ENERGY_CHART_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AvailableEnergyChartNode.ts
  *
@@ -18,13 +17,14 @@ import { sqrtSFixedTarget } from "../../common/model/kinematics.js";
 import { ChartFrameNode } from "../../common/view/ChartFrameNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { FONTS, THRESHOLDS_VIEW } from "../../RelativisticDynamicsConstants.js";
+
 import { BeamConfiguration, suppliedKineticEnergy } from "../model/reactions.js";
 import type { ThresholdsModel } from "../model/ThresholdsModel.js";
 
-const WIDTH: number = AVAILABLE_ENERGY_CHART_NODE_SETTINGS.WIDTH;
-const HEIGHT: number = AVAILABLE_ENERGY_CHART_NODE_SETTINGS.HEIGHT;
-const SAMPLES: number = AVAILABLE_ENERGY_CHART_NODE_SETTINGS.SAMPLES;
+const WIDTH: number = THRESHOLDS_VIEW.CHART_WIDTH;
+const HEIGHT: number = THRESHOLDS_VIEW.CHART_HEIGHT;
+const SAMPLES: number = THRESHOLDS_VIEW.CHART_SAMPLES;
 
 export class AvailableEnergyChartNode extends Node {
   public constructor(model: ThresholdsModel) {
@@ -42,22 +42,19 @@ export class AvailableEnergyChartNode extends Node {
     const transform = chart.chartTransform;
     const fixedCurve = new LinePlot(transform, [], {
       stroke: RelativisticDynamicsColors.body2ColorProperty,
-      lineWidth: AVAILABLE_ENERGY_CHART_NODE_SETTINGS.FIXED_CURVE_LINE_WIDTH,
+      lineWidth: THRESHOLDS_VIEW.FIXED_CURVE_LINE_WIDTH,
     });
     const colliderCurve = new LinePlot(transform, [], {
       stroke: RelativisticDynamicsColors.body1ColorProperty,
-      lineWidth: AVAILABLE_ENERGY_CHART_NODE_SETTINGS.COLLIDER_CURVE_LINE_WIDTH,
+      lineWidth: THRESHOLDS_VIEW.COLLIDER_CURVE_LINE_WIDTH,
     });
     const thresholdLine = new LinePlot(transform, [], {
       stroke: RelativisticDynamicsColors.invariantColorProperty,
-      lineWidth: AVAILABLE_ENERGY_CHART_NODE_SETTINGS.THRESHOLD_LINE_LINE_WIDTH,
-      lineDash: [
-        AVAILABLE_ENERGY_CHART_NODE_SETTINGS.THRESHOLD_LINE_LINE_DASH_DASH,
-        AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_THRESHOLD_LINE_LINE_DASH_DASH,
-      ],
+      lineWidth: THRESHOLDS_VIEW.THRESHOLD_LINE_WIDTH,
+      lineDash: [THRESHOLDS_VIEW.THRESHOLD_LINE_DASH, THRESHOLDS_VIEW.THRESHOLD_LINE_GAP],
     });
     chart.plotLayer.children = [thresholdLine, fixedCurve, colliderCurve];
-    const marker = new Circle(AVAILABLE_ENERGY_CHART_NODE_SETTINGS.MARKER_RADIUS, {
+    const marker = new Circle(THRESHOLDS_VIEW.CHART_MARKER_RADIUS, {
       fill: RelativisticDynamicsColors.textColorProperty,
     });
     const label = (
@@ -67,7 +64,7 @@ export class AvailableEnergyChartNode extends Node {
       new RichText(textProperty, {
         font: FONTS.TICK_LABEL,
         fill,
-        maxWidth: AVAILABLE_ENERGY_CHART_NODE_SETTINGS.LABEL_MAX_WIDTH,
+        maxWidth: THRESHOLDS_VIEW.CURVE_LABEL_MAX_WIDTH,
       });
     const fixedLabel = label(strings.chartFixedStringProperty, RelativisticDynamicsColors.body2ColorProperty);
     const colliderLabel = label(strings.chartColliderStringProperty, RelativisticDynamicsColors.body1ColorProperty);
@@ -108,19 +105,18 @@ export class AvailableEnergyChartNode extends Node {
         thresholdLine.setDataSet(finalMass > 0 ? [new Vector2(0, finalMass), new Vector2(xMax, finalMass)] : []);
         thresholdLabel.visible = finalMass > 0;
 
-        fixedLabel.right = WIDTH - AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_RIGHT_OFFSET;
-        fixedLabel.bottom =
-          transform.modelToViewY(fixedAt(xMax)) - AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_BOTTOM_OFFSET;
+        fixedLabel.right = WIDTH - THRESHOLDS_VIEW.FIXED_LABEL_RIGHT_INSET;
+        fixedLabel.bottom = transform.modelToViewY(fixedAt(xMax)) - THRESHOLDS_VIEW.FIXED_LABEL_BOTTOM_GAP;
         // Below and to the right of the line, clear of the marker that rides on it.
         colliderLabel.left =
-          transform.modelToViewX(xMax * AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_LEFT_FACTOR) +
-          AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
+          transform.modelToViewX(xMax * THRESHOLDS_VIEW.COLLIDER_LABEL_X_FACTOR) +
+          THRESHOLDS_VIEW.COLLIDER_LABEL_LEFT_GAP;
         colliderLabel.top = Math.max(
-          AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_TOP,
-          transform.modelToViewY(colliderAt(xMax * AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_TOP_FACTOR)) +
-            AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET,
+          THRESHOLDS_VIEW.COLLIDER_LABEL_TOP_MIN,
+          transform.modelToViewY(colliderAt(xMax * THRESHOLDS_VIEW.COLLIDER_LABEL_Y_FACTOR)) +
+            THRESHOLDS_VIEW.COLLIDER_LABEL_TOP_GAP,
         );
-        thresholdLabel.left = AVAILABLE_ENERGY_CHART_NODE_SETTINGS.LEFT_LEFT;
+        thresholdLabel.left = THRESHOLDS_VIEW.CHART_LEFT_INSET;
         thresholdLabel.bottom = transform.modelToViewY(finalMass) - 2;
       },
     );
@@ -141,12 +137,12 @@ export class AvailableEnergyChartNode extends Node {
     this.children = [
       new VBox({
         align: "left",
-        spacing: AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CHILDREN_SPACING,
+        spacing: THRESHOLDS_VIEW.CHART_CHILDREN_SPACING,
         children: [
           new Text(strings.chartTitleStringProperty, {
             font: FONTS.CHART_TITLE,
             fill: RelativisticDynamicsColors.textColorProperty,
-            maxWidth: WIDTH + AVAILABLE_ENERGY_CHART_NODE_SETTINGS.CONSTRUCTOR_MAX_WIDTH_OFFSET,
+            maxWidth: WIDTH + THRESHOLDS_VIEW.CHART_TITLE_WIDTH_PAD,
           }),
           chart,
         ],

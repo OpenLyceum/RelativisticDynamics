@@ -1,4 +1,3 @@
-import { COLLISIONS_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * CollisionsScreenView.ts
  *
@@ -34,7 +33,8 @@ import {
 } from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { COLLISIONS, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS, COLLISIONS_VIEW, CONTROL_WIDTH, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 import { openingAngle } from "../model/collisionGeometry.js";
 import { CollisionPlayAreaNode } from "./CollisionPlayAreaNode.js";
@@ -45,13 +45,13 @@ import { VelocityPadNode } from "./VelocityPadNode.js";
 
 export type CollisionsScreenViewOptions = ScreenViewOptions;
 
-const PLAY_WIDTH: number = COLLISIONS_SCREEN_VIEW_SETTINGS.PLAY_WIDTH;
-const PLAY_HEIGHT: number = COLLISIONS_SCREEN_VIEW_SETTINGS.PLAY_HEIGHT;
-const DIAGRAM_SIZE: number = COLLISIONS_SCREEN_VIEW_SETTINGS.DIAGRAM_SIZE;
+const PLAY_WIDTH: number = COLLISIONS_VIEW.PLAY_WIDTH;
+const PLAY_HEIGHT: number = COLLISIONS_VIEW.PLAY_HEIGHT;
+const DIAGRAM_SIZE: number = COLLISIONS_VIEW.DIAGRAM_SIZE;
 /** Width of the narrow readout column under the play area. */
-const READOUT_WIDTH: number = COLLISIONS_SCREEN_VIEW_SETTINGS.READOUT_WIDTH;
+const READOUT_WIDTH: number = COLLISIONS_VIEW.READOUT_WIDTH;
 /** Width of each body's mass control, so the two sit side by side under their pads. */
-const MASS_CONTROL_WIDTH: number = COLLISIONS_SCREEN_VIEW_SETTINGS.MASS_CONTROL_WIDTH;
+const MASS_CONTROL_WIDTH: number = COLLISIONS_VIEW.MASS_CONTROL_WIDTH;
 
 export class CollisionsScreenView extends ScreenView {
   public constructor(model: CollisionsModel, providedOptions?: CollisionsScreenViewOptions) {
@@ -68,26 +68,26 @@ export class CollisionsScreenView extends ScreenView {
 
     // ── Left column: play area, momentum diagram, invariants ─────────────────
     const playArea = new CollisionPlayAreaNode(model, PLAY_WIDTH, PLAY_HEIGHT);
-    playArea.left = bounds.minX + SCREEN_VIEW_MARGIN + COLLISIONS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
+    playArea.left = bounds.minX + SCREEN_VIEW_MARGIN + COLLISIONS_VIEW.PLAY_AREA_LEFT_INSET;
     playArea.top = bounds.minY + SCREEN_VIEW_MARGIN;
 
     const momentumDiagram = new MomentumDiagramNode(model, DIAGRAM_SIZE);
     momentumDiagram.left = bounds.minX + SCREEN_VIEW_MARGIN;
-    momentumDiagram.top = playArea.bottom + COLLISIONS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+    momentumDiagram.top = playArea.bottom + COLLISIONS_VIEW.DIAGRAM_TOP_GAP;
 
     const sqrtSText = new DerivedProperty([model.invariantMassProperty], (m) =>
-      formatSignificant(m, COLLISIONS_SCREEN_VIEW_SETTINGS.SQRT_S_TEXT_DIGITS),
+      formatSignificant(m, COLLISIONS_VIEW.SQRT_S_DIGITS),
     );
     const openingText = new DerivedProperty([model.viewStateProperty], (state) => {
       const angle = openingAngle(state.outgoing);
       return angle === null
         ? "—"
-        : `${formatSignificant((angle * 180) / Math.PI, COLLISIONS_SCREEN_VIEW_SETTINGS.OPENING_TEXT_DIGITS)}°`;
+        : `${formatSignificant((angle * 180) / Math.PI, COLLISIONS_VIEW.OPENING_ANGLE_DIGITS)}°`;
     });
     const compositeText = new DerivedProperty(
       [model.labStateProperty, model.mass1Property, model.mass2Property],
       (s, m1, m2) =>
-        `${formatSignificant(s.outgoing[0]?.mass ?? 0, COLLISIONS_SCREEN_VIEW_SETTINGS.COMPOSITE_TEXT_DIGITS)} (${formatSignificant(m1 + m2, COLLISIONS_SCREEN_VIEW_SETTINGS.COMPOSITE_TEXT_DIGITS_SEGMENT_2)})`,
+        `${formatSignificant(s.outgoing[0]?.mass ?? 0, COLLISIONS_VIEW.COMPOSITE_MASS_DIGITS)} (${formatSignificant(m1 + m2, COLLISIONS_VIEW.REST_MASS_SUM_DIGITS)})`,
     );
     const newtonReferenceVisible = new DerivedProperty(
       [model.modeProperty, model.mass1Property, model.mass2Property, model.velocity2Property, model.frameProperty],
@@ -107,7 +107,7 @@ export class CollisionsScreenView extends ScreenView {
 
     const readouts = new VBox({
       align: "left",
-      spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.READOUTS_SPACING,
+      spacing: COLLISIONS_VIEW.READOUTS_SPACING,
       children: [
         createSectionHeader(strings.readoutsHeadingStringProperty),
         createReadoutRow(
@@ -142,7 +142,7 @@ export class CollisionsScreenView extends ScreenView {
         ),
         accessibleHelpText: a11y.massHelpStringProperty,
         decimalPlaces: 1,
-        delta: COLLISIONS_SCREEN_VIEW_SETTINGS.MASS_CONTROL_DELTA,
+        delta: COLLISIONS_VIEW.MASS_CONTROL_DELTA,
         width: MASS_CONTROL_WIDTH,
       });
     const mass1Control = massControl(model.mass1Property, strings.mass1StringProperty, strings.body1StringProperty);
@@ -166,19 +166,19 @@ export class CollisionsScreenView extends ScreenView {
     const bodiesPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.BODIES_PANEL_SPACING,
+        spacing: COLLISIONS_VIEW.BODIES_PANEL_SPACING,
         children: [
           createSectionHeader(strings.bodiesHeadingStringProperty),
           new HBox({
-            spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_BODIES_PANEL_SPACING,
+            spacing: COLLISIONS_VIEW.BODIES_INNER_SPACING,
             align: "top",
             children: [
               new VBox({
-                spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.BODIES_PANEL_SPACING,
+                spacing: COLLISIONS_VIEW.BODIES_PANEL_SPACING,
                 children: [pad1, mass1Control],
               }),
               new VBox({
-                spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.BODIES_PANEL_SPACING,
+                spacing: COLLISIONS_VIEW.BODIES_PANEL_SPACING,
                 children: [pad2, mass2Control],
               }),
             ],
@@ -210,10 +210,10 @@ export class CollisionsScreenView extends ScreenView {
     const presetPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.PRESET_PANEL_SPACING,
+        spacing: COLLISIONS_VIEW.PRESET_PANEL_SPACING,
         children: [createSectionHeader(strings.presetsHeadingStringProperty), ...presetButtons],
       }),
-      { minWidth: CONTROL_WIDTH + COLLISIONS_SCREEN_VIEW_SETTINGS.PRESET_PANEL_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + COLLISIONS_VIEW.PRESET_PANEL_WIDTH_PAD },
     );
 
     const modeRadio = createRadioButtonGroup(
@@ -234,10 +234,7 @@ export class CollisionsScreenView extends ScreenView {
     );
     const angleControl = createNumberControl(
       model.cmAngleProperty,
-      new Range(
-        COLLISIONS_SCREEN_VIEW_SETTINGS.ANGLE_CONTROL_RANGE_MIN,
-        COLLISIONS_SCREEN_VIEW_SETTINGS.ANGLE_CONTROL_RANGE_MAX,
-      ),
+      new Range(COLLISIONS_VIEW.ANGLE_CONTROL_MIN, COLLISIONS_VIEW.ANGLE_CONTROL_MAX),
       {
         titleProperty: strings.cmAngleStringProperty,
         valuePatternProperty: strings.degreesPatternStringProperty,
@@ -251,10 +248,10 @@ export class CollisionsScreenView extends ScreenView {
     const collisionPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.COLLISION_PANEL_SPACING,
+        spacing: COLLISIONS_VIEW.COLLISION_PANEL_SPACING,
         children: [createSectionHeader(strings.collisionHeadingStringProperty), modeRadio, angleControl],
       }),
-      { minWidth: CONTROL_WIDTH + COLLISIONS_SCREEN_VIEW_SETTINGS.COLLISION_PANEL_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + COLLISIONS_VIEW.COLLISION_PANEL_WIDTH_PAD },
     );
 
     const frameRadio = createRadioButtonGroup(
@@ -286,22 +283,22 @@ export class CollisionsScreenView extends ScreenView {
         valuePatternProperty: sm.getCommonStrings().speedValuePatternStringProperty,
         accessibleName: a11y.frameSpeedStringProperty,
         accessibleHelpText: a11y.frameSpeedHelpStringProperty,
-        decimalPlaces: COLLISIONS_SCREEN_VIEW_SETTINGS.FRAME_SPEED_CONTROL_DECIMAL_PLACES,
-        delta: COLLISIONS_SCREEN_VIEW_SETTINGS.FRAME_SPEED_CONTROL_DELTA,
+        decimalPlaces: COLLISIONS_VIEW.FRAME_SPEED_DECIMAL_PLACES,
+        delta: COLLISIONS_VIEW.FRAME_SPEED_DELTA,
       },
     );
     frameSpeedControl.enabledProperty = new DerivedProperty([model.frameProperty], (frame) => frame === "moving");
     const framePanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.FRAME_PANEL_SPACING,
+        spacing: COLLISIONS_VIEW.FRAME_PANEL_SPACING,
         children: [createSectionHeader(strings.frameHeadingStringProperty), frameRadio, frameSpeedControl],
       }),
-      { minWidth: CONTROL_WIDTH + COLLISIONS_SCREEN_VIEW_SETTINGS.FRAME_PANEL_MIN_WIDTH_OFFSET },
+      { minWidth: CONTROL_WIDTH + COLLISIONS_VIEW.FRAME_PANEL_WIDTH_PAD },
     );
 
     const rightColumn = new VBox({
-      spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.RIGHT_COLUMN_SPACING,
+      spacing: COLLISIONS_VIEW.RIGHT_COLUMN_SPACING,
       align: "right",
       children: [presetPanel, collisionPanel, framePanel],
     });
@@ -328,7 +325,7 @@ export class CollisionsScreenView extends ScreenView {
       accessibleHelpText: a11y.restartHelpStringProperty,
     });
     const timeRow = new HBox({
-      spacing: COLLISIONS_SCREEN_VIEW_SETTINGS.TIME_ROW_SPACING,
+      spacing: COLLISIONS_VIEW.TIME_ROW_SPACING,
       children: [restartButton, timeControlNode],
     });
     timeRow.centerX = playArea.centerX;

@@ -47,7 +47,7 @@ Physics, data and references: [`doc/model.md`](doc/model.md). Architecture and d
 | `src/common/view/ChartFrameNode.ts` | bamboo chart frame with re-rangeable grid/ticks (parks spacing while re-ranging) |
 | `src/common/view/controlHelpers.ts` | Themed controls shared by every screen (adapted from SpecialRelativity) |
 | `src/RelativisticDynamicsColors.ts` | Colours **and the colour language** (cyan relativity, orange Newton, yellow light, violet invariants): read its header before adding a colour |
-| `src/RelativisticDynamicsConstants.ts` | Grouped `as const` blocks: `MASS_MEV`, `ACCELERATE`, `BERTOZZI`, `ENERGY_MOMENTUM`, `COLLISIONS`, `THRESHOLDS`, `FONTS` |
+| `src/RelativisticDynamicsConstants.ts` | Grouped `as const` blocks: `MASS_MEV`, `ACCELERATE`, `BERTOZZI`, `ENERGY_MOMENTUM`, `COLLISIONS`, `THRESHOLDS`, `KINEMATICS`, `PANEL`/`CHART`/`CONTROLS`, `SCREEN_ICONS`, `*_VIEW`, `FONTS` |
 | `src/preferences/` | One preference, Show Newton's predictions (`?hideNewton`) |
 
 ## Accessibility

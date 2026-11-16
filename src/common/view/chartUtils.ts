@@ -1,4 +1,3 @@
-import { CHART_UTILS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * chartUtils.ts
  *
@@ -12,6 +11,7 @@ import { CHART_UTILS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
  */
 
 import { toFixed } from "scenerystack/dot";
+import { CHART } from "../../RelativisticDynamicsConstants.js";
 
 /**
  * Pick a "nice" step (1, 2, or 5 × 10ⁿ) that yields roughly `targetDivisions`
@@ -57,7 +57,7 @@ export const formatTickValue = (value: number, decimalPlaces: number): string =>
  * Format to `digits` significant figures, dropping trailing zeros. Used for γ,
  * which spans 1 to several thousand.
  */
-export const formatSignificant = (value: number, digits: number = CHART_UTILS_SETTINGS.DEFAULT_DIGITS): string => {
+export const formatSignificant = (value: number, digits: number = CHART.DEFAULT_DIGITS): string => {
   if (!Number.isFinite(value)) {
     return "—";
   }

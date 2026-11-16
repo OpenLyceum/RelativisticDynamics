@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumScreenView.ts
  *
@@ -15,7 +14,8 @@ import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/RelativisticDynamicsButtonOptions.js";
 import type { RelativisticDynamicsPreferencesModel } from "../../preferences/RelativisticDynamicsPreferencesModel.js";
-import { SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+import { ENERGY_MOMENTUM_VIEW, SCREEN_VIEW_MARGIN } from "../../RelativisticDynamicsConstants.js";
+
 import type { EnergyMomentumModel } from "../model/EnergyMomentumModel.js";
 import { EnergyMomentumControls } from "./EnergyMomentumControls.js";
 import { EnergyMomentumDiagramNode } from "./EnergyMomentumDiagramNode.js";
@@ -26,7 +26,7 @@ import { EnergyTriangleNode } from "./EnergyTriangleNode.js";
 export type EnergyMomentumScreenViewOptions = ScreenViewOptions;
 
 /** Left edge of the diagram's plotting area; its axis labels hang to the left of it. */
-const DIAGRAM_LEFT: number = ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.DIAGRAM_LEFT;
+const DIAGRAM_LEFT: number = ENERGY_MOMENTUM_VIEW.DIAGRAM_LEFT;
 
 export class EnergyMomentumScreenView extends ScreenView {
   public constructor(
@@ -53,9 +53,8 @@ export class EnergyMomentumScreenView extends ScreenView {
     diagram.top = bounds.minY + SCREEN_VIEW_MARGIN;
 
     const readout = new EnergyMomentumReadoutNode(model);
-    readout.centerX =
-      DIAGRAM_LEFT + diagram.width / 2 - ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_CENTER_X_OFFSET;
-    readout.top = diagram.bottom + ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+    readout.centerX = DIAGRAM_LEFT + diagram.width / 2 - ENERGY_MOMENTUM_VIEW.READOUT_CENTER_X_NUDGE;
+    readout.top = diagram.bottom + ENERGY_MOMENTUM_VIEW.READOUT_TOP_GAP;
 
     const controls = new EnergyMomentumControls(model);
     controls.particlePanel.right = bounds.maxX - SCREEN_VIEW_MARGIN;

@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_MODEL_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumModel.ts
  *
@@ -91,7 +90,7 @@ export class EnergyMomentumModel implements TModel {
     this.isMasslessProperty = new DerivedProperty([this.massProperty], (mass) => mass === 0);
     this.scaleProperty = new DerivedProperty([this.massProperty], (mass) => (mass > 0 ? mass : PHOTON_SCALE_MEV));
 
-    this.scaledMomentumProperty = new NumberProperty(ENERGY_MOMENTUM_MODEL_SETTINGS.SCALED_MOMENTUM_DEFAULT, {
+    this.scaledMomentumProperty = new NumberProperty(ENERGY_MOMENTUM.SCALED_MOMENTUM_DEFAULT, {
       range: new Range(0, MAX_SCALED_MOMENTUM),
     });
     this.drivingQuantityProperty = new StringUnionProperty<DrivingQuantity>("momentum", {

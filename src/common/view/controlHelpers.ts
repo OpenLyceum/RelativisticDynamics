@@ -1,4 +1,3 @@
-import { CONTROL_HELPERS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * controlHelpers.ts
  *
@@ -14,7 +13,8 @@ import { Node, Text, type TPaint } from "scenerystack/scenery";
 import { NumberControl } from "scenerystack/scenery-phet";
 import { Checkbox, RectangularPushButton, VerticalAquaRadioButtonGroup } from "scenerystack/sun";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { CONTROL_WIDTH, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { CONTROL_WIDTH, CONTROLS, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import { FLAT_RECTANGULAR_BUTTON_OPTIONS, LIGHT_SURFACE_TEXT_FILL } from "../RelativisticDynamicsButtonOptions.js";
 
 export type NumberControlConfig = {
@@ -34,7 +34,7 @@ export type NumberControlConfig = {
 };
 
 /** Below this width the title gets its own row. */
-const NARROW_CONTROL_WIDTH: number = CONTROL_HELPERS_SETTINGS.NARROW_CONTROL_WIDTH;
+const NARROW_CONTROL_WIDTH: number = CONTROLS.NARROW_CONTROL_WIDTH;
 
 /**
  * A themed NumberControl: title above, value in a box, slider below.
@@ -47,9 +47,9 @@ export const createNumberControl = (
   new NumberControl(config.titleProperty, property, range, {
     layoutFunction:
       (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
-        ? NumberControl.createLayoutFunction3({ ySpacing: CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_Y_SPACING })
+        ? NumberControl.createLayoutFunction3({ ySpacing: CONTROLS.NARROW_NUMBER_CONTROL_Y_SPACING })
         : NumberControl.createLayoutFunction2({
-            ySpacing: CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_Y_SPACING_VARIANT_2,
+            ySpacing: CONTROLS.WIDE_NUMBER_CONTROL_Y_SPACING,
           }),
     delta: config.delta,
     titleNodeOptions: {
@@ -59,7 +59,7 @@ export const createNumberControl = (
       maxWidth:
         (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
           ? (config.width ?? CONTROL_WIDTH)
-          : (config.width ?? CONTROL_WIDTH) - CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_MAX_WIDTH_OFFSET,
+          : (config.width ?? CONTROL_WIDTH) - CONTROLS.NUMBER_CONTROL_TITLE_WIDTH_RESERVE,
     },
     numberDisplayOptions: {
       valuePattern: config.valuePatternProperty,
@@ -73,10 +73,7 @@ export const createNumberControl = (
     },
     arrowButtonOptions: FLAT_RECTANGULAR_BUTTON_OPTIONS,
     sliderOptions: {
-      trackSize: new Dimension2(
-        (config.width ?? CONTROL_WIDTH) - 40,
-        CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_HEIGHT,
-      ),
+      trackSize: new Dimension2((config.width ?? CONTROL_WIDTH) - 40, CONTROLS.NUMBER_CONTROL_TRACK_HEIGHT),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       majorTickLength: 10,
     },
@@ -99,7 +96,7 @@ export const createCheckbox = (
     new Text(labelProperty, {
       font: FONTS.READOUT,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: width - CONTROL_HELPERS_SETTINGS.CREATE_CHECKBOX_MAX_WIDTH_OFFSET,
+      maxWidth: width - CONTROLS.CHECKBOX_LABEL_WIDTH_RESERVE,
     }),
     {
       checkboxColor: RelativisticDynamicsColors.textColorProperty,
@@ -127,7 +124,7 @@ export const createPushButton = (
     content: new Text(labelProperty, {
       font: FONTS.READOUT,
       fill: LIGHT_SURFACE_TEXT_FILL,
-      maxWidth: config.maxTextWidth ?? CONTROL_WIDTH - CONTROL_HELPERS_SETTINGS.CREATE_PUSH_BUTTON_MAX_WIDTH_OFFSET,
+      maxWidth: config.maxTextWidth ?? CONTROL_WIDTH - CONTROLS.PUSH_BUTTON_LABEL_WIDTH_RESERVE,
     }),
     baseColor: RelativisticDynamicsColors.controlSurfaceColorProperty,
     // Spread rather than assign: `exactOptionalPropertyTypes` rejects an explicit
@@ -164,8 +161,7 @@ export const createRadioButtonGroup = <T>(
         new Text(item.labelProperty, {
           font: FONTS.READOUT,
           fill: RelativisticDynamicsColors.textColorProperty,
-          maxWidth:
-            (config.width ?? CONTROL_WIDTH) - CONTROL_HELPERS_SETTINGS.CREATE_RADIO_BUTTON_GROUP_MAX_WIDTH_OFFSET,
+          maxWidth: (config.width ?? CONTROL_WIDTH) - CONTROLS.RADIO_LABEL_WIDTH_RESERVE,
         }),
       options: {
         accessibleName: item.accessibleName,
@@ -173,7 +169,7 @@ export const createRadioButtonGroup = <T>(
       },
     })),
     {
-      spacing: CONTROL_HELPERS_SETTINGS.CREATE_RADIO_BUTTON_GROUP_SPACING,
+      spacing: CONTROLS.RADIO_BUTTON_SPACING,
       align: "left",
       radioButtonOptions: {
         selectedColor: RelativisticDynamicsColors.accentColorProperty,
@@ -199,12 +195,12 @@ export const createReadoutRow = (
   const label = new Text(labelProperty, {
     font: FONTS.READOUT,
     fill: RelativisticDynamicsColors.secondaryTextColorProperty,
-    maxWidth: width * CONTROL_HELPERS_SETTINGS.LABEL_MAX_WIDTH_FACTOR,
+    maxWidth: width * CONTROLS.LABEL_MAX_WIDTH_FACTOR,
   });
   const value = new Text(valueProperty, {
     font: FONTS.READOUT_VALUE,
     fill: valueFill,
-    maxWidth: width * CONTROL_HELPERS_SETTINGS.VALUE_MAX_WIDTH_FACTOR,
+    maxWidth: width * CONTROLS.VALUE_MAX_WIDTH_FACTOR,
   });
   // Explicit placement rather than a justified HBox: the value's right edge is pinned
   // to the row width, so a column of rows lines up whatever the value's length.

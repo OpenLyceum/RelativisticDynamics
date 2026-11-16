@@ -1,4 +1,3 @@
-import { KINEMATIC_NUMERICS } from "../../RelativisticDynamicsConstants.js";
 /**
  * kinematics.ts
  *
@@ -33,13 +32,14 @@ import { KINEMATIC_NUMERICS } from "../../RelativisticDynamicsConstants.js";
  */
 
 import { Vector2 } from "scenerystack/dot";
+import { KINEMATICS } from "../../RelativisticDynamicsConstants.js";
 
 /**
  * Largest speed any velocity-driven input is allowed to reach. γ here is ≈ 7 071,
  * well beyond anything the sim draws, while 1 − β² is still far above
  * double-precision roundoff.
  */
-const MAX_BETA = 1 - KINEMATIC_NUMERICS.BETA_MARGIN;
+const MAX_BETA = 1 - KINEMATICS.BETA_MARGIN;
 
 /** Clamps |β| below {@link MAX_BETA} and maps non-finite input to 0. */
 const sanitizeBeta = (beta: number): number => {

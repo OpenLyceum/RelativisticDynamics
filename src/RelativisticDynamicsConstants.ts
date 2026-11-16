@@ -130,6 +130,9 @@ export const ENERGY_MOMENTUM = {
    */
   DIAGRAM_ZOOM_LEVELS: [3, 6, 12, 24],
   DIAGRAM_VIEW_WIDTH: 420,
+
+  /** Default scaled momentum pc/S on the Set slider. */
+  SCALED_MOMENTUM_DEFAULT: 2,
 } as const;
 
 // ── Collisions screen ─────────────────────────────────────────────────────────
@@ -155,6 +158,17 @@ export const COLLISIONS = {
   DERIVATION_TRANSVERSE_SPEED: 0.3,
   /** Frame speed v used by the symmetric-derivation preset. */
   DERIVATION_FRAME_SPEED: 0.8,
+
+  /** Slow-motion rate relative to the normal clock (dimensionless). */
+  SLOW_TIME_FACTOR: 0.3,
+  /** Default CM scattering angle (degrees). */
+  CM_ANGLE_DEFAULT: 90,
+  CM_ANGLE_RANGE_MIN: -180,
+  CM_ANGLE_RANGE_MAX: 180,
+  /** Default free-frame β when the moving-frame radio is selected. */
+  FRAME_BETA_DEFAULT: 0.5,
+  /** Speed below which an outgoing direction is undefined (units of c). */
+  MIN_DIRECTION_SPEED: 1e-9,
 } as const;
 
 // ── Thresholds screen ─────────────────────────────────────────────────────────
@@ -162,565 +176,392 @@ export const COLLISIONS = {
 export const THRESHOLDS = {
   /** Beam kinetic-energy slider spans [0, this × threshold] (or a fixed range for exothermic reactions). */
   BEAM_RANGE_OVER_THRESHOLD: 3,
+
+  /** Initial slider position as a fraction of the over-threshold span. */
+  DEFAULT_FRACTION: 0.5,
+  /** Beam range when the threshold is zero: this many beam rest energies (or MeV for a photon). */
+  FALLBACK_RANGE_FACTOR: 10,
 } as const;
 
-/** Settings for accelerate/view/AccelerateChartsNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ACCELERATE_CHARTS_NODE_SETTINGS = {
-  T_LIGHT_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_T_LIGHT_LINE_DASH_DASH: 4, // px
-  T_NEWTON_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_T_NEWTON_LINE_DASH_DASH: 3, // px
-  MOMENTUM_NOTE_MAX_WIDTH_OFFSET: 12, // px
-  K_LIGHT_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_K_LIGHT_LINE_DASH_DASH: 4, // px
-  K_NEWTON_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_K_NEWTON_LINE_DASH_DASH: 3, // px
-  CONSTRUCTOR_LEFT_OFFSET: 75, // px
-  CONSTRUCTOR_RIGHT_OFFSET: 4, // px
-
-  CHART_WIDTH: 245,
-  CHART_HEIGHT: 200,
-  SAMPLES: 120,
-  MARKER_RADIUS: 5,
-  T_LIGHT_LINE_WIDTH: 1.5,
-  T_NEWTON_LINE_WIDTH: 2.5,
-  T_RELATIVITY_LINE_WIDTH: 2.5,
-  MOMENTUM_NOTE_LEFT: 6,
-  MOMENTUM_NOTE_TOP: 6,
-  /** Energy chart range max (in the source module’s documented units). */
-  ENERGY_CHART_RANGE_MAX: 20,
-  K_LIGHT_LINE_WIDTH: 1.5,
-  K_NEWTON_LINE_WIDTH: 2,
-  K_RELATIVITY_LINE_WIDTH: 2,
-  BERTOZZI_RADIUS: 4.5,
-  NEWTON_MARKER_LINE_WIDTH: 2,
-  TITLED_SPACING: 6,
+/** Shared kinematic numerics (natural units, c = 1). */
+export const KINEMATICS = {
+  /** Speed margin below c used to avoid singular boosts (dimensionless). */
+  BETA_MARGIN: 1e-8,
 } as const;
 
-/** Settings for accelerate/view/AccelerateScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ACCELERATE_SCREEN_VIEW_SETTINGS = {
-  READOUT_VALUES_DIGITS: 3, // digits
-  POSITION_FORMAT_SIGNIFICANT_DIGITS: 3, // digits
-  READOUT_VALUES_DIGITS_SEGMENT_2: 4, // digits
-  MOMENTUM_FORMAT_ENERGY_DIGITS: 4, // digits
-  KINETIC_ENERGY_FORMAT_ENERGY_DIGITS: 4, // digits
-
-  CONSTRUCTOR_TOP_OFFSET: 6, // px
-  CONSTRUCTOR_LEFT_OFFSET: 55, // px
-  CONTROL_PANEL_MIN_WIDTH_OFFSET: 24, // px
-  READOUT_PANEL_MIN_WIDTH_OFFSET: 24, // px
-
-  /** Width of the play area to the left of the control column. */
-  PLAY_AREA_WIDTH: 720,
-  /** Field control decimal places (dimensionless). */
-  FIELD_CONTROL_DECIMAL_PLACES: 2,
-  /** Field control delta (dimensionless). */
-  FIELD_CONTROL_DELTA: 0.05,
-  CONTROL_PANEL_SPACING: 8,
-  READOUT_PANEL_SPACING: 3,
-  TIME_ROW_SPACING: 18,
+/** Shared panel margins (px). */
+export const PANEL = {
+  X_MARGIN: 12,
+  Y_MARGIN: 10,
 } as const;
-
-/** Settings for accelerate/view/AccelerateTrackNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ACCELERATE_TRACK_NODE_SETTINGS = {
-  FORMAT_SIGNIFICANT_DIGITS: 3, // digits
-
-  LABEL_MAX_WIDTH_OFFSET: 10, // px
-  LABEL_RIGHT_OFFSET: 10, // px
-  READOUT_MAX_WIDTH_OFFSET: 14, // px
-  READOUT_LEFT_OFFSET: 14, // px
-  NEWTON_LINE_DASH_DASH: 4, // px
-  CONSTRUCTOR_NEWTON_LINE_DASH_DASH: 3, // px
-  CONSTRUCTOR_TOP_OFFSET: 6, // px
-
-  LANE_HEIGHT: 34,
-  LABEL_COLUMN: 90,
-  READOUT_COLUMN: 150,
-  MARKER_RADIUS: 9,
-  TICK_SPACING_M: 2,
-  LANE_LINE_WIDTH: 2,
-  LIGHT_X: -12,
-  LIGHT_Y: -3,
-  LIGHT_WIDTH: 24,
-  LIGHT_HEIGHT: 6,
-  LIGHT_CORNER_RADIUS: 3,
-  NEWTON_LINE_WIDTH: 2.5,
-  CONSTRUCTOR_LINE_WIDTH: 2,
+/** Shared bamboo chart chrome (px); DEFAULT_DIGITS is format precision. */
+export const CHART = {
+  AXIS_LABEL_TOP_OFFSET: 20,
+  RIGHT_AXIS_INSET: -32,
+  DEFAULT_DIGITS: 3,
 } as const;
-
-/** Settings for collisions/model/CollisionsModel.ts. */
-export const COLLISIONS_MODEL_SETTINGS = {
-  /** Slow-motion rate relative to the normal clock (dimensionless). */
-  SLOW_TIME_FACTOR: 0.3,
-  /** Cm angle default (degrees). */
-  CM_ANGLE_DEFAULT: 90,
-  /** Cm angle range min (degrees). */
-  CM_ANGLE_RANGE_MIN: -180,
-  /** Cm angle range max (degrees). */
-  CM_ANGLE_RANGE_MAX: 180,
-  /** Frame beta default (dimensionless). */
-  FRAME_BETA_DEFAULT: 0.5,
+/** Shared control-helper layout (px); factors are dimensionless. */
+export const CONTROLS = {
+  WIDE_NUMBER_CONTROL_Y_SPACING: 10,
+  NUMBER_CONTROL_TITLE_WIDTH_RESERVE: 110,
+  CHECKBOX_LABEL_WIDTH_RESERVE: 30,
+  PUSH_BUTTON_LABEL_WIDTH_RESERVE: 24,
+  RADIO_LABEL_WIDTH_RESERVE: 40,
+  LABEL_MAX_WIDTH_FACTOR: 0.62,
+  VALUE_MAX_WIDTH_FACTOR: 0.38,
+  NARROW_CONTROL_WIDTH: 170,
+  NARROW_NUMBER_CONTROL_Y_SPACING: 6,
+  NUMBER_CONTROL_TRACK_HEIGHT: 4,
+  RADIO_BUTTON_SPACING: 7,
 } as const;
-
-/** Settings for collisions/view/CollisionPlayAreaNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const COLLISION_PLAY_AREA_NODE_SETTINGS = {
-  FRAME_NAME_DIGITS: 2, // digits
-
-  LIGHT_CIRCLE_LINE_DASH_DASH: 4, // px
-  VIEWING_TEXT_MAX_WIDTH_OFFSET: 16, // px
-
-  /** Pixels per unit of velocity for the arrows (an arrow of this length is a speed of c). */
-  ARROW_SCALE: 55,
-  /** Light circle opacity (dimensionless). */
-  LIGHT_CIRCLE_OPACITY: 0.6,
-  TRAILS_LINE_WIDTH: 2,
-  MAKE_SPRITE_LINE_WIDTH: 1.5,
-  MAKE_SPRITE_HEAD_WIDTH: 9,
-  MAKE_SPRITE_HEAD_HEIGHT: 8,
-  MAKE_SPRITE_TAIL_WIDTH: 3,
-  VIEWING_TEXT_LEFT: 8,
-  VIEWING_TEXT_TOP: 6,
+/** Preferences panel typography and spacing. */
+export const PREFERENCES = {
+  HEADER_FONT_SIZE: 18,
+  CHECKBOX_FONT_SIZE: 14,
+  CHECKBOX_SPACING: 8,
+  SPACING: 12,
 } as const;
-
-/** Settings for collisions/view/CollisionsScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const COLLISIONS_SCREEN_VIEW_SETTINGS = {
-  SQRT_S_TEXT_DIGITS: 4, // digits
-  OPENING_TEXT_DIGITS: 3, // digits
-  COMPOSITE_TEXT_DIGITS: 4, // digits
-  COMPOSITE_TEXT_DIGITS_SEGMENT_2: 3, // digits
-
-  CONSTRUCTOR_LEFT_OFFSET: 42, // px
-  CONSTRUCTOR_TOP_OFFSET: 22, // px
-  CONSTRUCTOR_BODIES_PANEL_SPACING: 14, // px
-  PRESET_PANEL_MIN_WIDTH_OFFSET: 24, // px
-  COLLISION_PANEL_MIN_WIDTH_OFFSET: 24, // px
-  FRAME_PANEL_MIN_WIDTH_OFFSET: 24, // px
-
-  PLAY_WIDTH: 340,
-  PLAY_HEIGHT: 245,
-  DIAGRAM_SIZE: 150,
-  /** Width of the narrow readout column under the play area. */
-  READOUT_WIDTH: 215,
-  /** Width of each body's mass control, so the two sit side by side under their pads. */
-  MASS_CONTROL_WIDTH: 125,
-  READOUTS_SPACING: 6,
-  /** Mass control delta (dimensionless). */
-  MASS_CONTROL_DELTA: 0.1,
-  BODIES_PANEL_SPACING: 8,
-  PRESET_PANEL_SPACING: 6,
-  /** Angle control range min (in the source module’s documented units). */
-  ANGLE_CONTROL_RANGE_MIN: -180,
-  /** Angle control range max (in the source module’s documented units). */
-  ANGLE_CONTROL_RANGE_MAX: 180,
-  COLLISION_PANEL_SPACING: 8,
-  /** Frame speed control decimal places (dimensionless). */
-  FRAME_SPEED_CONTROL_DECIMAL_PLACES: 2,
-  /** Frame speed control delta (dimensionless). */
-  FRAME_SPEED_CONTROL_DELTA: 0.01,
-  FRAME_PANEL_SPACING: 8,
-  RIGHT_COLUMN_SPACING: 10,
-  TIME_ROW_SPACING: 16,
-} as const;
-
-/** Settings for collisions/view/ConservationPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const CONSERVATION_PANEL_SETTINGS = {
-  FORMAT_SIGNIFICANT_DIGITS: 3, // digits
-  ITEM_3_SPACING: 2, // px
-
-  CONSTRUCTOR_LEFT_OFFSET: 14, // px
-  CONSTRUCTOR_LEGEND_LEFT: 108, // px
-
-  LABEL_WIDTH: 52,
-  BAR_REGION: 100,
-  BAR_HEIGHT: 7,
-  VALUE_WIDTH: 70,
-  /** Relative tolerance below which before and after count as equal. */
-  TOLERANCE: 1e-7,
-  BEFORE_BAR_Y: 4,
-  AFTER_BAR_LINE_WIDTH: 1.5,
-  LEGEND_WIDTH: 14,
-  LEGEND_LEFT: 18,
-  LEGEND_MAX_WIDTH: 60,
-  LEGEND_X: 90,
-  CONSTRUCTOR_SPACING: 6,
-} as const;
-
-/** Settings for collisions/view/MomentumDiagramNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const MOMENTUM_DIAGRAM_NODE_SETTINGS = {
-  ARROW_OPTIONS_HEAD_WIDTH: 10,
-  ARROW_OPTIONS_HEAD_HEIGHT: 9,
-  ARROW_OPTIONS_TAIL_WIDTH: 3,
-  TITLE_BOTTOM: -4,
-  OUTLINE_LINE_WIDTH: 1.5,
-  /** Total opacity (dimensionless). */
-  TOTAL_OPACITY: 0.8,
-  ORIGIN_RADIUS: 3,
-} as const;
-
-/** Settings for collisions/view/VelocityPadNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const VELOCITY_PAD_NODE_SETTINGS = {
-  SPEED_DIGITS: 2, // digits
-
-  MAX_CIRCLE_LINE_DASH_DASH: 3, // px
-  C_LABEL_LEFT_FACTOR: 0.72, // dimensionless
-  C_LABEL_BOTTOM_FACTOR: 0.72, // dimensionless
-  TITLE_MAX_WIDTH_OFFSET: 20, // px
-  TITLE_BOTTOM_OFFSET: 6, // px
-  VALUE_TEXT_MAX_WIDTH_OFFSET: 30, // px
-  VALUE_TEXT_TOP_OFFSET: 4, // px
-
-  /** Radius of the c circle, px. */
-  RADIUS: 52,
-  /** Radius of the c circle, px. */
-  HANDLE_RADIUS: 8,
-  /** Keyboard step, as a fraction of c. */
-  KEYBOARD_STEP: 0.05,
-  LIGHT_CIRCLE_LINE_WIDTH: 2,
-  SPOKE_LINE_WIDTH: 2,
-} as const;
-
-/** Settings for common/RelativisticDynamicsPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const RELATIVISTIC_DYNAMICS_PANEL_SETTINGS = {
-  OPTIONS_X_MARGIN: 12,
-  OPTIONS_Y_MARGIN: 10,
-} as const;
-
-/** Settings for common/RelativisticDynamicsScreenIcons.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS = {
-  CREATE_ACCELERATE_ICON_X_VARIANT_2: 450, // px
-  CREATE_ACCELERATE_ICON_LINE_WIDTH_VARIANT_2: 9, // px
-  CREATE_ACCELERATE_ICON_X_VARIANT_3: 290, // px
-  CREATE_ENERGY_MOMENTUM_ICON_LINE_WIDTH_VARIANT_2: 10, // px
-  CREATE_COLLISIONS_ICON_RADIUS_SEGMENT_2: 40, // px
-
-  CREATE_ACCELERATE_ICON_LINE_DASH_DASH: 16, // px
-  CREATE_ENERGY_MOMENTUM_ICON_LINE_DASH_DASH: 14, // px
-  CREATE_ENERGY_MOMENTUM_ICON_X_FACTOR: 0.9, // dimensionless
-  /** Momentum coordinate on the mass-shell icon (dimensionless; paired with rest mass = 1). */
-  CREATE_ENERGY_MOMENTUM_ICON_Y: 0.9, // dimensionless
-  CREATE_COLLISIONS_ICON_X_OFFSET: 120, // px
-  CREATE_COLLISIONS_ICON_Y_OFFSET: 85, // px
-  PRODUCTS_X_OFFSET: 120, // px
-  /** Vertical pitch between threshold-product markers (px). */
-  PRODUCTS_Y_PITCH: 62, // px
-  CREATE_THRESHOLDS_ICON_X_OFFSET: 40, // px
-
+/** Home-screen icon geometry (px); ratios are dimensionless. */
+export const SCREEN_ICONS = {
   ARROW_HEAD_WIDTH: 40,
   ARROW_HEAD_HEIGHT: 34,
   ARROW_TAIL_WIDTH: 14,
   LANES_START_X: 50,
   LANES_END_X: 500,
   LANES_LINE_WIDTH: 6,
-  CREATE_ACCELERATE_ICON_START_X: 500,
-  CREATE_ACCELERATE_ICON_START_Y: 50,
-  CREATE_ACCELERATE_ICON_END_X: 500,
-  CREATE_ACCELERATE_ICON_END_Y: 320,
-  CREATE_ACCELERATE_ICON_LINE_WIDTH: 6,
-  CREATE_ACCELERATE_ICON_X: 330,
-  CREATE_ACCELERATE_ICON_WIDTH: 80,
-  CREATE_ACCELERATE_ICON_HEIGHT: 24,
-  CREATE_ACCELERATE_ICON_CORNER_RADIUS: 12,
-  CREATE_ACCELERATE_ICON_RADIUS: 34,
+  ACCELERATE_FINISH_X: 500,
+  ACCELERATE_FINISH_TOP_Y: 50,
+  ACCELERATE_FINISH_BOTTOM_Y: 320,
+  ACCELERATE_FINISH_LINE_WIDTH: 6,
+  ACCELERATE_LIGHT_X: 330,
+  ACCELERATE_LIGHT_WIDTH: 80,
+  ACCELERATE_LIGHT_HEIGHT: 24,
+  ACCELERATE_LIGHT_CORNER_RADIUS: 12,
+  ACCELERATE_MARKER_RADIUS: 34,
+  ACCELERATE_NEWTON_X: 450,
+  ACCELERATE_NEWTON_LINE_WIDTH: 9,
+  ACCELERATE_NEWTON_DASH: 16,
+  ACCELERATE_RELATIVITY_X: 290,
   TRIANGLE_LINE_WIDTH: 16,
-  CREATE_ENERGY_MOMENTUM_ICON_LINE_WIDTH: 6,
-  CREATE_ENERGY_MOMENTUM_ICON_RADIUS: 18,
-  CREATE_COLLISIONS_ICON_START_X: 40,
-  CREATE_COLLISIONS_ICON_LINE_WIDTH: 8,
-  CREATE_COLLISIONS_ICON_RADIUS: 42,
-  CREATE_COLLISIONS_ICON_X: 110,
-  /** Create collisions icon opacity (dimensionless). */
-  CREATE_COLLISIONS_ICON_OPACITY: 0.35,
-  PRODUCTS_RADIUS: 24,
-  CREATE_THRESHOLDS_ICON_RADIUS: 30,
-  CREATE_THRESHOLDS_ICON_X: 70,
+  ENERGY_LIGHT_LINE_WIDTH: 6,
+  ENERGY_LIGHT_DASH: 14,
+  ENERGY_SHELL_LINE_WIDTH: 10,
+  ENERGY_POINT_RADIUS: 18,
+  ENERGY_POINT_X_FACTOR: 0.9,
+  ENERGY_POINT_P: 0.9,
+  COLLISIONS_INCOMING_START_X: 40,
+  COLLISIONS_TRAIL_LINE_WIDTH: 8,
+  COLLISIONS_BODY_RADIUS: 42,
+  COLLISIONS_BODY_X_OFFSET: 120,
+  COLLISIONS_BODY_Y_OFFSET: 85,
+  COLLISIONS_COMPOSITE_RADIUS: 40,
+  COLLISIONS_COMPOSITE_X: 110,
+  COLLISIONS_COMPOSITE_OPACITY: 0.35,
+  THRESHOLDS_PRODUCT_RADIUS: 24,
+  THRESHOLDS_PRODUCT_X_OFFSET: 120,
+  THRESHOLDS_PRODUCT_Y_PITCH: 62,
+  THRESHOLDS_BEAM_RADIUS: 30,
+  THRESHOLDS_BEAM_X: 70,
+  THRESHOLDS_TARGET_X_OFFSET: 40,
 } as const;
 
-/** Settings for common/view/ChartFrameNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const CHART_FRAME_NODE_SETTINGS = {
-  PLACE_AXIS_LABELS_TOP_OFFSET: 20, // px
+// ── Per-screen view layout ─────────────────────────────────────────────────
 
-  RIGHT_RIGHT: -32,
+/** Accelerate screen layout, chart chrome, track geometry, and readout precision. */
+export const ACCELERATE_VIEW = {
+  T_LIGHT_DASH: 6,
+  T_LIGHT_GAP: 4,
+  T_NEWTON_DASH: 6,
+  T_NEWTON_GAP: 3,
+  MOMENTUM_NOTE_WIDTH_INSET: 12,
+  K_LIGHT_DASH: 6,
+  K_LIGHT_GAP: 4,
+  K_NEWTON_DASH: 6,
+  K_NEWTON_GAP: 3,
+  CHARTS_GAP: 75,
+  C_LABEL_RIGHT_INSET: 4,
+  CHART_WIDTH: 245,
+  CHART_HEIGHT: 200,
+  CHART_SAMPLES: 120,
+  CHART_MARKER_RADIUS: 5,
+  T_LIGHT_LINE_WIDTH: 1.5,
+  T_NEWTON_LINE_WIDTH: 2.5,
+  T_RELATIVITY_LINE_WIDTH: 2.5,
+  MOMENTUM_NOTE_LEFT: 6,
+  MOMENTUM_NOTE_TOP: 6,
+  ENERGY_CHART_RANGE_MAX: 20,
+  K_LIGHT_LINE_WIDTH: 1.5,
+  K_NEWTON_LINE_WIDTH: 2,
+  K_RELATIVITY_LINE_WIDTH: 2,
+  BERTOZZI_RADIUS: 4.5,
+  NEWTON_MARKER_LINE_WIDTH: 2,
+  TITLED_CHART_SPACING: 6,
+  READOUT_DIGITS: 3,
+  POSITION_DIGITS: 3,
+  GAMMA_DIGITS: 4,
+  MOMENTUM_DIGITS: 4,
+  KINETIC_ENERGY_DIGITS: 4,
+  TRACK_TOP_INSET: 6,
+  CHARTS_LEFT_INSET: 55,
+  CONTROL_PANEL_WIDTH_PAD: 24,
+  READOUT_PANEL_WIDTH_PAD: 24,
+  PLAY_AREA_WIDTH: 720,
+  FIELD_DECIMAL_PLACES: 2,
+  FIELD_DELTA: 0.05,
+  CONTROL_PANEL_SPACING: 8,
+  READOUT_PANEL_SPACING: 3,
+  TIME_ROW_SPACING: 18,
+  TRACK_READOUT_DIGITS: 3,
+  TRACK_LABEL_WIDTH_INSET: 10,
+  TRACK_LABEL_RIGHT_GAP: 10,
+  TRACK_READOUT_WIDTH_INSET: 14,
+  TRACK_READOUT_LEFT_GAP: 14,
+  TRACK_NEWTON_DASH: 4,
+  TRACK_NEWTON_GAP: 3,
+  TRACK_LANE_LABEL_TOP_GAP: 6,
+  LANE_HEIGHT: 34,
+  LABEL_COLUMN: 90,
+  READOUT_COLUMN: 150,
+  TRACK_MARKER_RADIUS: 9,
+  TICK_SPACING_M: 2,
+  LANE_LINE_WIDTH: 2,
+  LIGHT_PULSE_X: -12,
+  LIGHT_PULSE_Y: -3,
+  LIGHT_PULSE_WIDTH: 24,
+  LIGHT_PULSE_HEIGHT: 6,
+  LIGHT_PULSE_CORNER_RADIUS: 3,
+  TRACK_NEWTON_LINE_WIDTH: 2.5,
+  TRACK_RELATIVITY_LINE_WIDTH: 2,
+  SUMMARY_TIME_DIGITS: 3,
+  SUMMARY_POSITION_DIGITS: 3,
+  SUMMARY_KINETIC_DIGITS: 3,
+  SUMMARY_NEWTON_BETA_DIGITS: 3,
 } as const;
-
-/** Settings for common/view/chartUtils.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const CHART_UTILS_SETTINGS = {
-  DEFAULT_DIGITS: 3,
+/** Collisions screen layout: play area, pads, conservation bars, momentum diagram. */
+export const COLLISIONS_VIEW = {
+  FRAME_NAME_DIGITS: 2,
+  LIGHT_CIRCLE_DASH: 4,
+  VIEWING_TEXT_WIDTH_INSET: 16,
+  ARROW_SCALE: 55,
+  LIGHT_CIRCLE_OPACITY: 0.6,
+  TRAILS_LINE_WIDTH: 2,
+  SPRITE_LINE_WIDTH: 1.5,
+  SPRITE_HEAD_WIDTH: 9,
+  SPRITE_HEAD_HEIGHT: 8,
+  SPRITE_TAIL_WIDTH: 3,
+  VIEWING_TEXT_LEFT: 8,
+  VIEWING_TEXT_TOP: 6,
+  SQRT_S_DIGITS: 4,
+  OPENING_ANGLE_DIGITS: 3,
+  COMPOSITE_MASS_DIGITS: 4,
+  REST_MASS_SUM_DIGITS: 3,
+  PLAY_AREA_LEFT_INSET: 42,
+  DIAGRAM_TOP_GAP: 22,
+  BODIES_INNER_SPACING: 14,
+  PRESET_PANEL_WIDTH_PAD: 24,
+  COLLISION_PANEL_WIDTH_PAD: 24,
+  FRAME_PANEL_WIDTH_PAD: 24,
+  PLAY_WIDTH: 340,
+  PLAY_HEIGHT: 245,
+  DIAGRAM_SIZE: 150,
+  READOUT_WIDTH: 215,
+  MASS_CONTROL_WIDTH: 125,
+  READOUTS_SPACING: 6,
+  MASS_CONTROL_DELTA: 0.1,
+  BODIES_PANEL_SPACING: 8,
+  PRESET_PANEL_SPACING: 6,
+  ANGLE_CONTROL_MIN: -180,
+  ANGLE_CONTROL_MAX: 180,
+  COLLISION_PANEL_SPACING: 8,
+  FRAME_SPEED_DECIMAL_PLACES: 2,
+  FRAME_SPEED_DELTA: 0.01,
+  FRAME_PANEL_SPACING: 8,
+  RIGHT_COLUMN_SPACING: 10,
+  TIME_ROW_SPACING: 16,
+  CONSERVATION_DIGITS: 3,
+  CONSERVATION_VALUE_SPACING: 2,
+  CONSERVATION_VALUE_LEFT_GAP: 14,
+  CONSERVATION_LEGEND_LEFT: 108,
+  CONSERVATION_LABEL_WIDTH: 52,
+  CONSERVATION_BAR_REGION: 100,
+  CONSERVATION_BAR_HEIGHT: 7,
+  CONSERVATION_VALUE_WIDTH: 70,
+  CONSERVATION_TOLERANCE: 1e-7,
+  BEFORE_BAR_Y: 4,
+  AFTER_BAR_LINE_WIDTH: 1.5,
+  LEGEND_SWATCH_WIDTH: 14,
+  LEGEND_SWATCH_LEFT: 18,
+  LEGEND_LABEL_MAX_WIDTH: 60,
+  LEGEND_COLUMN_X: 90,
+  CONSERVATION_ROW_SPACING: 6,
+  MOMENTUM_ARROW_HEAD_WIDTH: 10,
+  MOMENTUM_ARROW_HEAD_HEIGHT: 9,
+  MOMENTUM_ARROW_TAIL_WIDTH: 3,
+  MOMENTUM_TITLE_BOTTOM: -4,
+  MOMENTUM_OUTLINE_LINE_WIDTH: 1.5,
+  MOMENTUM_TOTAL_OPACITY: 0.8,
+  MOMENTUM_ORIGIN_RADIUS: 3,
+  PAD_SPEED_DIGITS: 2,
+  PAD_LIGHT_DASH: 3,
+  PAD_C_LABEL_LEFT_FACTOR: 0.72,
+  PAD_C_LABEL_BOTTOM_FACTOR: 0.72,
+  PAD_TITLE_WIDTH_INSET: 20,
+  PAD_TITLE_BOTTOM_GAP: 6,
+  PAD_VALUE_WIDTH_INSET: 30,
+  PAD_VALUE_TOP_GAP: 4,
+  PAD_RADIUS: 52,
+  PAD_HANDLE_RADIUS: 8,
+  PAD_KEYBOARD_STEP: 0.05,
+  PAD_LIGHT_LINE_WIDTH: 2,
+  PAD_SPOKE_LINE_WIDTH: 2,
+  SUMMARY_DIGITS: 3,
 } as const;
-
-/** Settings for common/view/controlHelpers.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const CONTROL_HELPERS_SETTINGS = {
-  CREATE_NUMBER_CONTROL_Y_SPACING_VARIANT_2: 10, // px
-
-  CREATE_NUMBER_CONTROL_MAX_WIDTH_OFFSET: 110, // px
-  CREATE_CHECKBOX_MAX_WIDTH_OFFSET: 30, // px
-  CREATE_PUSH_BUTTON_MAX_WIDTH_OFFSET: 24, // px
-  CREATE_RADIO_BUTTON_GROUP_MAX_WIDTH_OFFSET: 40, // px
-  LABEL_MAX_WIDTH_FACTOR: 0.62, // dimensionless
-  VALUE_MAX_WIDTH_FACTOR: 0.38, // dimensionless
-
-  /** Below this width the title gets its own row. */
-  NARROW_CONTROL_WIDTH: 170,
-  CREATE_NUMBER_CONTROL_Y_SPACING: 6,
-  CREATE_NUMBER_CONTROL_HEIGHT: 4,
-  CREATE_RADIO_BUTTON_GROUP_SPACING: 7,
-} as const;
-
-/** Settings for energy-momentum/model/EnergyMomentumModel.ts. */
-export const ENERGY_MOMENTUM_MODEL_SETTINGS = {
-  /** Scaled momentum default (dimensionless). */
-  SCALED_MOMENTUM_DEFAULT: 2,
-} as const;
-
-/** Settings for energy-momentum/view/EnergyMomentumControls.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ENERGY_MOMENTUM_CONTROLS_SETTINGS = {
-  MOMENTUM_FORMAT_ENERGY_DIGITS: 4, // digits
-  KINETIC_ENERGY_FORMAT_ENERGY_DIGITS: 4, // digits
-  ENERGY_FORMAT_ENERGY_DIGITS: 4, // digits
-  SLIDER_WIDTH_DIMENSION2_HEIGHT: 26, // px
-
-  CONSTRUCTOR_MIN_WIDTH_OFFSET: 24, // px
-
-  /** Keyboard step of the "Set" slider, as a fraction of its range. */
+/** Energy–Momentum screen layout: diagram, triangle, readout, and controls. */
+export const ENERGY_MOMENTUM_VIEW = {
+  MOMENTUM_DIGITS: 4,
+  KINETIC_DIGITS: 4,
+  ENERGY_DIGITS: 4,
+  SLIDER_THUMB_HEIGHT: 26,
+  PANEL_WIDTH_PAD: 24,
   SLIDER_STEP: 0.01,
-  /** Custom mass control delta (dimensionless). */
-  CUSTOM_MASS_CONTROL_DELTA: 10,
+  CUSTOM_MASS_DELTA: 10,
   PARTICLE_PANEL_SPACING: 8,
-  SLIDER_HEIGHT: 4,
-  SLIDER_WIDTH: 14,
+  SLIDER_TRACK_HEIGHT: 4,
+  SLIDER_THUMB_WIDTH: 14,
   SET_PANEL_SPACING: 8,
-  /** Observer control decimal places (dimensionless). */
-  OBSERVER_CONTROL_DECIMAL_PLACES: 2,
-  /** Observer control delta (dimensionless). */
-  OBSERVER_CONTROL_DELTA: 0.01,
+  OBSERVER_DECIMAL_PLACES: 2,
+  OBSERVER_DELTA: 0.01,
   OBSERVER_PANEL_SPACING: 8,
-} as const;
-
-/** Settings for energy-momentum/view/EnergyMomentumDiagramNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS = {
-  LIGHT_LINE_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_LIGHT_LINE_LINE_DASH_DASH: 4, // px
-  DROP_LINES_LINE_DASH_DASH: 3, // px
-  PLACE_LINE_WIDTH: 3, // px
-  SET_ZOOM_TOP_FACTOR: 0.55, // dimensionless
-  SET_ZOOM_TOP_OFFSET: 6, // px
-  SET_ZOOM_LEFT_OFFSET: 8, // px
-  SET_ZOOM_BOTTOM_OFFSET: 4, // px
-
-  /** Equal scales: the E range is half the pc range, so the height is half the width. */
+  LIGHT_LINE_DASH: 6,
+  LIGHT_LINE_GAP: 4,
+  DROP_LINE_DASH: 3,
+  DROP_LINE_WIDTH: 3,
+  ZOOM_BUTTON_TOP_FACTOR: 0.55,
+  ZOOM_BUTTON_TOP_GAP: 6,
+  ZOOM_BUTTON_LEFT_GAP: 8,
+  ZOOM_BUTTON_BOTTOM_GAP: 4,
   HYPERBOLA_SAMPLES: 120,
-  /** Equal scales: the E range is half the pc range, so the height is half the width. */
   POINT_RADIUS: 6,
-  TITLE_BOTTOM: -8,
-  LIGHT_LINE_LINE_WIDTH: 2,
+  DIAGRAM_TITLE_BOTTOM: -8,
+  LIGHT_LINE_WIDTH: 2,
   LIGHT_LABEL_MAX_WIDTH: 80,
   MASS_SHELL_LINE_WIDTH: 2.5,
   MASS_SHELL_LABEL_MAX_WIDTH: 80,
   LAB_LABEL_MAX_WIDTH: 70,
   FRAME_LABEL_MAX_WIDTH: 80,
-} as const;
-
-/** Settings for energy-momentum/view/EnergyMomentumReadoutNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ENERGY_MOMENTUM_READOUT_NODE_SETTINGS = {
-  GAMMA_FORMAT_SIGNIFICANT_DIGITS: 4, // digits
-  ROWS_DIGITS: 4, // digits
-  KINETIC_ENERGY_FORMAT_ENERGY_DIGITS: 4, // digits
-  ENERGY_FORMAT_ENERGY_DIGITS: 4, // digits
-  MASS_FORMAT_ENERGY_DIGITS: 4, // digits
-
-  LABEL_WIDTH: 150,
-  VALUE_WIDTH: 105,
-  GRID_X_SPACING: 14,
-  GRID_Y_SPACING: 4,
-} as const;
-
-/** Settings for energy-momentum/view/EnergyMomentumScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS = {
-  CONSTRUCTOR_CENTER_X_OFFSET: 20, // px
-  CONSTRUCTOR_TOP_OFFSET: 14, // px
-
-  /** Left edge of the diagram's plotting area; its axis labels hang to the left of it. */
+  READOUT_GAMMA_DIGITS: 4,
+  READOUT_MOMENTUM_DIGITS: 4,
+  READOUT_KINETIC_DIGITS: 4,
+  READOUT_ENERGY_DIGITS: 4,
+  READOUT_MASS_DIGITS: 4,
+  READOUT_LABEL_WIDTH: 150,
+  READOUT_VALUE_WIDTH: 105,
+  READOUT_GRID_X_SPACING: 14,
+  READOUT_GRID_Y_SPACING: 4,
+  READOUT_CENTER_X_NUDGE: 20,
+  READOUT_TOP_GAP: 14,
   DIAGRAM_LEFT: 305,
-} as const;
-
-/** Settings for energy-momentum/view/EnergyTriangleNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const ENERGY_TRIANGLE_NODE_SETTINGS = {
-  MOMENTUM_LABEL_DIGITS: 3, // digits
-  MASS_LABEL_DIGITS: 3, // digits
-  ENERGY_FORMAT_ENERGY_DIGITS: 3, // digits
-
-  TITLE_MAX_WIDTH_OFFSET: 20, // px
-  BADGE_MAX_WIDTH_OFFSET: 20, // px
-  CONSTRUCTOR_SPACING: 4, // px
-  CONSTRUCTOR_LEFT_OFFSET: 6, // px
-
-  /** Side of the square box the triangle is fitted into, px. */
-  BOX: 170,
-  /** Full length of the energy bar, px. */
-  BAR_WIDTH: 210,
-  /** Full length of the energy bar, px. */
-  BAR_HEIGHT: 14,
+  TRIANGLE_MOMENTUM_DIGITS: 3,
+  TRIANGLE_MASS_DIGITS: 3,
+  TRIANGLE_ENERGY_DIGITS: 3,
+  TRIANGLE_TITLE_WIDTH_INSET: 20,
+  TRIANGLE_BADGE_WIDTH_INSET: 20,
+  TRIANGLE_BADGE_SPACING: 4,
+  NEWTON_LABEL_LEFT_GAP: 6,
+  TRIANGLE_BOX: 170,
+  ENERGY_BAR_WIDTH: 210,
+  ENERGY_BAR_HEIGHT: 14,
   MOMENTUM_LEG_LINE_WIDTH: 4,
   MASS_LEG_LINE_WIDTH: 4,
   HYPOTENUSE_LINE_WIDTH: 4,
-  LABEL_OPTIONS_MAX_WIDTH: 150,
-  LEGEND_SPACING: 2,
-  CHILDREN_SPACING: 10,
-  LEFT_LEFT: 2,
+  TRIANGLE_LABEL_MAX_WIDTH: 150,
+  TRIANGLE_LEGEND_SPACING: 2,
+  TRIANGLE_CHILDREN_SPACING: 10,
+  TRIANGLE_LEFT_INSET: 2,
+  SUMMARY_MOMENTUM_DIGITS: 3,
+  SUMMARY_KINETIC_DIGITS: 3,
+  SUMMARY_ENERGY_DIGITS: 3,
+  SUMMARY_MASS_DIGITS: 3,
+  SUMMARY_PX_DIGITS: 3,
 } as const;
-
-/** Settings for preferences/RelativisticDynamicsPreferencesNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS = {
-  HEADER_FONT_SIZE: 18,
-  SHOW_NEWTON_CHECKBOX_FONT_SIZE: 14,
-  SHOW_NEWTON_CHECKBOX_SPACING: 8,
-  CONSTRUCTOR_SPACING: 12,
-} as const;
-
-/** Settings for thresholds/model/ThresholdsModel.ts. */
-export const THRESHOLDS_MODEL_SETTINGS = {
-  /** Initial slider position: one and a half times threshold. */
-  DEFAULT_FRACTION: 0.5,
-  /** Beam range used when the threshold is zero or does not exist: this many beam rest energies (or MeV for a photon). */
-  FALLBACK_RANGE_FACTOR: 10,
-} as const;
-
-/** Settings for thresholds/view/AvailableEnergyChartNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const AVAILABLE_ENERGY_CHART_NODE_SETTINGS = {
-  THRESHOLD_LINE_LINE_DASH_DASH: 6, // px
-  CONSTRUCTOR_THRESHOLD_LINE_LINE_DASH_DASH: 4, // px
-  CONSTRUCTOR_RIGHT_OFFSET: 4, // px
-  CONSTRUCTOR_BOTTOM_OFFSET: 3, // px
-  CONSTRUCTOR_LEFT_FACTOR: 0.72, // dimensionless
-  CONSTRUCTOR_LEFT_OFFSET: 8, // px
-  CONSTRUCTOR_TOP: 4, // px
-  CONSTRUCTOR_TOP_FACTOR: 0.72, // dimensionless
-  CONSTRUCTOR_TOP_OFFSET: 4, // px
-  CONSTRUCTOR_MAX_WIDTH_OFFSET: 40, // px
-
-  WIDTH: 270,
-  HEIGHT: 160,
-  SAMPLES: 100,
+/** Thresholds screen layout: reaction frames, √s meter, and available-energy chart. */
+export const THRESHOLDS_VIEW = {
+  THRESHOLD_LINE_DASH: 6,
+  THRESHOLD_LINE_GAP: 4,
+  FIXED_LABEL_RIGHT_INSET: 4,
+  FIXED_LABEL_BOTTOM_GAP: 3,
+  COLLIDER_LABEL_X_FACTOR: 0.72,
+  COLLIDER_LABEL_LEFT_GAP: 8,
+  COLLIDER_LABEL_TOP_MIN: 4,
+  COLLIDER_LABEL_Y_FACTOR: 0.72,
+  COLLIDER_LABEL_TOP_GAP: 4,
+  CHART_TITLE_WIDTH_PAD: 40,
+  CHART_WIDTH: 270,
+  CHART_HEIGHT: 160,
+  CHART_SAMPLES: 100,
   FIXED_CURVE_LINE_WIDTH: 2.5,
   COLLIDER_CURVE_LINE_WIDTH: 2.5,
-  THRESHOLD_LINE_LINE_WIDTH: 1.5,
-  MARKER_RADIUS: 5,
-  LABEL_MAX_WIDTH: 90,
-  LEFT_LEFT: 4,
-  CHILDREN_SPACING: 6,
-} as const;
-
-/** Settings for thresholds/view/AvailableEnergyNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const AVAILABLE_ENERGY_NODE_SETTINGS = {
-  FORMAT_DIGITS: 4, // digits
-  VALUES_DIGITS: 4, // digits
-  SQRT_S_LABEL_DIGITS: 4, // digits
-  MARKER_LABEL_DIGITS: 4, // digits
-
-  CONSTRUCTOR_TOP_OFFSET: 6, // px
-
+  THRESHOLD_LINE_WIDTH: 1.5,
+  CHART_MARKER_RADIUS: 5,
+  CURVE_LABEL_MAX_WIDTH: 90,
+  CHART_LEFT_INSET: 4,
+  CHART_CHILDREN_SPACING: 6,
+  METER_FORMAT_DIGITS: 4,
+  METER_VALUE_DIGITS: 4,
+  SQRT_S_LABEL_DIGITS: 4,
+  MARKER_LABEL_DIGITS: 4,
+  SQRT_S_LABEL_TOP_GAP: 6,
   METER_WIDTH: 300,
   METER_HEIGHT: 18,
-  READOUT_WIDTH: 300,
+  METER_READOUT_WIDTH: 300,
   MARKER_START_Y: -6,
   MARKER_LINE_WIDTH: 3,
   SQRT_S_LABEL_MAX_WIDTH: 150,
   MARKER_LABEL_MAX_WIDTH: 150,
-  READOUTS_SPACING: 3,
-  CHILDREN_SPACING: 14,
-  LEFT_LEFT: 2,
-  BOTTOM_BOTTOM: -8,
-} as const;
-
-/** Settings for thresholds/view/ReactionFrameNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const REACTION_FRAME_NODE_SETTINGS = {
-  TITLE_MAX_WIDTH_OFFSET: 16, // px
-  DIVIDER_LINE_DASH_DASH: 4, // px
-  MESSAGE_MAX_WIDTH_OFFSET: 80, // px
-  PLACE_RADIUS: 12, // px
-  CONSTRUCTOR_PLACE_RADIUS: 5, // px
-
-  REACTION_FRAME_WIDTH: 330,
-  HEIGHT: 196,
+  METER_READOUTS_SPACING: 3,
+  METER_CHILDREN_SPACING: 14,
+  METER_LEFT_INSET: 2,
+  MARKER_LABEL_BOTTOM: -8,
+  FRAME_TITLE_WIDTH_INSET: 16,
+  FRAME_DIVIDER_DASH: 4,
+  FRAME_MESSAGE_WIDTH_INSET: 80,
+  PRODUCT_DISK_RADIUS: 12,
+  REACTANT_DISK_RADIUS: 5,
+  FRAME_WIDTH: 330,
+  FRAME_HEIGHT: 196,
   BEFORE_Y: 62,
   AFTER_Y: 150,
-  /** Arrow length for a speed of c, px. */
   ARROW_LENGTH: 62,
-  /** Distance of a product from the centre of its cluster, px. */
   CLUSTER_RADIUS: 26,
-  /** The most product sprites any reaction needs. */
   MAX_PRODUCTS: 4,
-  BACKGROUND_CORNER_X: 6,
-  BACKGROUND_CORNER_Y: 6,
-  TITLE_LEFT: 8,
-  TITLE_TOP: 6,
+  FRAME_CORNER_X: 6,
+  FRAME_CORNER_Y: 6,
+  FRAME_TITLE_LEFT: 8,
+  FRAME_TITLE_TOP: 6,
   SECTION_LABEL_MAX_WIDTH: 60,
   SECTION_LABEL_LEFT: 8,
   DIVIDER_START_X: 8,
-  MAKE_SPRITE_RADIUS: 8,
-  MAKE_SPRITE_HEAD_WIDTH: 9,
-  MAKE_SPRITE_HEAD_HEIGHT: 8,
-  MAKE_SPRITE_TAIL_WIDTH: 3,
-  MAKE_SPRITE_MAX_WIDTH: 40,
-} as const;
-
-/** Settings for thresholds/view/ThresholdsScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
-export const THRESHOLDS_SCREEN_VIEW_SETTINGS = {
-  BEAM_VALUE_PROPERTY_DIGITS: 4, // digits
-  BEAM_SLIDER_WIDTH_DIMENSION2_HEIGHT: 26, // px
-
-  TITLE_MAX_WIDTH_OFFSET: 16, // px
-  CONSTRUCTOR_TOP_OFFSET: 10, // px
-  CONSTRUCTOR_LEFT_OFFSET: 16, // px
-  REACTION_PANEL_MIN_WIDTH_OFFSET: 24, // px
-  CONFIGURATION_PANEL_MIN_WIDTH_OFFSET: 24, // px
-  BEAM_PANEL_MIN_WIDTH_OFFSET: 24, // px
-
+  SPRITE_RADIUS: 8,
+  SPRITE_HEAD_WIDTH: 9,
+  SPRITE_HEAD_HEIGHT: 8,
+  SPRITE_TAIL_WIDTH: 3,
+  SPRITE_MAX_WIDTH: 40,
+  BEAM_VALUE_DIGITS: 4,
+  BEAM_SLIDER_THUMB_HEIGHT: 26,
+  TITLE_WIDTH_PAD: 16,
+  FRAMES_TOP_GAP: 10,
+  FRAMES_GAP: 16,
+  REACTION_PANEL_WIDTH_PAD: 24,
+  CONFIGURATION_PANEL_WIDTH_PAD: 24,
+  BEAM_PANEL_WIDTH_PAD: 24,
   REACTION_PANEL_SPACING: 8,
   CONFIGURATION_PANEL_SPACING: 8,
-  BEAM_SLIDER_HEIGHT: 4,
-  BEAM_SLIDER_WIDTH: 14,
+  BEAM_SLIDER_TRACK_HEIGHT: 4,
+  BEAM_SLIDER_THUMB_WIDTH: 14,
   BEAM_PANEL_SPACING: 8,
   RIGHT_COLUMN_SPACING: 10,
-} as const;
-
-/** Numerical thresholds for the corresponding model. */
-export const COLLISION_NUMERICS = {
-  /** Speed below which an outgoing direction is undefined (units of c). */
-  MIN_DIRECTION_SPEED: 1e-9,
-} as const;
-
-/** Numerical settings; units are specified per value. */
-export const KINEMATIC_NUMERICS = {
-  /** Speed margin below c used to avoid singular boosts (dimensionless). */
-  BETA_MARGIN: 1e-8,
-} as const;
-
-/** Component dimensions in px; ratios and control steps are dimensionless; precision counts digits. */
-export const THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS = {
-  VALUE_FORMAT_ENERGY_DIGITS: 3, // digits
-  CURRENT_DETAILS_PROPERTY_DIGITS: 3, // digits
-} as const;
-
-/** Component dimensions in px; ratios and control steps are dimensionless; precision counts digits. */
-export const ENERGY_MOMENTUM_SCREEN_SUMMARY_CONTENT_SETTINGS = {
-  MOMENTUM_FORMAT_ENERGY_DIGITS: 3, // digits
-  KINETIC_ENERGY_FORMAT_ENERGY_DIGITS: 3, // digits
-  ENERGY_FORMAT_ENERGY_DIGITS: 3, // digits
-  MASS_FORMAT_ENERGY_DIGITS: 3, // digits
-  PX_FORMAT_ENERGY_DIGITS: 3, // digits
-} as const;
-
-/** Component dimensions in px; ratios and control steps are dimensionless; precision counts digits. */
-export const COLLISIONS_SCREEN_SUMMARY_CONTENT_SETTINGS = {
-  F_DIGITS: 3, // digits
-} as const;
-
-/** Component dimensions in px; ratios and control steps are dimensionless; precision counts digits. */
-export const ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS = {
-  CURRENT_DETAILS_PROPERTY_DIGITS: 3, // digits
-  POSITION_FORMAT_SIGNIFICANT_DIGITS: 3, // digits
-  KINETIC_ENERGY_FORMAT_ENERGY_DIGITS: 3, // digits
-  NEWTONIAN_BETA_FORMAT_SIGNIFICANT_DIGITS: 3, // digits
+  SUMMARY_ENERGY_DIGITS: 3,
+  SUMMARY_THRESHOLD_DIGITS: 3,
 } as const;
 
 RelativisticDynamicsNamespace.register("RelativisticDynamicsConstants", {
@@ -735,4 +576,14 @@ RelativisticDynamicsNamespace.register("RelativisticDynamicsConstants", {
   ENERGY_MOMENTUM,
   COLLISIONS,
   THRESHOLDS,
+  KINEMATICS,
+  PANEL,
+  CHART,
+  CONTROLS,
+  PREFERENCES,
+  SCREEN_ICONS,
+  ACCELERATE_VIEW,
+  COLLISIONS_VIEW,
+  ENERGY_MOMENTUM_VIEW,
+  THRESHOLDS_VIEW,
 });

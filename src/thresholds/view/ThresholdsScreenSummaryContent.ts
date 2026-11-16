@@ -1,4 +1,3 @@
-import { THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ThresholdsScreenSummaryContent.ts
  *
@@ -12,6 +11,7 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { formatEnergy } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import { THRESHOLDS_VIEW } from "../../RelativisticDynamicsConstants.js";
 import { BeamConfiguration, type ReactionId, Verdict } from "../model/reactions.js";
 import type { ThresholdsModel } from "../model/ThresholdsModel.js";
 
@@ -72,21 +72,12 @@ export class ThresholdsScreenSummaryContent extends ScreenSummaryContent {
         return StringUtils.fillIn(a11y.currentDetailsPatternStringProperty.value, {
           reaction: reactionNames[model.reactionProperty.value.id].value,
           configuration: configuration.toLowerCase(),
-          beam: formatEnergy(
-            model.beamKineticEnergyProperty.value,
-            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
-          ),
+          beam: formatEnergy(model.beamKineticEnergyProperty.value, THRESHOLDS_VIEW.SUMMARY_ENERGY_DIGITS),
           threshold: Number.isFinite(threshold)
-            ? formatEnergy(threshold, THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.CURRENT_DETAILS_PROPERTY_DIGITS)
+            ? formatEnergy(threshold, THRESHOLDS_VIEW.SUMMARY_THRESHOLD_DIGITS)
             : strings.infinityStringProperty.value,
-          sqrtS: formatEnergy(
-            model.sqrtSProperty.value,
-            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
-          ),
-          finalMass: formatEnergy(
-            model.finalMassProperty.value,
-            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
-          ),
+          sqrtS: formatEnergy(model.sqrtSProperty.value, THRESHOLDS_VIEW.SUMMARY_ENERGY_DIGITS),
+          finalMass: formatEnergy(model.finalMassProperty.value, THRESHOLDS_VIEW.SUMMARY_ENERGY_DIGITS),
           verdict: verdictText,
         });
       },

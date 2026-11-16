@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumDiagramNode.ts
  *
@@ -24,7 +23,8 @@ import { Circle, Node, Text } from "scenerystack/scenery";
 import { ChartFrameNode } from "../../common/view/ChartFrameNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { ENERGY_MOMENTUM, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { ENERGY_MOMENTUM, ENERGY_MOMENTUM_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { EnergyMomentumModel } from "../model/EnergyMomentumModel.js";
 
 const ZOOM_LEVELS = ENERGY_MOMENTUM.DIAGRAM_ZOOM_LEVELS;
@@ -34,8 +34,8 @@ const P_MAX = ZOOM_LEVELS[ZOOM_LEVELS.length - 1] ?? P;
 const VIEW_WIDTH = ENERGY_MOMENTUM.DIAGRAM_VIEW_WIDTH;
 /** Equal scales: the E range is half the pc range, so the height is half the width. */
 const VIEW_HEIGHT = VIEW_WIDTH / 2;
-const HYPERBOLA_SAMPLES: number = ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.HYPERBOLA_SAMPLES;
-const POINT_RADIUS: number = ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.POINT_RADIUS;
+const HYPERBOLA_SAMPLES: number = ENERGY_MOMENTUM_VIEW.HYPERBOLA_SAMPLES;
+const POINT_RADIUS: number = ENERGY_MOMENTUM_VIEW.POINT_RADIUS;
 
 export class EnergyMomentumDiagramNode extends Node {
   private readonly disposeDiagram: () => void;
@@ -68,7 +68,7 @@ export class EnergyMomentumDiagramNode extends Node {
       fill: RelativisticDynamicsColors.textColorProperty,
       maxWidth: VIEW_WIDTH,
       centerX: VIEW_WIDTH / 2,
-      bottom: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.TITLE_BOTTOM,
+      bottom: ENERGY_MOMENTUM_VIEW.DIAGRAM_TITLE_BOTTOM,
     });
 
     // The light line, both branches. Fixed: it is the same in every frame.
@@ -77,28 +77,25 @@ export class EnergyMomentumDiagramNode extends Node {
       [new Vector2(-P_MAX, P_MAX), new Vector2(0, 0), new Vector2(P_MAX, P_MAX)],
       {
         stroke: RelativisticDynamicsColors.lightColorProperty,
-        lineWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.LIGHT_LINE_LINE_WIDTH,
-        lineDash: [
-          ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.LIGHT_LINE_LINE_DASH_DASH,
-          ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.CONSTRUCTOR_LIGHT_LINE_LINE_DASH_DASH,
-        ],
+        lineWidth: ENERGY_MOMENTUM_VIEW.LIGHT_LINE_WIDTH,
+        lineDash: [ENERGY_MOMENTUM_VIEW.LIGHT_LINE_DASH, ENERGY_MOMENTUM_VIEW.LIGHT_LINE_GAP],
       },
     );
     const lightLabel = new Text(strings.lightLineStringProperty, {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.lightColorProperty,
-      maxWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.LIGHT_LABEL_MAX_WIDTH,
+      maxWidth: ENERGY_MOMENTUM_VIEW.LIGHT_LABEL_MAX_WIDTH,
     });
 
     // The unit mass shell E = √(p² + 1). Hidden for a massless particle, whose shell is the light line.
     const massShell = new LinePlot(transform, [], {
       stroke: RelativisticDynamicsColors.invariantColorProperty,
-      lineWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.MASS_SHELL_LINE_WIDTH,
+      lineWidth: ENERGY_MOMENTUM_VIEW.MASS_SHELL_LINE_WIDTH,
     });
     const massShellLabel = new Text(strings.massShellStringProperty, {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.invariantColorProperty,
-      maxWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.MASS_SHELL_LABEL_MAX_WIDTH,
+      maxWidth: ENERGY_MOMENTUM_VIEW.MASS_SHELL_LABEL_MAX_WIDTH,
     });
     const massShellGroup = new Node({ children: [massShell, massShellLabel] });
 
@@ -106,10 +103,7 @@ export class EnergyMomentumDiagramNode extends Node {
     const dropLines = new LinePlot(transform, [], {
       stroke: RelativisticDynamicsColors.relativisticColorProperty,
       lineWidth: 1,
-      lineDash: [
-        ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.DROP_LINES_LINE_DASH_DASH,
-        ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.DROP_LINES_LINE_DASH_DASH,
-      ],
+      lineDash: [ENERGY_MOMENTUM_VIEW.DROP_LINE_DASH, ENERGY_MOMENTUM_VIEW.DROP_LINE_DASH],
     });
 
     chart.plotLayer.addChild(lightLine);
@@ -128,12 +122,12 @@ export class EnergyMomentumDiagramNode extends Node {
     const labLabel = new Text(strings.labPointStringProperty, {
       font: FONTS.PARTICLE_LABEL,
       fill: RelativisticDynamicsColors.relativisticColorProperty,
-      maxWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.LAB_LABEL_MAX_WIDTH,
+      maxWidth: ENERGY_MOMENTUM_VIEW.LAB_LABEL_MAX_WIDTH,
     });
     const frameLabel = new Text(strings.framePointStringProperty, {
       font: FONTS.PARTICLE_LABEL,
       fill: RelativisticDynamicsColors.accentColorProperty,
-      maxWidth: ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.FRAME_LABEL_MAX_WIDTH,
+      maxWidth: ENERGY_MOMENTUM_VIEW.FRAME_LABEL_MAX_WIDTH,
     });
     chart.overlayLayer.children = [lightLabel, framePoint, frameLabel, labPoint, labLabel];
 
@@ -148,7 +142,7 @@ export class EnergyMomentumDiagramNode extends Node {
       );
       const inside = clamped.equals(view);
       point.center = clamped;
-      point.lineWidth = inside ? 1 : ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.PLACE_LINE_WIDTH;
+      point.lineWidth = inside ? 1 : ENERGY_MOMENTUM_VIEW.DROP_LINE_WIDTH;
       label.centerX = Math.max(label.width / 2, Math.min(VIEW_WIDTH - label.width / 2, clamped.x));
       if (labelAbove) {
         label.bottom = clamped.y - POINT_RADIUS - 2;
@@ -176,12 +170,12 @@ export class EnergyMomentumDiagramNode extends Node {
       // branch (p ≥ 0), so only a fast-moving observer's point ever comes near it.
       lightLabel.right = transform.modelToViewX(-0.55 * range) - 2;
       lightLabel.top =
-        transform.modelToViewY(ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.SET_ZOOM_TOP_FACTOR * range) +
-        ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.SET_ZOOM_TOP_OFFSET;
+        transform.modelToViewY(ENERGY_MOMENTUM_VIEW.ZOOM_BUTTON_TOP_FACTOR * range) +
+        ENERGY_MOMENTUM_VIEW.ZOOM_BUTTON_TOP_GAP;
       const shellP = -0.55 * range;
-      massShellLabel.left = transform.modelToViewX(shellP) + ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.SET_ZOOM_LEFT_OFFSET;
+      massShellLabel.left = transform.modelToViewX(shellP) + ENERGY_MOMENTUM_VIEW.ZOOM_BUTTON_LEFT_GAP;
       massShellLabel.bottom =
-        transform.modelToViewY(Math.hypot(shellP, 1)) - ENERGY_MOMENTUM_DIAGRAM_NODE_SETTINGS.SET_ZOOM_BOTTOM_OFFSET;
+        transform.modelToViewY(Math.hypot(shellP, 1)) - ENERGY_MOMENTUM_VIEW.ZOOM_BUTTON_BOTTOM_GAP;
     };
     setZoom(P);
 

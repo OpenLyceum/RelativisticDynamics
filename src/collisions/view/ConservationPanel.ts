@@ -1,4 +1,3 @@
-import { CONSERVATION_PANEL_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ConservationPanel.ts
  *
@@ -21,17 +20,18 @@ import { formatSignificant } from "../../common/view/chartUtils.js";
 import { createCheckbox, createSectionHeader } from "../../common/view/controlHelpers.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 import type { Totals } from "../model/collisionGeometry.js";
 
-const LABEL_WIDTH: number = CONSERVATION_PANEL_SETTINGS.LABEL_WIDTH;
-const BAR_REGION: number = CONSERVATION_PANEL_SETTINGS.BAR_REGION;
-const BAR_HEIGHT: number = CONSERVATION_PANEL_SETTINGS.BAR_HEIGHT;
-const VALUE_WIDTH: number = CONSERVATION_PANEL_SETTINGS.VALUE_WIDTH;
+const LABEL_WIDTH: number = COLLISIONS_VIEW.CONSERVATION_LABEL_WIDTH;
+const BAR_REGION: number = COLLISIONS_VIEW.CONSERVATION_BAR_REGION;
+const BAR_HEIGHT: number = COLLISIONS_VIEW.CONSERVATION_BAR_HEIGHT;
+const VALUE_WIDTH: number = COLLISIONS_VIEW.CONSERVATION_VALUE_WIDTH;
 const ROW_HEIGHT = 2 * BAR_HEIGHT + 10;
 /** Relative tolerance below which before and after count as equal. */
-const TOLERANCE: number = CONSERVATION_PANEL_SETTINGS.TOLERANCE;
+const TOLERANCE: number = COLLISIONS_VIEW.CONSERVATION_TOLERANCE;
 
 type RowSpec = {
   label: TReadOnlyProperty<string>;
@@ -60,16 +60,16 @@ class ConservationRow extends Node {
     const zeroLine = new Line(zeroX, 1, zeroX, ROW_HEIGHT - 1, {
       stroke: RelativisticDynamicsColors.chartAxisColorProperty,
     });
-    this.beforeBar = new Rectangle(0, CONSERVATION_PANEL_SETTINGS.BEFORE_BAR_Y, 0, BAR_HEIGHT, { fill: spec.fill });
+    this.beforeBar = new Rectangle(0, COLLISIONS_VIEW.BEFORE_BAR_Y, 0, BAR_HEIGHT, { fill: spec.fill });
     this.afterBar = new Rectangle(0, 6 + BAR_HEIGHT, 0, BAR_HEIGHT, {
       stroke: spec.fill,
-      lineWidth: CONSERVATION_PANEL_SETTINGS.AFTER_BAR_LINE_WIDTH,
+      lineWidth: COLLISIONS_VIEW.AFTER_BAR_LINE_WIDTH,
     });
     this.valueText = new Text("", {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
       maxWidth: VALUE_WIDTH,
-      left: LABEL_WIDTH + BAR_REGION + CONSERVATION_PANEL_SETTINGS.CONSTRUCTOR_LEFT_OFFSET,
+      left: LABEL_WIDTH + BAR_REGION + COLLISIONS_VIEW.CONSERVATION_VALUE_LEFT_GAP,
       centerY: ROW_HEIGHT / 2,
     });
     this.verdictText = new Text("", {
@@ -94,7 +94,7 @@ class ConservationRow extends Node {
     };
     bar(this.beforeBar, b);
     bar(this.afterBar, a);
-    this.valueText.string = `${formatSignificant(clean(b), CONSERVATION_PANEL_SETTINGS.FORMAT_SIGNIFICANT_DIGITS)} → ${formatSignificant(clean(a), CONSERVATION_PANEL_SETTINGS.FORMAT_SIGNIFICANT_DIGITS)}`;
+    this.valueText.string = `${formatSignificant(clean(b), COLLISIONS_VIEW.CONSERVATION_DIGITS)} → ${formatSignificant(clean(a), COLLISIONS_VIEW.CONSERVATION_DIGITS)}`;
     const conserved = Math.abs(a - b) <= TOLERANCE * Math.max(1, scale);
     this.verdictText.string = conserved ? "✓" : "✗";
     this.verdictText.fill = conserved
@@ -158,25 +158,25 @@ export class ConservationPanel extends RelativisticDynamicsPanel {
 
     const legend = new Node({
       children: [
-        new Rectangle(0, 0, CONSERVATION_PANEL_SETTINGS.LEGEND_WIDTH, BAR_HEIGHT, {
+        new Rectangle(0, 0, COLLISIONS_VIEW.LEGEND_SWATCH_WIDTH, BAR_HEIGHT, {
           fill: RelativisticDynamicsColors.textColorProperty,
         }),
         new Text(strings.beforeStringProperty, {
           font: FONTS.TICK_LABEL,
           fill: RelativisticDynamicsColors.textColorProperty,
-          left: CONSERVATION_PANEL_SETTINGS.LEGEND_LEFT,
+          left: COLLISIONS_VIEW.LEGEND_SWATCH_LEFT,
           centerY: BAR_HEIGHT / 2,
-          maxWidth: CONSERVATION_PANEL_SETTINGS.LEGEND_MAX_WIDTH,
+          maxWidth: COLLISIONS_VIEW.LEGEND_LABEL_MAX_WIDTH,
         }),
-        new Rectangle(CONSERVATION_PANEL_SETTINGS.LEGEND_X, 0, CONSERVATION_PANEL_SETTINGS.LEGEND_WIDTH, BAR_HEIGHT, {
+        new Rectangle(COLLISIONS_VIEW.LEGEND_COLUMN_X, 0, COLLISIONS_VIEW.LEGEND_SWATCH_WIDTH, BAR_HEIGHT, {
           stroke: RelativisticDynamicsColors.textColorProperty,
         }),
         new Text(strings.afterStringProperty, {
           font: FONTS.TICK_LABEL,
           fill: RelativisticDynamicsColors.textColorProperty,
-          left: CONSERVATION_PANEL_SETTINGS.CONSTRUCTOR_LEGEND_LEFT,
+          left: COLLISIONS_VIEW.CONSERVATION_LEGEND_LEFT,
           centerY: BAR_HEIGHT / 2,
-          maxWidth: CONSERVATION_PANEL_SETTINGS.LEGEND_MAX_WIDTH,
+          maxWidth: COLLISIONS_VIEW.LEGEND_LABEL_MAX_WIDTH,
         }),
       ],
     });
@@ -190,14 +190,14 @@ export class ConservationPanel extends RelativisticDynamicsPanel {
     super(
       new VBox({
         align: "left",
-        spacing: CONSERVATION_PANEL_SETTINGS.CONSTRUCTOR_SPACING,
+        spacing: COLLISIONS_VIEW.CONSERVATION_ROW_SPACING,
         children: [
           createSectionHeader(strings.conservationHeadingStringProperty),
           legend,
           // Hidden Newton rows keep their space, so toggling them does not shift the panels below.
           new VBox({
             align: "left",
-            spacing: CONSERVATION_PANEL_SETTINGS.ITEM_3_SPACING,
+            spacing: COLLISIONS_VIEW.CONSERVATION_VALUE_SPACING,
             children: rowNodes,
             excludeInvisibleChildrenFromBounds: false,
           }),

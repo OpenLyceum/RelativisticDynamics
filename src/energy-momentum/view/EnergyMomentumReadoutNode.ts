@@ -1,4 +1,3 @@
-import { ENERGY_MOMENTUM_READOUT_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumReadoutNode.ts
  *
@@ -15,11 +14,12 @@ import { RelativisticDynamicsPanel } from "../../common/RelativisticDynamicsPane
 import { formatBeta, formatEnergy, formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { ENERGY_MOMENTUM_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { EnergyMomentumModel } from "../model/EnergyMomentumModel.js";
 
-const LABEL_WIDTH: number = ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.LABEL_WIDTH;
-const VALUE_WIDTH: number = ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.VALUE_WIDTH;
+const LABEL_WIDTH: number = ENERGY_MOMENTUM_VIEW.READOUT_LABEL_WIDTH;
+const VALUE_WIDTH: number = ENERGY_MOMENTUM_VIEW.READOUT_VALUE_WIDTH;
 
 type Row = {
   label: TReadOnlyProperty<string>;
@@ -40,29 +40,26 @@ export class EnergyMomentumReadoutNode extends RelativisticDynamicsPanel {
       {
         label: q.gammaStringProperty,
         value: (s) =>
-          Number.isFinite(s.gamma)
-            ? formatSignificant(s.gamma, ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.GAMMA_FORMAT_SIGNIFICANT_DIGITS)
-            : "∞",
+          Number.isFinite(s.gamma) ? formatSignificant(s.gamma, ENERGY_MOMENTUM_VIEW.READOUT_GAMMA_DIGITS) : "∞",
       },
       {
         label: q.momentumStringProperty,
-        value: (_s, signed) => formatEnergy(signed, ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.ROWS_DIGITS, "/c"),
+        value: (_s, signed) => formatEnergy(signed, ENERGY_MOMENTUM_VIEW.READOUT_MOMENTUM_DIGITS, "/c"),
         fill: RelativisticDynamicsColors.momentumColorProperty,
       },
       {
         label: q.kineticEnergyStringProperty,
-        value: (s) =>
-          formatEnergy(s.kineticEnergy, ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS),
+        value: (s) => formatEnergy(s.kineticEnergy, ENERGY_MOMENTUM_VIEW.READOUT_KINETIC_DIGITS),
         fill: RelativisticDynamicsColors.kineticEnergyColorProperty,
       },
       {
         label: q.totalEnergyStringProperty,
-        value: (s) => formatEnergy(s.energy, ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS),
+        value: (s) => formatEnergy(s.energy, ENERGY_MOMENTUM_VIEW.READOUT_ENERGY_DIGITS),
         fill: RelativisticDynamicsColors.totalEnergyColorProperty,
       },
       {
         label: q.invariantMassStringProperty,
-        value: (s) => formatEnergy(s.mass, ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.MASS_FORMAT_ENERGY_DIGITS, "/c²"),
+        value: (s) => formatEnergy(s.mass, ENERGY_MOMENTUM_VIEW.READOUT_MASS_DIGITS, "/c²"),
         fill: RelativisticDynamicsColors.invariantColorProperty,
       },
     ];
@@ -104,8 +101,8 @@ export class EnergyMomentumReadoutNode extends RelativisticDynamicsPanel {
 
     const grid = new GridBox({
       rows: cells,
-      xSpacing: ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.GRID_X_SPACING,
-      ySpacing: ENERGY_MOMENTUM_READOUT_NODE_SETTINGS.GRID_Y_SPACING,
+      xSpacing: ENERGY_MOMENTUM_VIEW.READOUT_GRID_X_SPACING,
+      ySpacing: ENERGY_MOMENTUM_VIEW.READOUT_GRID_Y_SPACING,
       xAlign: "left",
     });
 

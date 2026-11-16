@@ -1,4 +1,3 @@
-import { CHART_FRAME_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ChartFrameNode.ts
  *
@@ -18,7 +17,8 @@ import { Range } from "scenerystack/dot";
 import { Orientation } from "scenerystack/phet-core";
 import { Node, type NodeOptions, RichText, Text } from "scenerystack/scenery";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { FONTS } from "../../RelativisticDynamicsConstants.js";
+import { CHART, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import { decimalPlacesForStep, formatTickValue, niceStep } from "./chartUtils.js";
 
 export type ChartFrameNodeOptions = {
@@ -110,9 +110,9 @@ export class ChartFrameNode extends Node {
     });
     const placeAxisLabels = (): void => {
       xAxisLabel.centerX = options.viewWidth / 2;
-      xAxisLabel.top = options.viewHeight + CHART_FRAME_NODE_SETTINGS.PLACE_AXIS_LABELS_TOP_OFFSET;
+      xAxisLabel.top = options.viewHeight + CHART.AXIS_LABEL_TOP_OFFSET;
       yAxisLabel.centerY = options.viewHeight / 2;
-      yAxisLabel.right = CHART_FRAME_NODE_SETTINGS.RIGHT_RIGHT;
+      yAxisLabel.right = CHART.RIGHT_AXIS_INSET;
     };
     xAxisLabel.boundsProperty.lazyLink(placeAxisLabels);
     yAxisLabel.boundsProperty.lazyLink(placeAxisLabels);

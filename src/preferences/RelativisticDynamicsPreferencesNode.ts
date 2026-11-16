@@ -1,4 +1,3 @@
-import { RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS } from "../RelativisticDynamicsConstants.js";
 /**
  * RelativisticDynamicsPreferencesNode.ts
  *
@@ -13,6 +12,7 @@ import { Checkbox } from "scenerystack/sun";
 import type { Tandem } from "scenerystack/tandem";
 import { StringManager } from "../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../RelativisticDynamicsColors.js";
+import { PREFERENCES } from "../RelativisticDynamicsConstants.js";
 import RelativisticDynamicsNamespace from "../RelativisticDynamicsNamespace.js";
 import type { RelativisticDynamicsPreferencesModel } from "./RelativisticDynamicsPreferencesModel.js";
 
@@ -24,27 +24,27 @@ export class RelativisticDynamicsPreferencesNode extends VBox {
     // colors (readable on white in both default and projector profiles), not textColorProperty
     // (which is near-white in default mode and would be invisible on the white dialog).
     const header = new Text(prefStrings.titleStringProperty, {
-      font: new PhetFont({ size: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.HEADER_FONT_SIZE, weight: "bold" }),
+      font: new PhetFont({ size: PREFERENCES.HEADER_FONT_SIZE, weight: "bold" }),
       fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
     });
 
     const showNewtonCheckbox = new Checkbox(
       preferencesModel.showNewtonProperty,
       new Text(prefStrings.showNewtonStringProperty, {
-        font: new PhetFont(RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.SHOW_NEWTON_CHECKBOX_FONT_SIZE),
+        font: new PhetFont(PREFERENCES.CHECKBOX_FONT_SIZE),
         fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
       }),
       {
         checkboxColor: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: RelativisticDynamicsColors.controlSurfaceColorProperty,
-        spacing: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.SHOW_NEWTON_CHECKBOX_SPACING,
+        spacing: PREFERENCES.CHECKBOX_SPACING,
         ...(tandem && { tandem: tandem.createTandem("showNewtonCheckbox") }),
       },
     );
 
     super({
       align: "left",
-      spacing: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+      spacing: PREFERENCES.SPACING,
       children: [header, showNewtonCheckbox],
     });
   }

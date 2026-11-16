@@ -1,4 +1,3 @@
-import { ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateScreenSummaryContent.ts
  *
@@ -11,6 +10,7 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { formatBeta, formatEnergy, formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import { ACCELERATE_VIEW } from "../../RelativisticDynamicsConstants.js";
 import type { AccelerateModel } from "../model/AccelerateModel.js";
 
 export class AccelerateScreenSummaryContent extends ScreenSummaryContent {
@@ -35,15 +35,12 @@ export class AccelerateScreenSummaryContent extends ScreenSummaryContent {
           return StringUtils.fillIn(atStart, { particle: name });
         }
         return StringUtils.fillIn(pattern, {
-          time: `${formatSignificant(time, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.CURRENT_DETAILS_PROPERTY_DIGITS)} ns`,
+          time: `${formatSignificant(time, ACCELERATE_VIEW.SUMMARY_TIME_DIGITS)} ns`,
           particle: name,
-          distance: `${formatSignificant(snapshot.position, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.POSITION_FORMAT_SIGNIFICANT_DIGITS)} m`,
-          kinetic: formatEnergy(
-            snapshot.kineticEnergy,
-            ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS,
-          ),
+          distance: `${formatSignificant(snapshot.position, ACCELERATE_VIEW.SUMMARY_POSITION_DIGITS)} m`,
+          kinetic: formatEnergy(snapshot.kineticEnergy, ACCELERATE_VIEW.SUMMARY_KINETIC_DIGITS),
           speed: `${formatBeta(snapshot.beta)} c`,
-          newtonSpeed: `${formatSignificant(snapshot.newtonianBeta, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.NEWTONIAN_BETA_FORMAT_SIGNIFICANT_DIGITS)} c`,
+          newtonSpeed: `${formatSignificant(snapshot.newtonianBeta, ACCELERATE_VIEW.SUMMARY_NEWTON_BETA_DIGITS)} c`,
         });
       },
     );

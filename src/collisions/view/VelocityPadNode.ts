@@ -1,4 +1,3 @@
-import { VELOCITY_PAD_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * VelocityPadNode.ts
  *
@@ -16,13 +15,13 @@ import { Circle, InteractiveHighlighting, Line, Node, RichDragListener, Text, ty
 import { formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { COLLISIONS, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS, COLLISIONS_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
 
 /** Radius of the c circle, px. */
-const RADIUS: number = VELOCITY_PAD_NODE_SETTINGS.RADIUS;
-const HANDLE_RADIUS: number = VELOCITY_PAD_NODE_SETTINGS.HANDLE_RADIUS;
+const RADIUS: number = COLLISIONS_VIEW.PAD_RADIUS;
+const HANDLE_RADIUS: number = COLLISIONS_VIEW.PAD_HANDLE_RADIUS;
 /** Keyboard step, as a fraction of c. */
-const KEYBOARD_STEP: number = VELOCITY_PAD_NODE_SETTINGS.KEYBOARD_STEP;
+const KEYBOARD_STEP: number = COLLISIONS_VIEW.PAD_KEYBOARD_STEP;
 
 class Handle extends InteractiveHighlighting(Circle) {}
 
@@ -41,14 +40,11 @@ export class VelocityPadNode extends Node {
     const lightCircle = new Circle(RADIUS, {
       fill: RelativisticDynamicsColors.chartBackgroundColorProperty,
       stroke: RelativisticDynamicsColors.lightColorProperty,
-      lineWidth: VELOCITY_PAD_NODE_SETTINGS.LIGHT_CIRCLE_LINE_WIDTH,
+      lineWidth: COLLISIONS_VIEW.PAD_LIGHT_LINE_WIDTH,
     });
     const maxCircle = new Circle(RADIUS * COLLISIONS.MAX_SPEED, {
       stroke: RelativisticDynamicsColors.chartGridColorProperty,
-      lineDash: [
-        VELOCITY_PAD_NODE_SETTINGS.MAX_CIRCLE_LINE_DASH_DASH,
-        VELOCITY_PAD_NODE_SETTINGS.MAX_CIRCLE_LINE_DASH_DASH,
-      ],
+      lineDash: [COLLISIONS_VIEW.PAD_LIGHT_DASH, COLLISIONS_VIEW.PAD_LIGHT_DASH],
     });
     const axes = new Node({
       children: [
@@ -59,10 +55,10 @@ export class VelocityPadNode extends Node {
     const cLabel = new Text("c", {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.lightColorProperty,
-      left: RADIUS * VELOCITY_PAD_NODE_SETTINGS.C_LABEL_LEFT_FACTOR + 2,
-      bottom: -RADIUS * VELOCITY_PAD_NODE_SETTINGS.C_LABEL_BOTTOM_FACTOR - 2,
+      left: RADIUS * COLLISIONS_VIEW.PAD_C_LABEL_LEFT_FACTOR + 2,
+      bottom: -RADIUS * COLLISIONS_VIEW.PAD_C_LABEL_BOTTOM_FACTOR - 2,
     });
-    const spoke = new Line(0, 0, 0, 0, { stroke: fill, lineWidth: VELOCITY_PAD_NODE_SETTINGS.SPOKE_LINE_WIDTH });
+    const spoke = new Line(0, 0, 0, 0, { stroke: fill, lineWidth: COLLISIONS_VIEW.PAD_SPOKE_LINE_WIDTH });
 
     const handle = new Handle(HANDLE_RADIUS, {
       fill,
@@ -79,16 +75,16 @@ export class VelocityPadNode extends Node {
     const title = new Text(labelProperty, {
       font: FONTS.READOUT_VALUE,
       fill,
-      maxWidth: 2 * RADIUS + VELOCITY_PAD_NODE_SETTINGS.TITLE_MAX_WIDTH_OFFSET,
+      maxWidth: 2 * RADIUS + COLLISIONS_VIEW.PAD_TITLE_WIDTH_INSET,
       centerX: 0,
-      bottom: -RADIUS - VELOCITY_PAD_NODE_SETTINGS.TITLE_BOTTOM_OFFSET,
+      bottom: -RADIUS - COLLISIONS_VIEW.PAD_TITLE_BOTTOM_GAP,
     });
     const valueText = new Text("", {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: 2 * RADIUS + VELOCITY_PAD_NODE_SETTINGS.VALUE_TEXT_MAX_WIDTH_OFFSET,
+      maxWidth: 2 * RADIUS + COLLISIONS_VIEW.PAD_VALUE_WIDTH_INSET,
       centerX: 0,
-      top: RADIUS + VELOCITY_PAD_NODE_SETTINGS.VALUE_TEXT_TOP_OFFSET,
+      top: RADIUS + COLLISIONS_VIEW.PAD_VALUE_TOP_GAP,
     });
 
     this.children = [lightCircle, maxCircle, axes, cLabel, spoke, handle, title, valueText];
@@ -118,7 +114,7 @@ export class VelocityPadNode extends Node {
       const view = transform.modelToViewPosition(velocity);
       handle.center = view;
       spoke.setLine(0, 0, view.x, view.y);
-      const speed = formatSignificant(velocity.magnitude, VELOCITY_PAD_NODE_SETTINGS.SPEED_DIGITS);
+      const speed = formatSignificant(velocity.magnitude, COLLISIONS_VIEW.PAD_SPEED_DIGITS);
       const angle = Math.round((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI);
       valueText.string = `${speed} c, ${velocity.magnitude < 1e-6 ? 0 : angle}°`;
       valueResponse = StringUtils.fillIn(pattern, { speed, angle: velocity.magnitude < 1e-6 ? 0 : angle });

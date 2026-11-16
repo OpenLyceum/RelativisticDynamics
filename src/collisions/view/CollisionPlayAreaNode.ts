@@ -1,4 +1,3 @@
-import { COLLISION_PLAY_AREA_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * CollisionPlayAreaNode.ts
  *
@@ -22,12 +21,13 @@ import { ChartFrameNode } from "../../common/view/ChartFrameNode.js";
 import { formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
-import { COLLISIONS, FONTS } from "../../RelativisticDynamicsConstants.js";
+import { COLLISIONS, COLLISIONS_VIEW, FONTS } from "../../RelativisticDynamicsConstants.js";
+
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 import { type Body, positionAt } from "../model/collisionGeometry.js";
 
 /** Pixels per unit of velocity for the arrows (an arrow of this length is a speed of c). */
-const ARROW_SCALE: number = COLLISION_PLAY_AREA_NODE_SETTINGS.ARROW_SCALE;
+const ARROW_SCALE: number = COLLISIONS_VIEW.ARROW_SCALE;
 
 export class CollisionPlayAreaNode extends Node {
   public constructor(model: CollisionsModel, viewWidth: number, viewHeight: number) {
@@ -53,16 +53,13 @@ export class CollisionPlayAreaNode extends Node {
     const lightCircle = new Circle(pixelsPerUnit, {
       center: toView(Vector2.ZERO),
       stroke: RelativisticDynamicsColors.lightColorProperty,
-      lineDash: [
-        COLLISION_PLAY_AREA_NODE_SETTINGS.LIGHT_CIRCLE_LINE_DASH_DASH,
-        COLLISION_PLAY_AREA_NODE_SETTINGS.LIGHT_CIRCLE_LINE_DASH_DASH,
-      ],
-      opacity: COLLISION_PLAY_AREA_NODE_SETTINGS.LIGHT_CIRCLE_OPACITY,
+      lineDash: [COLLISIONS_VIEW.LIGHT_CIRCLE_DASH, COLLISIONS_VIEW.LIGHT_CIRCLE_DASH],
+      opacity: COLLISIONS_VIEW.LIGHT_CIRCLE_OPACITY,
     });
 
     const trails = new Path(null, {
       stroke: RelativisticDynamicsColors.trailColorProperty,
-      lineWidth: COLLISION_PLAY_AREA_NODE_SETTINGS.TRAILS_LINE_WIDTH,
+      lineWidth: COLLISIONS_VIEW.TRAILS_LINE_WIDTH,
     });
     chart.plotLayer.children = [lightCircle, trails];
 
@@ -71,14 +68,14 @@ export class CollisionPlayAreaNode extends Node {
       disk: new Circle(COLLISIONS.BODY_RADIUS_PX, {
         fill,
         stroke: RelativisticDynamicsColors.backgroundColorProperty,
-        lineWidth: COLLISION_PLAY_AREA_NODE_SETTINGS.MAKE_SPRITE_LINE_WIDTH,
+        lineWidth: COLLISIONS_VIEW.SPRITE_LINE_WIDTH,
       }),
       arrow: new ArrowNode(0, 0, 1, 0, {
         fill: fill,
         stroke: null,
-        headWidth: COLLISION_PLAY_AREA_NODE_SETTINGS.MAKE_SPRITE_HEAD_WIDTH,
-        headHeight: COLLISION_PLAY_AREA_NODE_SETTINGS.MAKE_SPRITE_HEAD_HEIGHT,
-        tailWidth: COLLISION_PLAY_AREA_NODE_SETTINGS.MAKE_SPRITE_TAIL_WIDTH,
+        headWidth: COLLISIONS_VIEW.SPRITE_HEAD_WIDTH,
+        headHeight: COLLISIONS_VIEW.SPRITE_HEAD_HEIGHT,
+        tailWidth: COLLISIONS_VIEW.SPRITE_TAIL_WIDTH,
       }),
     });
     const incomingSprites = [
@@ -100,9 +97,9 @@ export class CollisionPlayAreaNode extends Node {
     const viewingText = new Text("", {
       font: FONTS.READOUT_VALUE,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: viewWidth - COLLISION_PLAY_AREA_NODE_SETTINGS.VIEWING_TEXT_MAX_WIDTH_OFFSET,
-      left: COLLISION_PLAY_AREA_NODE_SETTINGS.VIEWING_TEXT_LEFT,
-      top: COLLISION_PLAY_AREA_NODE_SETTINGS.VIEWING_TEXT_TOP,
+      maxWidth: viewWidth - COLLISIONS_VIEW.VIEWING_TEXT_WIDTH_INSET,
+      left: COLLISIONS_VIEW.VIEWING_TEXT_LEFT,
+      top: COLLISIONS_VIEW.VIEWING_TEXT_TOP,
     });
     chart.overlayLayer.addChild(viewingText);
 
@@ -174,7 +171,7 @@ export class CollisionPlayAreaNode extends Node {
             : frame === "centerOfMomentum"
               ? cmName
               : StringUtils.fillIn(movingPattern, {
-                  beta: formatSignificant(beta, COLLISION_PLAY_AREA_NODE_SETTINGS.FRAME_NAME_DIGITS),
+                  beta: formatSignificant(beta, COLLISIONS_VIEW.FRAME_NAME_DIGITS),
                 });
         viewingText.string = StringUtils.fillIn(viewingPattern, { frame: frameName });
       },
