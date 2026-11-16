@@ -1,3 +1,4 @@
+import { AVAILABLE_ENERGY_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AvailableEnergyNode.ts
  *
@@ -19,9 +20,9 @@ import { FONTS } from "../../RelativisticDynamicsConstants.js";
 import { Verdict } from "../model/reactions.js";
 import type { ThresholdsModel } from "../model/ThresholdsModel.js";
 
-const METER_WIDTH = 300;
-const METER_HEIGHT = 18;
-const READOUT_WIDTH = 300;
+const METER_WIDTH: number = AVAILABLE_ENERGY_NODE_SETTINGS.METER_WIDTH;
+const METER_HEIGHT: number = AVAILABLE_ENERGY_NODE_SETTINGS.METER_HEIGHT;
+const READOUT_WIDTH: number = AVAILABLE_ENERGY_NODE_SETTINGS.READOUT_WIDTH;
 
 export class AvailableEnergyNode extends Node {
   public constructor(model: ThresholdsModel) {
@@ -38,39 +39,46 @@ export class AvailableEnergyNode extends Node {
       stroke: RelativisticDynamicsColors.chartAxisColorProperty,
     });
     const bar = new Rectangle(0, 0, 0, METER_HEIGHT);
-    const marker = new Line(0, -6, 0, METER_HEIGHT + 6, {
+    const marker = new Line(0, AVAILABLE_ENERGY_NODE_SETTINGS.MARKER_START_Y, 0, METER_HEIGHT + 6, {
       stroke: RelativisticDynamicsColors.invariantColorProperty,
-      lineWidth: 3,
+      lineWidth: AVAILABLE_ENERGY_NODE_SETTINGS.MARKER_LINE_WIDTH,
     });
     const sqrtSLabel = new RichText("", {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: 150,
+      maxWidth: AVAILABLE_ENERGY_NODE_SETTINGS.SQRT_S_LABEL_MAX_WIDTH,
     });
     const markerLabel = new RichText("", {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.invariantColorProperty,
-      maxWidth: 150,
+      maxWidth: AVAILABLE_ENERGY_NODE_SETTINGS.MARKER_LABEL_MAX_WIDTH,
     });
     const meter = new Node({ children: [track, bar, marker, sqrtSLabel, markerLabel] });
 
     const r = strings.readouts;
-    const format = (value: number, none: string): string => (Number.isFinite(value) ? formatEnergy(value, 4) : none);
+    const format = (value: number, none: string): string =>
+      Number.isFinite(value) ? formatEnergy(value, AVAILABLE_ENERGY_NODE_SETTINGS.FORMAT_DIGITS) : none;
     const values = {
       threshold: new DerivedProperty([model.thresholdProperty, strings.infinityStringProperty], (v, none) =>
         format(v, none),
       ),
-      beam: new DerivedProperty([model.beamKineticEnergyProperty], (v) => formatEnergy(v, 4)),
-      sqrtS: new DerivedProperty([model.sqrtSProperty], (v) => formatEnergy(v, 4)),
-      finalMass: new DerivedProperty([model.finalMassProperty], (v) => formatEnergy(v, 4)),
+      beam: new DerivedProperty([model.beamKineticEnergyProperty], (v) =>
+        formatEnergy(v, AVAILABLE_ENERGY_NODE_SETTINGS.VALUES_DIGITS),
+      ),
+      sqrtS: new DerivedProperty([model.sqrtSProperty], (v) =>
+        formatEnergy(v, AVAILABLE_ENERGY_NODE_SETTINGS.VALUES_DIGITS),
+      ),
+      finalMass: new DerivedProperty([model.finalMassProperty], (v) =>
+        formatEnergy(v, AVAILABLE_ENERGY_NODE_SETTINGS.VALUES_DIGITS),
+      ),
       cmSpeed: new DerivedProperty([model.cmVelocityProperty], (v) => `${formatBeta(v.magnitude)} c`),
       tiedUp: new DerivedProperty([model.initialStateProperty, model.sqrtSProperty], ([p1, p2], sqrtS) =>
-        formatEnergy(Math.max(0, p1.energy + p2.energy - sqrtS), 4),
+        formatEnergy(Math.max(0, p1.energy + p2.energy - sqrtS), AVAILABLE_ENERGY_NODE_SETTINGS.VALUES_DIGITS),
       ),
     };
     const readouts = new VBox({
       align: "left",
-      spacing: 3,
+      spacing: AVAILABLE_ENERGY_NODE_SETTINGS.READOUTS_SPACING,
       children: [
         createReadoutRow(
           r.thresholdStringProperty,
@@ -111,7 +119,13 @@ export class AvailableEnergyNode extends Node {
       ],
     });
 
-    this.children = [new VBox({ align: "left", spacing: 14, children: [title, meter, readouts] })];
+    this.children = [
+      new VBox({
+        align: "left",
+        spacing: AVAILABLE_ENERGY_NODE_SETTINGS.CHILDREN_SPACING,
+        children: [title, meter, readouts],
+      }),
+    ];
 
     Multilink.multilink(
       [
@@ -129,12 +143,12 @@ export class AvailableEnergyNode extends Node {
             ? RelativisticDynamicsColors.allowedColorProperty
             : RelativisticDynamicsColors.forbiddenColorProperty;
         marker.x = finalMass * scale;
-        sqrtSLabel.string = `${sqrtSName} = ${formatEnergy(sqrtS, 4)}`;
-        sqrtSLabel.left = 2;
-        sqrtSLabel.top = METER_HEIGHT + 6;
-        markerLabel.string = `${finalMassName} = ${formatEnergy(finalMass, 4)}`;
+        sqrtSLabel.string = `${sqrtSName} = ${formatEnergy(sqrtS, AVAILABLE_ENERGY_NODE_SETTINGS.SQRT_S_LABEL_DIGITS)}`;
+        sqrtSLabel.left = AVAILABLE_ENERGY_NODE_SETTINGS.LEFT_LEFT;
+        sqrtSLabel.top = METER_HEIGHT + AVAILABLE_ENERGY_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+        markerLabel.string = `${finalMassName} = ${formatEnergy(finalMass, AVAILABLE_ENERGY_NODE_SETTINGS.MARKER_LABEL_DIGITS)}`;
         markerLabel.centerX = Math.min(METER_WIDTH - markerLabel.width / 2, Math.max(markerLabel.width / 2, marker.x));
-        markerLabel.bottom = -8;
+        markerLabel.bottom = AVAILABLE_ENERGY_NODE_SETTINGS.BOTTOM_BOTTOM;
       },
     );
   }

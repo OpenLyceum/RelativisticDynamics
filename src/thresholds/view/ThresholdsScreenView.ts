@@ -1,3 +1,4 @@
+import { THRESHOLDS_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ThresholdsScreenView.ts
  *
@@ -68,7 +69,7 @@ export class ThresholdsScreenView extends ScreenView {
     const title = new Text(titleProperty, {
       font: FONTS.BIG_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: 2 * REACTION_FRAME_WIDTH + 16,
+      maxWidth: 2 * REACTION_FRAME_WIDTH + THRESHOLDS_SCREEN_VIEW_SETTINGS.TITLE_MAX_WIDTH_OFFSET,
       left: bounds.minX + SCREEN_VIEW_MARGIN,
       top: bounds.minY + SCREEN_VIEW_MARGIN,
     });
@@ -87,8 +88,8 @@ export class ThresholdsScreenView extends ScreenView {
       model.cmProductsProperty,
     );
     labFrame.left = title.left;
-    labFrame.top = title.bottom + 10;
-    cmFrame.left = labFrame.right + 16;
+    labFrame.top = title.bottom + THRESHOLDS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
+    cmFrame.left = labFrame.right + THRESHOLDS_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
     cmFrame.top = labFrame.top;
 
     // ── Meter and chart ────────────────────────────────────────────────────────
@@ -112,10 +113,10 @@ export class ThresholdsScreenView extends ScreenView {
     const reactionPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: THRESHOLDS_SCREEN_VIEW_SETTINGS.REACTION_PANEL_SPACING,
         children: [createSectionHeader(strings.reactionHeadingStringProperty), reactionRadio],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + THRESHOLDS_SCREEN_VIEW_SETTINGS.REACTION_PANEL_MIN_WIDTH_OFFSET },
     );
 
     const configurationRadio = createRadioButtonGroup(
@@ -138,20 +139,25 @@ export class ThresholdsScreenView extends ScreenView {
     const configurationPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: THRESHOLDS_SCREEN_VIEW_SETTINGS.CONFIGURATION_PANEL_SPACING,
         children: [createSectionHeader(strings.configurationHeadingStringProperty), configurationRadio],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + THRESHOLDS_SCREEN_VIEW_SETTINGS.CONFIGURATION_PANEL_MIN_WIDTH_OFFSET },
     );
 
     const beamTitleProperty = new DerivedProperty(
       [model.configurationProperty, strings.beamEnergyStringProperty, strings.beamEnergyEachStringProperty],
       (configuration, single, each) => (configuration === BeamConfiguration.COLLIDER ? each : single),
     );
-    const beamValueProperty = new DerivedProperty([model.beamKineticEnergyProperty], (k) => formatEnergy(k, 4));
+    const beamValueProperty = new DerivedProperty([model.beamKineticEnergyProperty], (k) =>
+      formatEnergy(k, THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_VALUE_PROPERTY_DIGITS),
+    );
     const beamSlider = new HSlider(model.energyFractionProperty, new Range(0, 1), {
-      trackSize: new Dimension2(CONTROL_WIDTH - 20, 4),
-      thumbSize: new Dimension2(14, 26),
+      trackSize: new Dimension2(CONTROL_WIDTH - 20, THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_SLIDER_HEIGHT),
+      thumbSize: new Dimension2(
+        THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_SLIDER_WIDTH,
+        THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_SLIDER_WIDTH_DIMENSION2_HEIGHT,
+      ),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       trackFillEnabled: RelativisticDynamicsColors.textColorProperty,
       keyboardStep: 1 / 60,
@@ -172,7 +178,7 @@ export class ThresholdsScreenView extends ScreenView {
     const beamPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_PANEL_SPACING,
         children: [
           createSectionHeader(strings.beamHeadingStringProperty),
           new Text(beamTitleProperty, {
@@ -189,11 +195,11 @@ export class ThresholdsScreenView extends ScreenView {
           thresholdButton,
         ],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + THRESHOLDS_SCREEN_VIEW_SETTINGS.BEAM_PANEL_MIN_WIDTH_OFFSET },
     );
 
     const rightColumn = new VBox({
-      spacing: 10,
+      spacing: THRESHOLDS_SCREEN_VIEW_SETTINGS.RIGHT_COLUMN_SPACING,
       align: "right",
       children: [reactionPanel, configurationPanel, beamPanel],
     });

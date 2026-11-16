@@ -1,3 +1,4 @@
+import { MOMENTUM_DIAGRAM_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * MomentumDiagramNode.ts
  *
@@ -22,7 +23,11 @@ import { FONTS } from "../../RelativisticDynamicsConstants.js";
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 import type { Body } from "../model/collisionGeometry.js";
 
-const ARROW_OPTIONS = { headWidth: 10, headHeight: 9, tailWidth: 3 };
+const ARROW_OPTIONS = {
+  headWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_HEAD_WIDTH,
+  headHeight: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_HEAD_HEIGHT,
+  tailWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.ARROW_OPTIONS_TAIL_WIDTH,
+};
 
 export class MomentumDiagramNode extends Node {
   public constructor(model: CollisionsModel, size: number) {
@@ -38,12 +43,17 @@ export class MomentumDiagramNode extends Node {
       fill: RelativisticDynamicsColors.textColorProperty,
       maxWidth: size,
       left: 0,
-      bottom: -4,
+      bottom: MOMENTUM_DIAGRAM_NODE_SETTINGS.TITLE_BOTTOM,
     });
 
     const solid = (fill: TPaint): ArrowNode => new ArrowNode(0, 0, 1, 0, { ...ARROW_OPTIONS, fill, stroke: null });
     const outline = (fill: TPaint): ArrowNode =>
-      new ArrowNode(0, 0, 1, 0, { ...ARROW_OPTIONS, fill: null, stroke: fill, lineWidth: 1.5 });
+      new ArrowNode(0, 0, 1, 0, {
+        ...ARROW_OPTIONS,
+        fill: null,
+        stroke: fill,
+        lineWidth: MOMENTUM_DIAGRAM_NODE_SETTINGS.OUTLINE_LINE_WIDTH,
+      });
 
     const in1 = solid(RelativisticDynamicsColors.body1ColorProperty);
     const in2 = solid(RelativisticDynamicsColors.body2ColorProperty);
@@ -54,9 +64,11 @@ export class MomentumDiagramNode extends Node {
       ...ARROW_OPTIONS,
       fill: RelativisticDynamicsColors.invariantColorProperty,
       stroke: null,
-      opacity: 0.8,
+      opacity: MOMENTUM_DIAGRAM_NODE_SETTINGS.TOTAL_OPACITY,
     });
-    const origin = new Circle(3, { fill: RelativisticDynamicsColors.textColorProperty });
+    const origin = new Circle(MOMENTUM_DIAGRAM_NODE_SETTINGS.ORIGIN_RADIUS, {
+      fill: RelativisticDynamicsColors.textColorProperty,
+    });
     const arrows = new Node({ children: [total, in1, in2, out1, out2, outComposite, origin] });
 
     this.children = [frame, title, arrows];

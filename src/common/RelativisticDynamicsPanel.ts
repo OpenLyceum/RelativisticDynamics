@@ -1,3 +1,4 @@
+import { RELATIVISTIC_DYNAMICS_PANEL_SETTINGS } from "../RelativisticDynamicsConstants.js";
 /**
  * RelativisticDynamicsPanel.ts
  *
@@ -40,8 +41,8 @@ export class RelativisticDynamicsPanel extends Panel {
         fill: RelativisticDynamicsColors.panelBackgroundColorProperty,
         stroke: RelativisticDynamicsColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: 12,
-        yMargin: 10,
+        xMargin: RELATIVISTIC_DYNAMICS_PANEL_SETTINGS.OPTIONS_X_MARGIN,
+        yMargin: RELATIVISTIC_DYNAMICS_PANEL_SETTINGS.OPTIONS_Y_MARGIN,
       },
       providedOptions,
     );

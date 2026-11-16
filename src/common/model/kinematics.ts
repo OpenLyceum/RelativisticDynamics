@@ -1,3 +1,4 @@
+import { KINEMATIC_NUMERICS } from "../../RelativisticDynamicsConstants.js";
 /**
  * kinematics.ts
  *
@@ -38,7 +39,7 @@ import { Vector2 } from "scenerystack/dot";
  * well beyond anything the sim draws, while 1 − β² is still far above
  * double-precision roundoff.
  */
-const MAX_BETA = 1 - 1e-8;
+const MAX_BETA = 1 - KINEMATIC_NUMERICS.BETA_MARGIN;
 
 /** Clamps |β| below {@link MAX_BETA} and maps non-finite input to 0. */
 const sanitizeBeta = (beta: number): number => {

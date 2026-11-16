@@ -1,3 +1,4 @@
+import { ACCELERATE_CHARTS_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateChartsNode.ts
  *
@@ -31,10 +32,10 @@ import {
   relativisticBetaSquared,
 } from "../model/acceleration.js";
 
-const CHART_WIDTH = 245;
-const CHART_HEIGHT = 200;
-const SAMPLES = 120;
-const MARKER_RADIUS = 5;
+const CHART_WIDTH: number = ACCELERATE_CHARTS_NODE_SETTINGS.CHART_WIDTH;
+const CHART_HEIGHT: number = ACCELERATE_CHARTS_NODE_SETTINGS.CHART_HEIGHT;
+const SAMPLES: number = ACCELERATE_CHARTS_NODE_SETTINGS.SAMPLES;
+const MARKER_RADIUS: number = ACCELERATE_CHARTS_NODE_SETTINGS.MARKER_RADIUS;
 
 export class AccelerateChartsNode extends Node {
   /**
@@ -63,17 +64,23 @@ export class AccelerateChartsNode extends Node {
     });
     const tLight = new LinePlot(timeChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.lightColorProperty,
-      lineWidth: 1.5,
-      lineDash: [6, 4],
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.T_LIGHT_LINE_WIDTH,
+      lineDash: [
+        ACCELERATE_CHARTS_NODE_SETTINGS.T_LIGHT_LINE_DASH_DASH,
+        ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_T_LIGHT_LINE_DASH_DASH,
+      ],
     });
     const tNewton = new LinePlot(timeChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.newtonianColorProperty,
-      lineWidth: 2.5,
-      lineDash: [6, 3],
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.T_NEWTON_LINE_WIDTH,
+      lineDash: [
+        ACCELERATE_CHARTS_NODE_SETTINGS.T_NEWTON_LINE_DASH_DASH,
+        ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_T_NEWTON_LINE_DASH_DASH,
+      ],
     });
     const tRelativity = new LinePlot(timeChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.relativisticColorProperty,
-      lineWidth: 2.5,
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.T_RELATIVITY_LINE_WIDTH,
     });
     timeChart.plotLayer.children = [tLight, tRelativity, tNewton];
     const cLabel = new Text(strings.speedOfLightStringProperty, {
@@ -83,9 +90,9 @@ export class AccelerateChartsNode extends Node {
     const momentumNote = new Text(strings.momentumNoteStringProperty, {
       font: FONTS.TICK_LABEL,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: CHART_WIDTH - 12,
-      left: 6,
-      top: 6,
+      maxWidth: CHART_WIDTH - ACCELERATE_CHARTS_NODE_SETTINGS.MOMENTUM_NOTE_MAX_WIDTH_OFFSET,
+      left: ACCELERATE_CHARTS_NODE_SETTINGS.MOMENTUM_NOTE_LEFT,
+      top: ACCELERATE_CHARTS_NODE_SETTINGS.MOMENTUM_NOTE_TOP,
     });
     timeChart.overlayLayer.children = [cLabel, momentumNote];
 
@@ -93,29 +100,35 @@ export class AccelerateChartsNode extends Node {
     const energyChart = new ChartFrameNode({
       viewWidth: CHART_WIDTH,
       viewHeight: CHART_HEIGHT,
-      xRange: new Range(0, 20),
+      xRange: new Range(0, ACCELERATE_CHARTS_NODE_SETTINGS.ENERGY_CHART_RANGE_MAX),
       yRange: new Range(0, ACCELERATE.CHART_MAX_BETA_SQUARED),
       xAxisLabelProperty: strings.kineticEnergyAxisStringProperty,
       yAxisLabelProperty: strings.betaSquaredAxisStringProperty,
     });
     const kLight = new LinePlot(energyChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.lightColorProperty,
-      lineWidth: 1.5,
-      lineDash: [6, 4],
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.K_LIGHT_LINE_WIDTH,
+      lineDash: [
+        ACCELERATE_CHARTS_NODE_SETTINGS.K_LIGHT_LINE_DASH_DASH,
+        ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_K_LIGHT_LINE_DASH_DASH,
+      ],
     });
     const kNewton = new LinePlot(energyChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.newtonianColorProperty,
-      lineWidth: 2,
-      lineDash: [6, 3],
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.K_NEWTON_LINE_WIDTH,
+      lineDash: [
+        ACCELERATE_CHARTS_NODE_SETTINGS.K_NEWTON_LINE_DASH_DASH,
+        ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_K_NEWTON_LINE_DASH_DASH,
+      ],
     });
     const kRelativity = new LinePlot(energyChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.relativisticColorProperty,
-      lineWidth: 2,
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.K_RELATIVITY_LINE_WIDTH,
     });
     const bertozzi = new ScatterPlot(
       energyChart.chartTransform,
       bertozziPoints().map((p) => new Vector2(p.kineticEnergy, p.betaSquared)),
-      { radius: 4.5, fill: RelativisticDynamicsColors.textColorProperty },
+      { radius: ACCELERATE_CHARTS_NODE_SETTINGS.BERTOZZI_RADIUS, fill: RelativisticDynamicsColors.textColorProperty },
     );
     bertozzi.visibleProperty = new DerivedProperty(
       [model.showBertozziProperty, model.particleProperty],
@@ -124,7 +137,7 @@ export class AccelerateChartsNode extends Node {
     energyChart.plotLayer.children = [kLight, kNewton, kRelativity, bertozzi];
     const newtonMarker = new Circle(MARKER_RADIUS, {
       stroke: RelativisticDynamicsColors.newtonianColorProperty,
-      lineWidth: 2,
+      lineWidth: ACCELERATE_CHARTS_NODE_SETTINGS.NEWTON_MARKER_LINE_WIDTH,
     });
     const relativityMarker = new Circle(MARKER_RADIUS, { fill: RelativisticDynamicsColors.relativisticColorProperty });
     energyChart.overlayLayer.children = [newtonMarker, relativityMarker];
@@ -134,7 +147,7 @@ export class AccelerateChartsNode extends Node {
 
     const titled = (titleProperty: TReadOnlyProperty<string>, chart: ChartFrameNode): VBox =>
       new VBox({
-        spacing: 6,
+        spacing: ACCELERATE_CHARTS_NODE_SETTINGS.TITLED_SPACING,
         children: [
           new Text(titleProperty, {
             font: FONTS.CHART_TITLE,
@@ -146,7 +159,7 @@ export class AccelerateChartsNode extends Node {
       });
     const left = titled(leftTitle, timeChart);
     const right = titled(strings.betaSquaredChartTitleStringProperty, energyChart);
-    right.left = left.right + 75;
+    right.left = left.right + ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
     this.children = [left, right];
 
     // ── Geometry that depends on the run (particle, field) ───────────────────
@@ -164,7 +177,7 @@ export class AccelerateChartsNode extends Node {
         timeChart.setRanges(new Range(0, duration), new Range(0, yMax));
         tLight.setDataSet(quantity === "speed" ? [new Vector2(0, 1), new Vector2(duration, 1)] : []);
         cLabel.visible = quantity === "speed";
-        cLabel.right = CHART_WIDTH - 4;
+        cLabel.right = CHART_WIDTH - ACCELERATE_CHARTS_NODE_SETTINGS.CONSTRUCTOR_RIGHT_OFFSET;
         cLabel.bottom = timeChart.chartTransform.modelToViewY(1) - 2;
         momentumNote.visible = quantity === "momentum";
 

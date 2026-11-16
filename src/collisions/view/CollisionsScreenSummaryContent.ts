@@ -1,3 +1,4 @@
+import { COLLISIONS_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * CollisionsScreenSummaryContent.ts
  *
@@ -14,7 +15,8 @@ import { formatSignificant } from "../../common/view/chartUtils.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { CollisionsModel } from "../model/CollisionsModel.js";
 
-const f = (value: number): string => formatSignificant(Math.abs(value) < 1e-9 ? 0 : value, 3);
+const f = (value: number): string =>
+  formatSignificant(Math.abs(value) < 1e-9 ? 0 : value, COLLISIONS_SCREEN_SUMMARY_CONTENT_SETTINGS.F_DIGITS);
 
 export class CollisionsScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: CollisionsModel) {

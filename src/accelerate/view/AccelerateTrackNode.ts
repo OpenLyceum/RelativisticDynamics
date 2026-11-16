@@ -1,3 +1,4 @@
+import { ACCELERATE_TRACK_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateTrackNode.ts
  *
@@ -16,11 +17,11 @@ import RelativisticDynamicsColors from "../../RelativisticDynamicsColors.js";
 import { ACCELERATE, FONTS } from "../../RelativisticDynamicsConstants.js";
 import type { AccelerateModel } from "../model/AccelerateModel.js";
 
-const LANE_HEIGHT = 34;
-const LABEL_COLUMN = 90;
-const READOUT_COLUMN = 150;
-const MARKER_RADIUS = 9;
-const TICK_SPACING_M = 2;
+const LANE_HEIGHT: number = ACCELERATE_TRACK_NODE_SETTINGS.LANE_HEIGHT;
+const LABEL_COLUMN: number = ACCELERATE_TRACK_NODE_SETTINGS.LABEL_COLUMN;
+const READOUT_COLUMN: number = ACCELERATE_TRACK_NODE_SETTINGS.READOUT_COLUMN;
+const MARKER_RADIUS: number = ACCELERATE_TRACK_NODE_SETTINGS.MARKER_RADIUS;
+const TICK_SPACING_M: number = ACCELERATE_TRACK_NODE_SETTINGS.TICK_SPACING_M;
 
 export class AccelerateTrackNode extends Node {
   /**
@@ -46,19 +47,19 @@ export class AccelerateTrackNode extends Node {
       const label = new Text(labelProperty, {
         font: FONTS.READOUT_VALUE,
         fill: color,
-        maxWidth: LABEL_COLUMN - 10,
-        right: trackLeft - 10,
+        maxWidth: LABEL_COLUMN - ACCELERATE_TRACK_NODE_SETTINGS.LABEL_MAX_WIDTH_OFFSET,
+        right: trackLeft - ACCELERATE_TRACK_NODE_SETTINGS.LABEL_RIGHT_OFFSET,
         centerY: y,
       });
       const lane = new Line(trackLeft, y, trackLeft + trackWidth, y, {
         stroke: RelativisticDynamicsColors.chartGridColorProperty,
-        lineWidth: 2,
+        lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.LANE_LINE_WIDTH,
       });
       const readout = new Text("", {
         font: FONTS.READOUT_VALUE,
         fill: color,
-        maxWidth: READOUT_COLUMN - 14,
-        left: trackLeft + trackWidth + 14,
+        maxWidth: READOUT_COLUMN - ACCELERATE_TRACK_NODE_SETTINGS.READOUT_MAX_WIDTH_OFFSET,
+        left: trackLeft + trackWidth + ACCELERATE_TRACK_NODE_SETTINGS.READOUT_LEFT_OFFSET,
         centerY: y,
       });
       marker.centerY = y;
@@ -77,7 +78,16 @@ export class AccelerateTrackNode extends Node {
       0,
       strings.lanes.lightStringProperty,
       RelativisticDynamicsColors.lightColorProperty,
-      new Rectangle(-12, -3, 24, 6, { fill: RelativisticDynamicsColors.lightColorProperty, cornerRadius: 3 }),
+      new Rectangle(
+        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_X,
+        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_Y,
+        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_WIDTH,
+        ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_HEIGHT,
+        {
+          fill: RelativisticDynamicsColors.lightColorProperty,
+          cornerRadius: ACCELERATE_TRACK_NODE_SETTINGS.LIGHT_CORNER_RADIUS,
+        },
+      ),
     );
     const newton = makeLane(
       1,
@@ -86,8 +96,11 @@ export class AccelerateTrackNode extends Node {
       new Circle(MARKER_RADIUS, {
         fill: null,
         stroke: RelativisticDynamicsColors.newtonianColorProperty,
-        lineWidth: 2.5,
-        lineDash: [4, 3],
+        lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.NEWTON_LINE_WIDTH,
+        lineDash: [
+          ACCELERATE_TRACK_NODE_SETTINGS.NEWTON_LINE_DASH_DASH,
+          ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_NEWTON_LINE_DASH_DASH,
+        ],
       }),
       showNewtonProperty,
     );
@@ -104,7 +117,7 @@ export class AccelerateTrackNode extends Node {
       this.addChild(
         new Line(toView(metres), 0, toView(metres), bottom, {
           stroke: RelativisticDynamicsColors.chartAxisColorProperty,
-          lineWidth: 2,
+          lineWidth: ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_LINE_WIDTH,
         }),
       );
     }
@@ -116,7 +129,7 @@ export class AccelerateTrackNode extends Node {
           font: FONTS.TICK_LABEL,
           fill: RelativisticDynamicsColors.textColorProperty,
           centerX: x,
-          top: bottom + 6,
+          top: bottom + ACCELERATE_TRACK_NODE_SETTINGS.CONSTRUCTOR_TOP_OFFSET,
         }),
       );
     }
@@ -147,7 +160,7 @@ export class AccelerateTrackNode extends Node {
         const newtonBeta = snapshot.newtonianBeta;
         newton.readout.string =
           newtonBeta > 1
-            ? `u = ${formatSignificant(newtonBeta, 3)} c, ${fasterThanLight}`
+            ? `u = ${formatSignificant(newtonBeta, ACCELERATE_TRACK_NODE_SETTINGS.FORMAT_SIGNIFICANT_DIGITS)} c, ${fasterThanLight}`
             : `u = ${formatBeta(newtonBeta)} c`;
       },
     );

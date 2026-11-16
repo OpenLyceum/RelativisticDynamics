@@ -1,3 +1,4 @@
+import { RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS } from "../RelativisticDynamicsConstants.js";
 /**
  * RelativisticDynamicsScreenIcons.ts
  *
@@ -32,30 +33,61 @@ function iconFrom(...content: Node[]): ScreenIcon {
 }
 
 const arrow = (x1: number, y1: number, x2: number, y2: number, fill: TPaint): ArrowNode =>
-  new ArrowNode(x1, y1, x2, y2, { fill, stroke: null, headWidth: 40, headHeight: 34, tailWidth: 14 });
+  new ArrowNode(x1, y1, x2, y2, {
+    fill,
+    stroke: null,
+    headWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.ARROW_HEAD_WIDTH,
+    headHeight: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.ARROW_HEAD_HEIGHT,
+    tailWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.ARROW_TAIL_WIDTH,
+  });
 
 export function createAccelerateIcon(): ScreenIcon {
   const [lightY, newtonY, relativityY] = [95, 187, 279] as const;
   const laneY = [lightY, newtonY, relativityY];
   const lanes = laneY.map(
-    (y) => new Line(50, y, 500, y, { stroke: RelativisticDynamicsColors.chartGridColorProperty, lineWidth: 6 }),
+    (y) =>
+      new Line(
+        RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.LANES_START_X,
+        y,
+        RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.LANES_END_X,
+        y,
+        {
+          stroke: RelativisticDynamicsColors.chartGridColorProperty,
+          lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.LANES_LINE_WIDTH,
+        },
+      ),
   );
   return iconFrom(
     ...lanes,
-    new Line(500, 50, 500, 320, { stroke: RelativisticDynamicsColors.chartAxisColorProperty, lineWidth: 6 }),
-    new Rectangle(330, lightY - 12, 80, 24, {
-      fill: RelativisticDynamicsColors.lightColorProperty,
-      cornerRadius: 12,
-    }),
-    new Circle(34, {
-      x: 450,
+    new Line(
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_START_X,
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_START_Y,
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_END_X,
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_END_Y,
+      {
+        stroke: RelativisticDynamicsColors.chartAxisColorProperty,
+        lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_LINE_WIDTH,
+      },
+    ),
+    new Rectangle(
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_X,
+      lightY - 12,
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_WIDTH,
+      RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_HEIGHT,
+      {
+        fill: RelativisticDynamicsColors.lightColorProperty,
+        cornerRadius: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_CORNER_RADIUS,
+      },
+    ),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_RADIUS, {
+      x: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_X_VARIANT_2,
       y: newtonY,
       stroke: RelativisticDynamicsColors.newtonianColorProperty,
-      lineWidth: 9,
-      lineDash: [16, 10],
+      lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_LINE_WIDTH_VARIANT_2,
+      lineDash: [RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_LINE_DASH_DASH, 10],
     }),
-    new Circle(34, {
-      x: 290,
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_RADIUS, {
+      x: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ACCELERATE_ICON_X_VARIANT_3,
       y: relativityY,
       fill: RelativisticDynamicsColors.relativisticColorProperty,
     }),
@@ -70,11 +102,17 @@ export function createEnergyMomentumIcon(): ScreenIcon {
   const mc2 = 170;
   const triangle = new Node({
     children: [
-      new Line(ox, oy, ox + pc, oy, { stroke: RelativisticDynamicsColors.momentumColorProperty, lineWidth: 16 }),
-      new Line(ox, oy, ox, oy - mc2, { stroke: RelativisticDynamicsColors.restEnergyColorProperty, lineWidth: 16 }),
+      new Line(ox, oy, ox + pc, oy, {
+        stroke: RelativisticDynamicsColors.momentumColorProperty,
+        lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.TRIANGLE_LINE_WIDTH,
+      }),
+      new Line(ox, oy, ox, oy - mc2, {
+        stroke: RelativisticDynamicsColors.restEnergyColorProperty,
+        lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.TRIANGLE_LINE_WIDTH,
+      }),
       new Line(ox, oy - mc2, ox + pc, oy, {
         stroke: RelativisticDynamicsColors.totalEnergyColorProperty,
-        lineWidth: 16,
+        lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.TRIANGLE_LINE_WIDTH,
       }),
     ],
   });
@@ -102,14 +140,17 @@ export function createEnergyMomentumIcon(): ScreenIcon {
         .lineTo(cx + 1.6 * unit, by - 1.6 * unit),
       {
         stroke: RelativisticDynamicsColors.lightColorProperty,
-        lineWidth: 6,
-        lineDash: [14, 10],
+        lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_LINE_WIDTH,
+        lineDash: [RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_LINE_DASH_DASH, 10],
       },
     ),
-    new Path(shell, { stroke: RelativisticDynamicsColors.invariantColorProperty, lineWidth: 10 }),
-    new Circle(18, {
-      x: cx + 0.9 * unit,
-      y: by - Math.hypot(0.9, 1) * unit,
+    new Path(shell, {
+      stroke: RelativisticDynamicsColors.invariantColorProperty,
+      lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_LINE_WIDTH_VARIANT_2,
+    }),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_RADIUS, {
+      x: cx + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_X_FACTOR * unit,
+      y: by - Math.hypot(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_MOMENTUM_ICON_Y, 1) * unit,
       fill: RelativisticDynamicsColors.relativisticColorProperty,
     }),
   );
@@ -119,18 +160,35 @@ export function createCollisionsIcon(): ScreenIcon {
   const cx = W / 2;
   const cy = H / 2;
   return iconFrom(
-    new Line(40, cy, cx, cy, { stroke: RelativisticDynamicsColors.trailColorProperty, lineWidth: 8 }),
-    new Line(cx, cy, cx + 170, cy - 120, { stroke: RelativisticDynamicsColors.trailColorProperty, lineWidth: 8 }),
-    new Line(cx, cy, cx + 170, cy + 120, { stroke: RelativisticDynamicsColors.trailColorProperty, lineWidth: 8 }),
-    new Circle(42, { x: cx + 120, y: cy - 85, fill: RelativisticDynamicsColors.body1ColorProperty }),
-    new Circle(42, { x: cx + 120, y: cy + 85, fill: RelativisticDynamicsColors.body2ColorProperty }),
+    new Line(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_START_X, cy, cx, cy, {
+      stroke: RelativisticDynamicsColors.trailColorProperty,
+      lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_LINE_WIDTH,
+    }),
+    new Line(cx, cy, cx + 170, cy - 120, {
+      stroke: RelativisticDynamicsColors.trailColorProperty,
+      lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_LINE_WIDTH,
+    }),
+    new Line(cx, cy, cx + 170, cy + 120, {
+      stroke: RelativisticDynamicsColors.trailColorProperty,
+      lineWidth: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_LINE_WIDTH,
+    }),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_RADIUS, {
+      x: cx + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_X_OFFSET,
+      y: cy - RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_Y_OFFSET,
+      fill: RelativisticDynamicsColors.body1ColorProperty,
+    }),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_RADIUS, {
+      x: cx + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_X_OFFSET,
+      y: cy + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_Y_OFFSET,
+      fill: RelativisticDynamicsColors.body2ColorProperty,
+    }),
     arrow(cx + 150, cy - 106, cx + 225, cy - 159, RelativisticDynamicsColors.body1ColorProperty),
     arrow(cx + 150, cy + 106, cx + 225, cy + 159, RelativisticDynamicsColors.body2ColorProperty),
-    new Circle(40, {
-      x: 110,
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_RADIUS_SEGMENT_2, {
+      x: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_X,
       y: cy,
       fill: RelativisticDynamicsColors.body1ColorProperty,
-      opacity: 0.35,
+      opacity: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_COLLISIONS_ICON_OPACITY,
     }),
   );
 }
@@ -139,15 +197,28 @@ export function createThresholdsIcon(): ScreenIcon {
   const cy = H / 2;
   const tx = 300;
   const products = [-1.5, -0.5, 0.5, 1.5].map(
-    (k) => new Circle(24, { x: tx + 120, y: cy + k * 62, fill: RelativisticDynamicsColors.compositeColorProperty }),
+    (k) =>
+      new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_RADIUS, {
+        x: tx + RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_X_OFFSET,
+        y: cy + k * RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.PRODUCTS_Y_FACTOR,
+        fill: RelativisticDynamicsColors.compositeColorProperty,
+      }),
   );
   const productArrows = [-1.5, -0.5, 0.5, 1.5].map((k) =>
     arrow(tx + 150, cy + k * 62, tx + 230, cy + k * 62, RelativisticDynamicsColors.compositeColorProperty),
   );
   return iconFrom(
-    new Circle(30, { x: 70, y: cy, fill: RelativisticDynamicsColors.body1ColorProperty }),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_THRESHOLDS_ICON_RADIUS, {
+      x: RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_THRESHOLDS_ICON_X,
+      y: cy,
+      fill: RelativisticDynamicsColors.body1ColorProperty,
+    }),
     arrow(105, cy, 210, cy, RelativisticDynamicsColors.body1ColorProperty),
-    new Circle(30, { x: tx - 40, y: cy, fill: RelativisticDynamicsColors.body2ColorProperty }),
+    new Circle(RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_THRESHOLDS_ICON_RADIUS, {
+      x: tx - RELATIVISTIC_DYNAMICS_SCREEN_ICONS_SETTINGS.CREATE_THRESHOLDS_ICON_X_OFFSET,
+      y: cy,
+      fill: RelativisticDynamicsColors.body2ColorProperty,
+    }),
     ...products,
     ...productArrows,
   );

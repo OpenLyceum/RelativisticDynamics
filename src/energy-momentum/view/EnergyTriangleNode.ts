@@ -1,3 +1,4 @@
+import { ENERGY_TRIANGLE_NODE_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyTriangleNode.ts
  *
@@ -23,10 +24,10 @@ import { ENERGY_MOMENTUM, FONTS } from "../../RelativisticDynamicsConstants.js";
 import type { EnergyMomentumModel } from "../model/EnergyMomentumModel.js";
 
 /** Side of the square box the triangle is fitted into, px. */
-const BOX = 170;
+const BOX: number = ENERGY_TRIANGLE_NODE_SETTINGS.BOX;
 /** Full length of the energy bar, px. */
-const BAR_WIDTH = 210;
-const BAR_HEIGHT = 14;
+const BAR_WIDTH: number = ENERGY_TRIANGLE_NODE_SETTINGS.BAR_WIDTH;
+const BAR_HEIGHT: number = ENERGY_TRIANGLE_NODE_SETTINGS.BAR_HEIGHT;
 
 export class EnergyTriangleNode extends Node {
   /**
@@ -39,16 +40,19 @@ export class EnergyTriangleNode extends Node {
     // ── Triangle ────────────────────────────────────────────────────────────
     const momentumLeg = new Line(0, 0, 0, 0, {
       stroke: RelativisticDynamicsColors.momentumColorProperty,
-      lineWidth: 4,
+      lineWidth: ENERGY_TRIANGLE_NODE_SETTINGS.MOMENTUM_LEG_LINE_WIDTH,
     });
-    const massLeg = new Line(0, 0, 0, 0, { stroke: RelativisticDynamicsColors.restEnergyColorProperty, lineWidth: 4 });
+    const massLeg = new Line(0, 0, 0, 0, {
+      stroke: RelativisticDynamicsColors.restEnergyColorProperty,
+      lineWidth: ENERGY_TRIANGLE_NODE_SETTINGS.MASS_LEG_LINE_WIDTH,
+    });
     const hypotenuse = new Line(0, 0, 0, 0, {
       stroke: RelativisticDynamicsColors.totalEnergyColorProperty,
-      lineWidth: 4,
+      lineWidth: ENERGY_TRIANGLE_NODE_SETTINGS.HYPOTENUSE_LINE_WIDTH,
     });
     const rightAngle = new Path(null, { stroke: RelativisticDynamicsColors.chartAxisColorProperty, lineWidth: 1 });
 
-    const labelOptions = { font: FONTS.READOUT_VALUE, maxWidth: 150 };
+    const labelOptions = { font: FONTS.READOUT_VALUE, maxWidth: ENERGY_TRIANGLE_NODE_SETTINGS.LABEL_OPTIONS_MAX_WIDTH };
     const momentumLabel = new RichText("", { ...labelOptions, fill: RelativisticDynamicsColors.momentumColorProperty });
     const massLabel = new RichText("", { ...labelOptions, fill: RelativisticDynamicsColors.restEnergyColorProperty });
     const energyLabel = new RichText("", {
@@ -63,12 +67,16 @@ export class EnergyTriangleNode extends Node {
     });
     // The values go in a legend keyed by colour rather than on the legs: a very steep or
     // very flat triangle leaves no room beside its short leg.
-    const legend = new VBox({ align: "left", spacing: 2, children: [energyLabel, massLabel, momentumLabel] });
+    const legend = new VBox({
+      align: "left",
+      spacing: ENERGY_TRIANGLE_NODE_SETTINGS.LEGEND_SPACING,
+      children: [energyLabel, massLabel, momentumLabel],
+    });
 
     const title = new Text(strings.triangleTitleStringProperty, {
       font: FONTS.SECTION_HEADER,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: BAR_WIDTH + 20,
+      maxWidth: BAR_WIDTH + ENERGY_TRIANGLE_NODE_SETTINGS.TITLE_MAX_WIDTH_OFFSET,
     });
 
     // ── Energy bar ──────────────────────────────────────────────────────────
@@ -103,7 +111,10 @@ export class EnergyTriangleNode extends Node {
 
     // ── Limit badges ────────────────────────────────────────────────────────
     const badge = (labelProperty: TReadOnlyProperty<string>): Text =>
-      new Text(labelProperty, { font: FONTS.READOUT_VALUE, maxWidth: BAR_WIDTH + 20 });
+      new Text(labelProperty, {
+        font: FONTS.READOUT_VALUE,
+        maxWidth: BAR_WIDTH + ENERGY_TRIANGLE_NODE_SETTINGS.BADGE_MAX_WIDTH_OFFSET,
+      });
     const atRestBadge = badge(strings.limits.atRestStringProperty);
     const ultraBadge = badge(strings.limits.ultrarelativisticStringProperty);
     const masslessBadge = badge(strings.limits.masslessStringProperty);
@@ -111,7 +122,7 @@ export class EnergyTriangleNode extends Node {
     this.children = [
       new VBox({
         align: "left",
-        spacing: 10,
+        spacing: ENERGY_TRIANGLE_NODE_SETTINGS.CHILDREN_SPACING,
         children: [
           title,
           triangle,
@@ -119,7 +130,11 @@ export class EnergyTriangleNode extends Node {
           barTitle,
           energyBar,
           newtonRow,
-          new VBox({ align: "left", spacing: 4, children: [atRestBadge, ultraBadge, masslessBadge] }),
+          new VBox({
+            align: "left",
+            spacing: ENERGY_TRIANGLE_NODE_SETTINGS.CONSTRUCTOR_SPACING,
+            children: [atRestBadge, ultraBadge, masslessBadge],
+          }),
         ],
       }),
     ];
@@ -138,15 +153,15 @@ export class EnergyTriangleNode extends Node {
       const corner = Math.min(10, px / 3, -my / 3);
       rightAngle.shape = corner > 2 ? new Shape().moveTo(corner, 0).lineTo(corner, -corner).lineTo(0, -corner) : null;
 
-      momentumLabel.string = `pc = ${formatEnergy(pc, 3)}`;
-      massLabel.string = `mc² = ${formatEnergy(mc2, 3)}`;
-      energyLabel.string = `E = ${formatEnergy(state.energy, 3)}`;
+      momentumLabel.string = `pc = ${formatEnergy(pc, ENERGY_TRIANGLE_NODE_SETTINGS.MOMENTUM_LABEL_DIGITS)}`;
+      massLabel.string = `mc² = ${formatEnergy(mc2, ENERGY_TRIANGLE_NODE_SETTINGS.MASS_LABEL_DIGITS)}`;
+      energyLabel.string = `E = ${formatEnergy(state.energy, ENERGY_TRIANGLE_NODE_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS)}`;
 
       // Bars share one scale: the full bar is E.
       const unit = state.energy > 0 ? BAR_WIDTH / state.energy : 0;
       restBar.setRectWidth(mc2 * unit);
       kineticBar.setRect(mc2 * unit, 0, state.kineticEnergy * unit, BAR_HEIGHT);
-      restBarLabel.left = 2;
+      restBarLabel.left = ENERGY_TRIANGLE_NODE_SETTINGS.LEFT_LEFT;
       restBarLabel.top = BAR_HEIGHT + 2;
       kineticBarLabel.right = BAR_WIDTH - 2;
       kineticBarLabel.top = BAR_HEIGHT + 2;
@@ -154,7 +169,7 @@ export class EnergyTriangleNode extends Node {
 
       const newtonEnergy = mc2 > 0 ? 0.5 * mc2 * state.beta * state.beta : 0;
       newtonBar.setRectWidth(newtonEnergy * unit);
-      newtonLabel.left = newtonEnergy * unit + 6;
+      newtonLabel.left = newtonEnergy * unit + ENERGY_TRIANGLE_NODE_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
       newtonLabel.centerY = BAR_HEIGHT / 2;
       newtonRow.visible = mc2 > 0 && showNewton;
 

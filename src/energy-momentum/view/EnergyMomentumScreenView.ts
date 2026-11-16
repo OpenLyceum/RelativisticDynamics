@@ -1,3 +1,4 @@
+import { ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumScreenView.ts
  *
@@ -25,7 +26,7 @@ import { EnergyTriangleNode } from "./EnergyTriangleNode.js";
 export type EnergyMomentumScreenViewOptions = ScreenViewOptions;
 
 /** Left edge of the diagram's plotting area; its axis labels hang to the left of it. */
-const DIAGRAM_LEFT = 305;
+const DIAGRAM_LEFT: number = ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.DIAGRAM_LEFT;
 
 export class EnergyMomentumScreenView extends ScreenView {
   public constructor(
@@ -52,8 +53,9 @@ export class EnergyMomentumScreenView extends ScreenView {
     diagram.top = bounds.minY + SCREEN_VIEW_MARGIN;
 
     const readout = new EnergyMomentumReadoutNode(model);
-    readout.centerX = DIAGRAM_LEFT + diagram.width / 2 - 20;
-    readout.top = diagram.bottom + 14;
+    readout.centerX =
+      DIAGRAM_LEFT + diagram.width / 2 - ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_CENTER_X_OFFSET;
+    readout.top = diagram.bottom + ENERGY_MOMENTUM_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
 
     const controls = new EnergyMomentumControls(model);
     controls.particlePanel.right = bounds.maxX - SCREEN_VIEW_MARGIN;

@@ -1,3 +1,4 @@
+import { COLLISIONS_MODEL_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * CollisionsModel.ts
  *
@@ -92,9 +93,11 @@ export class CollisionsModel implements TModel {
     this.velocity1Property = new Vector2Property(new Vector2(0.8, 0));
     this.velocity2Property = new Vector2Property(Vector2.ZERO);
     this.modeProperty = new StringUnionProperty<CollisionMode>("elastic", { validValues: CollisionModeValues });
-    this.cmAngleProperty = new NumberProperty(90, { range: new Range(-180, 180) });
+    this.cmAngleProperty = new NumberProperty(COLLISIONS_MODEL_SETTINGS.CM_ANGLE_DEFAULT, {
+      range: new Range(COLLISIONS_MODEL_SETTINGS.CM_ANGLE_RANGE_MIN, COLLISIONS_MODEL_SETTINGS.CM_ANGLE_RANGE_MAX),
+    });
     this.frameProperty = new StringUnionProperty<FrameChoice>("lab", { validValues: FrameChoiceValues });
-    this.frameBetaProperty = new NumberProperty(0.5, {
+    this.frameBetaProperty = new NumberProperty(COLLISIONS_MODEL_SETTINGS.FRAME_BETA_DEFAULT, {
       range: new Range(-COLLISIONS.MAX_FRAME_BETA, COLLISIONS.MAX_FRAME_BETA),
     });
     this.showNewtonProperty = new BooleanProperty(false);
@@ -203,7 +206,7 @@ export class CollisionsModel implements TModel {
 
   /** Advances the clock by one wall-clock dt. */
   public stepTime(dt: number): void {
-    const factor = this.timeSpeedProperty.value === TimeSpeed.SLOW ? 0.3 : 1;
+    const factor = this.timeSpeedProperty.value === TimeSpeed.SLOW ? COLLISIONS_MODEL_SETTINGS.SLOW_TIME_FACTOR : 1;
     const next = this.timeProperty.value + dt * COLLISIONS.TIME_SCALE * factor;
     if (next >= T) {
       this.timeProperty.value = T;

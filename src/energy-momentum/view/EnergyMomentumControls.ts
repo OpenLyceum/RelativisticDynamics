@@ -1,3 +1,4 @@
+import { ENERGY_MOMENTUM_CONTROLS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * EnergyMomentumControls.ts
  *
@@ -30,7 +31,7 @@ import {
 } from "../model/EnergyMomentumModel.js";
 
 /** Keyboard step of the "Set" slider, as a fraction of its range. */
-const SLIDER_STEP = 0.01;
+const SLIDER_STEP: number = ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_STEP;
 
 export class EnergyMomentumControls {
   public readonly particlePanel: Node;
@@ -75,7 +76,7 @@ export class EnergyMomentumControls {
         accessibleName: a11y.customMassStringProperty,
         accessibleHelpText: a11y.customMassHelpStringProperty,
         decimalPlaces: 0,
-        delta: 10,
+        delta: ENERGY_MOMENTUM_CONTROLS_SETTINGS.CUSTOM_MASS_CONTROL_DELTA,
       },
     );
     customMassControl.visibleProperty = new DerivedProperty([model.particleProperty], (p) => p === "custom");
@@ -83,10 +84,10 @@ export class EnergyMomentumControls {
     this.particlePanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.PARTICLE_PANEL_SPACING,
         children: [createSectionHeader(strings.particleHeadingStringProperty), particleRadio, customMassControl],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
     );
 
     // ── Set ───────────────────────────────────────────────────────────────────
@@ -153,11 +154,14 @@ export class EnergyMomentumControls {
           case "speed":
             return `${formatBeta(state.beta)} c`;
           case "momentum":
-            return formatEnergy(state.momentum, 4, "/c");
+            return formatEnergy(state.momentum, ENERGY_MOMENTUM_CONTROLS_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS, "/c");
           case "kineticEnergy":
-            return formatEnergy(state.kineticEnergy, 4);
+            return formatEnergy(
+              state.kineticEnergy,
+              ENERGY_MOMENTUM_CONTROLS_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS,
+            );
           case "totalEnergy":
-            return formatEnergy(state.energy, 4);
+            return formatEnergy(state.energy, ENERGY_MOMENTUM_CONTROLS_SETTINGS.ENERGY_FORMAT_ENERGY_DIGITS);
         }
       },
     );
@@ -168,8 +172,11 @@ export class EnergyMomentumControls {
     });
 
     const slider = new HSlider(fractionProperty, new Range(0, 1), {
-      trackSize: new Dimension2(CONTROL_WIDTH - 20, 4),
-      thumbSize: new Dimension2(14, 26),
+      trackSize: new Dimension2(CONTROL_WIDTH - 20, ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_HEIGHT),
+      thumbSize: new Dimension2(
+        ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_WIDTH,
+        ENERGY_MOMENTUM_CONTROLS_SETTINGS.SLIDER_WIDTH_DIMENSION2_HEIGHT,
+      ),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       trackFillEnabled: RelativisticDynamicsColors.textColorProperty,
       keyboardStep: SLIDER_STEP,
@@ -184,10 +191,10 @@ export class EnergyMomentumControls {
     this.setPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.SET_PANEL_SPACING,
         children: [createSectionHeader(strings.setHeadingStringProperty), quantityRadio, selectedValueText, slider],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
     );
 
     // ── Observer ──────────────────────────────────────────────────────────────
@@ -199,17 +206,17 @@ export class EnergyMomentumControls {
         valuePatternProperty: common.speedValuePatternStringProperty,
         accessibleName: a11y.observerSpeedStringProperty,
         accessibleHelpText: a11y.observerSpeedHelpStringProperty,
-        decimalPlaces: 2,
-        delta: 0.01,
+        decimalPlaces: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_CONTROL_DECIMAL_PLACES,
+        delta: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_CONTROL_DELTA,
       },
     );
     this.observerPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: ENERGY_MOMENTUM_CONTROLS_SETTINGS.OBSERVER_PANEL_SPACING,
         children: [createSectionHeader(strings.observerHeadingStringProperty), observerControl],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + ENERGY_MOMENTUM_CONTROLS_SETTINGS.CONSTRUCTOR_MIN_WIDTH_OFFSET },
     );
 
     this.traversalOrder = [particleRadio, customMassControl, quantityRadio, slider, observerControl];

@@ -1,3 +1,4 @@
+import { THRESHOLDS_MODEL_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ThresholdsModel.ts
  *
@@ -37,10 +38,10 @@ const ReactionIdValues = REACTIONS.map((r) => r.id);
 const BeamConfigurationValues = [BeamConfiguration.FIXED_TARGET, BeamConfiguration.COLLIDER] as const;
 
 /** Initial slider position: one and a half times threshold. */
-const DEFAULT_FRACTION = 0.5;
+const DEFAULT_FRACTION: number = THRESHOLDS_MODEL_SETTINGS.DEFAULT_FRACTION;
 
 /** Beam range used when the threshold is zero or does not exist: this many beam rest energies (or MeV for a photon). */
-const FALLBACK_RANGE_FACTOR = 10;
+const FALLBACK_RANGE_FACTOR: number = THRESHOLDS_MODEL_SETTINGS.FALLBACK_RANGE_FACTOR;
 
 export class ThresholdsModel implements TModel {
   public readonly reactionIdProperty: StringUnionProperty<ReactionId>;

@@ -1,3 +1,4 @@
+import { THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * ThresholdsScreenSummaryContent.ts
  *
@@ -71,10 +72,21 @@ export class ThresholdsScreenSummaryContent extends ScreenSummaryContent {
         return StringUtils.fillIn(a11y.currentDetailsPatternStringProperty.value, {
           reaction: reactionNames[model.reactionProperty.value.id].value,
           configuration: configuration.toLowerCase(),
-          beam: formatEnergy(model.beamKineticEnergyProperty.value, 3),
-          threshold: Number.isFinite(threshold) ? formatEnergy(threshold, 3) : strings.infinityStringProperty.value,
-          sqrtS: formatEnergy(model.sqrtSProperty.value, 3),
-          finalMass: formatEnergy(model.finalMassProperty.value, 3),
+          beam: formatEnergy(
+            model.beamKineticEnergyProperty.value,
+            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
+          ),
+          threshold: Number.isFinite(threshold)
+            ? formatEnergy(threshold, THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.CURRENT_DETAILS_PROPERTY_DIGITS)
+            : strings.infinityStringProperty.value,
+          sqrtS: formatEnergy(
+            model.sqrtSProperty.value,
+            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
+          ),
+          finalMass: formatEnergy(
+            model.finalMassProperty.value,
+            THRESHOLDS_SCREEN_SUMMARY_CONTENT_SETTINGS.VALUE_FORMAT_ENERGY_DIGITS,
+          ),
           verdict: verdictText,
         });
       },

@@ -1,3 +1,4 @@
+import { CONTROL_HELPERS_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * controlHelpers.ts
  *
@@ -33,7 +34,7 @@ export type NumberControlConfig = {
 };
 
 /** Below this width the title gets its own row. */
-const NARROW_CONTROL_WIDTH = 170;
+const NARROW_CONTROL_WIDTH: number = CONTROL_HELPERS_SETTINGS.NARROW_CONTROL_WIDTH;
 
 /**
  * A themed NumberControl: title above, value in a box, slider below.
@@ -46,8 +47,10 @@ export const createNumberControl = (
   new NumberControl(config.titleProperty, property, range, {
     layoutFunction:
       (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
-        ? NumberControl.createLayoutFunction3({ ySpacing: 6 })
-        : NumberControl.createLayoutFunction2({ ySpacing: 10 }),
+        ? NumberControl.createLayoutFunction3({ ySpacing: CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_Y_SPACING })
+        : NumberControl.createLayoutFunction2({
+            ySpacing: CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_Y_SPACING_VARIANT_2,
+          }),
     delta: config.delta,
     titleNodeOptions: {
       font: FONTS.CONTROL_TITLE,
@@ -56,7 +59,7 @@ export const createNumberControl = (
       maxWidth:
         (config.width ?? CONTROL_WIDTH) < NARROW_CONTROL_WIDTH
           ? (config.width ?? CONTROL_WIDTH)
-          : (config.width ?? CONTROL_WIDTH) - 110,
+          : (config.width ?? CONTROL_WIDTH) - CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_MAX_WIDTH_OFFSET,
     },
     numberDisplayOptions: {
       valuePattern: config.valuePatternProperty,
@@ -70,7 +73,10 @@ export const createNumberControl = (
     },
     arrowButtonOptions: FLAT_RECTANGULAR_BUTTON_OPTIONS,
     sliderOptions: {
-      trackSize: new Dimension2((config.width ?? CONTROL_WIDTH) - 40, 4),
+      trackSize: new Dimension2(
+        (config.width ?? CONTROL_WIDTH) - 40,
+        CONTROL_HELPERS_SETTINGS.CREATE_NUMBER_CONTROL_HEIGHT,
+      ),
       thumbFill: RelativisticDynamicsColors.accentColorProperty,
       majorTickLength: 10,
     },
@@ -93,7 +99,7 @@ export const createCheckbox = (
     new Text(labelProperty, {
       font: FONTS.READOUT,
       fill: RelativisticDynamicsColors.textColorProperty,
-      maxWidth: width - 30,
+      maxWidth: width - CONTROL_HELPERS_SETTINGS.CREATE_CHECKBOX_MAX_WIDTH_OFFSET,
     }),
     {
       checkboxColor: RelativisticDynamicsColors.textColorProperty,
@@ -121,7 +127,7 @@ export const createPushButton = (
     content: new Text(labelProperty, {
       font: FONTS.READOUT,
       fill: LIGHT_SURFACE_TEXT_FILL,
-      maxWidth: config.maxTextWidth ?? CONTROL_WIDTH - 24,
+      maxWidth: config.maxTextWidth ?? CONTROL_WIDTH - CONTROL_HELPERS_SETTINGS.CREATE_PUSH_BUTTON_MAX_WIDTH_OFFSET,
     }),
     baseColor: RelativisticDynamicsColors.controlSurfaceColorProperty,
     // Spread rather than assign: `exactOptionalPropertyTypes` rejects an explicit
@@ -158,7 +164,8 @@ export const createRadioButtonGroup = <T>(
         new Text(item.labelProperty, {
           font: FONTS.READOUT,
           fill: RelativisticDynamicsColors.textColorProperty,
-          maxWidth: (config.width ?? CONTROL_WIDTH) - 40,
+          maxWidth:
+            (config.width ?? CONTROL_WIDTH) - CONTROL_HELPERS_SETTINGS.CREATE_RADIO_BUTTON_GROUP_MAX_WIDTH_OFFSET,
         }),
       options: {
         accessibleName: item.accessibleName,
@@ -166,7 +173,7 @@ export const createRadioButtonGroup = <T>(
       },
     })),
     {
-      spacing: 7,
+      spacing: CONTROL_HELPERS_SETTINGS.CREATE_RADIO_BUTTON_GROUP_SPACING,
       align: "left",
       radioButtonOptions: {
         selectedColor: RelativisticDynamicsColors.accentColorProperty,
@@ -192,12 +199,12 @@ export const createReadoutRow = (
   const label = new Text(labelProperty, {
     font: FONTS.READOUT,
     fill: RelativisticDynamicsColors.secondaryTextColorProperty,
-    maxWidth: width * 0.62,
+    maxWidth: width * CONTROL_HELPERS_SETTINGS.LABEL_MAX_WIDTH_FACTOR,
   });
   const value = new Text(valueProperty, {
     font: FONTS.READOUT_VALUE,
     fill: valueFill,
-    maxWidth: width * 0.38,
+    maxWidth: width * CONTROL_HELPERS_SETTINGS.VALUE_MAX_WIDTH_FACTOR,
   });
   // Explicit placement rather than a justified HBox: the value's right edge is pinned
   // to the row width, so a column of rows lines up whatever the value's length.

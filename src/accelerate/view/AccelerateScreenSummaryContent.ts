@@ -1,3 +1,4 @@
+import { ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateScreenSummaryContent.ts
  *
@@ -34,12 +35,15 @@ export class AccelerateScreenSummaryContent extends ScreenSummaryContent {
           return StringUtils.fillIn(atStart, { particle: name });
         }
         return StringUtils.fillIn(pattern, {
-          time: `${formatSignificant(time, 3)} ns`,
+          time: `${formatSignificant(time, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.CURRENT_DETAILS_PROPERTY_DIGITS)} ns`,
           particle: name,
-          distance: `${formatSignificant(snapshot.position, 3)} m`,
-          kinetic: formatEnergy(snapshot.kineticEnergy, 3),
+          distance: `${formatSignificant(snapshot.position, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.POSITION_FORMAT_SIGNIFICANT_DIGITS)} m`,
+          kinetic: formatEnergy(
+            snapshot.kineticEnergy,
+            ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS,
+          ),
           speed: `${formatBeta(snapshot.beta)} c`,
-          newtonSpeed: `${formatSignificant(snapshot.newtonianBeta, 3)} c`,
+          newtonSpeed: `${formatSignificant(snapshot.newtonianBeta, ACCELERATE_SCREEN_SUMMARY_CONTENT_SETTINGS.NEWTONIAN_BETA_FORMAT_SIGNIFICANT_DIGITS)} c`,
         });
       },
     );

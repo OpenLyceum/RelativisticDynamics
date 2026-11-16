@@ -1,3 +1,4 @@
+import { ACCELERATE_SCREEN_VIEW_SETTINGS } from "../../RelativisticDynamicsConstants.js";
 /**
  * AccelerateScreenView.ts
  *
@@ -43,7 +44,7 @@ import { AccelerateTrackNode } from "./AccelerateTrackNode.js";
 export type AccelerateScreenViewOptions = ScreenViewOptions;
 
 /** Width of the play area to the left of the control column. */
-const PLAY_AREA_WIDTH = 720;
+const PLAY_AREA_WIDTH: number = ACCELERATE_SCREEN_VIEW_SETTINGS.PLAY_AREA_WIDTH;
 
 export class AccelerateScreenView extends ScreenView {
   public constructor(
@@ -66,10 +67,10 @@ export class AccelerateScreenView extends ScreenView {
     // ── Play area ──────────────────────────────────────────────────────────────
     const track = new AccelerateTrackNode(model, preferences.showNewtonProperty, PLAY_AREA_WIDTH);
     track.left = bounds.minX + SCREEN_VIEW_MARGIN;
-    track.top = bounds.minY + SCREEN_VIEW_MARGIN + 6;
+    track.top = bounds.minY + SCREEN_VIEW_MARGIN + ACCELERATE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_TOP_OFFSET;
 
     const charts = new AccelerateChartsNode(model, preferences.showNewtonProperty);
-    charts.left = bounds.minX + SCREEN_VIEW_MARGIN + 55;
+    charts.left = bounds.minX + SCREEN_VIEW_MARGIN + ACCELERATE_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_LEFT_OFFSET;
     charts.top = track.bottom + 24;
 
     // ── Controls ───────────────────────────────────────────────────────────────
@@ -97,8 +98,8 @@ export class AccelerateScreenView extends ScreenView {
         valuePatternProperty: strings.fieldValuePatternStringProperty,
         accessibleName: a11y.fieldStringProperty,
         accessibleHelpText: a11y.fieldHelpStringProperty,
-        decimalPlaces: 2,
-        delta: 0.05,
+        decimalPlaces: ACCELERATE_SCREEN_VIEW_SETTINGS.FIELD_CONTROL_DECIMAL_PLACES,
+        delta: ACCELERATE_SCREEN_VIEW_SETTINGS.FIELD_CONTROL_DELTA,
       },
     );
     const chartRadio = createRadioButtonGroup(
@@ -132,7 +133,7 @@ export class AccelerateScreenView extends ScreenView {
     const controlPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.CONTROL_PANEL_SPACING,
         children: [
           createSectionHeader(strings.particleHeadingStringProperty),
           particleRadio,
@@ -143,7 +144,7 @@ export class AccelerateScreenView extends ScreenView {
           workedExampleButton,
         ],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + ACCELERATE_SCREEN_VIEW_SETTINGS.CONTROL_PANEL_MIN_WIDTH_OFFSET },
     );
     controlPanel.right = bounds.maxX - SCREEN_VIEW_MARGIN;
     controlPanel.top = bounds.minY + SCREEN_VIEW_MARGIN;
@@ -152,19 +153,29 @@ export class AccelerateScreenView extends ScreenView {
     const q = common.quantities;
     const snapshot = model.snapshotProperty;
     const readoutValues = {
-      time: new DerivedProperty([model.timeProperty], (t) => `${formatSignificant(t, 3)} ns`),
-      distance: new DerivedProperty([snapshot], (s) => `${formatSignificant(s.position, 3)} m`),
+      time: new DerivedProperty(
+        [model.timeProperty],
+        (t) => `${formatSignificant(t, ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS)} ns`,
+      ),
+      distance: new DerivedProperty(
+        [snapshot],
+        (s) => `${formatSignificant(s.position, ACCELERATE_SCREEN_VIEW_SETTINGS.POSITION_FORMAT_SIGNIFICANT_DIGITS)} m`,
+      ),
       speed: new DerivedProperty([snapshot], (s) => `${formatBeta(s.beta)} c`),
       gamma: new DerivedProperty([snapshot, model.massProperty], (s, m) =>
-        formatSignificant(1 + s.kineticEnergy / m, 4),
+        formatSignificant(1 + s.kineticEnergy / m, ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_VALUES_DIGITS_SEGMENT_2),
       ),
-      momentum: new DerivedProperty([snapshot], (s) => formatEnergy(s.momentum, 4, "/c")),
-      kinetic: new DerivedProperty([snapshot], (s) => formatEnergy(s.kineticEnergy, 4)),
+      momentum: new DerivedProperty([snapshot], (s) =>
+        formatEnergy(s.momentum, ACCELERATE_SCREEN_VIEW_SETTINGS.MOMENTUM_FORMAT_ENERGY_DIGITS, "/c"),
+      ),
+      kinetic: new DerivedProperty([snapshot], (s) =>
+        formatEnergy(s.kineticEnergy, ACCELERATE_SCREEN_VIEW_SETTINGS.KINETIC_ENERGY_FORMAT_ENERGY_DIGITS),
+      ),
     };
     const readoutPanel = new RelativisticDynamicsPanel(
       new VBox({
         align: "left",
-        spacing: 3,
+        spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_PANEL_SPACING,
         children: [
           createSectionHeader(strings.readoutsHeadingStringProperty),
           createReadoutRow(strings.timeStringProperty, readoutValues.time),
@@ -187,7 +198,7 @@ export class AccelerateScreenView extends ScreenView {
           ),
         ],
       }),
-      { minWidth: CONTROL_WIDTH + 24 },
+      { minWidth: CONTROL_WIDTH + ACCELERATE_SCREEN_VIEW_SETTINGS.READOUT_PANEL_MIN_WIDTH_OFFSET },
     );
     readoutPanel.right = controlPanel.right;
     readoutPanel.top = controlPanel.bottom + 10;
@@ -211,7 +222,10 @@ export class AccelerateScreenView extends ScreenView {
       accessibleName: a11y.restartStringProperty,
       accessibleHelpText: a11y.restartHelpStringProperty,
     });
-    const timeRow = new HBox({ spacing: 18, children: [restartButton, timeControlNode] });
+    const timeRow = new HBox({
+      spacing: ACCELERATE_SCREEN_VIEW_SETTINGS.TIME_ROW_SPACING,
+      children: [restartButton, timeControlNode],
+    });
     timeRow.centerX = bounds.minX + SCREEN_VIEW_MARGIN + PLAY_AREA_WIDTH / 2;
     timeRow.bottom = bounds.maxY - SCREEN_VIEW_MARGIN;
 

@@ -1,3 +1,4 @@
+import { COLLISION_NUMERICS } from "../../RelativisticDynamicsConstants.js";
 /**
  * collisionGeometry.ts
  *
@@ -115,7 +116,11 @@ export const positionAt = (body: Body, time: number): Vector2 => body.velocity.t
 /** Angle between the two outgoing velocities (radians), or null if there are not two moving bodies. */
 export const openingAngle = (outgoing: readonly Body[]): number | null => {
   const [a, b] = outgoing;
-  if (!(a && b) || a.velocity.magnitude < 1e-9 || b.velocity.magnitude < 1e-9) {
+  if (
+    !(a && b) ||
+    a.velocity.magnitude < COLLISION_NUMERICS.MIN_DIRECTION_SPEED ||
+    b.velocity.magnitude < COLLISION_NUMERICS.MIN_DIRECTION_SPEED
+  ) {
     return null;
   }
   const cos = a.velocity.dot(b.velocity) / (a.velocity.magnitude * b.velocity.magnitude);

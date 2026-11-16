@@ -1,3 +1,4 @@
+import { RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS } from "../RelativisticDynamicsConstants.js";
 /**
  * RelativisticDynamicsPreferencesNode.ts
  *
@@ -23,27 +24,27 @@ export class RelativisticDynamicsPreferencesNode extends VBox {
     // colors (readable on white in both default and projector profiles), not textColorProperty
     // (which is near-white in default mode and would be invisible on the white dialog).
     const header = new Text(prefStrings.titleStringProperty, {
-      font: new PhetFont({ size: 18, weight: "bold" }),
+      font: new PhetFont({ size: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.HEADER_FONT_SIZE, weight: "bold" }),
       fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
     });
 
     const showNewtonCheckbox = new Checkbox(
       preferencesModel.showNewtonProperty,
       new Text(prefStrings.showNewtonStringProperty, {
-        font: new PhetFont(14),
+        font: new PhetFont(RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.SHOW_NEWTON_CHECKBOX_FONT_SIZE),
         fill: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
       }),
       {
         checkboxColor: RelativisticDynamicsColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: RelativisticDynamicsColors.controlSurfaceColorProperty,
-        spacing: 8,
+        spacing: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.SHOW_NEWTON_CHECKBOX_SPACING,
         ...(tandem && { tandem: tandem.createTandem("showNewtonCheckbox") }),
       },
     );
 
     super({
       align: "left",
-      spacing: 12,
+      spacing: RELATIVISTIC_DYNAMICS_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [header, showNewtonCheckbox],
     });
   }
