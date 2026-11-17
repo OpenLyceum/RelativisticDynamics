@@ -62,7 +62,6 @@ Full convention: [Baton/ACCESSIBILITY.md](https://github.com/OpenLyceum/Baton/bl
 
 ## Compliance carve-outs
 
-- `.github/workflows/ci.yml`: `unused-mode: advisory` until both Knip default and production baselines are reviewed and cleared ([Baton/doc/knip.md](https://github.com/OpenLyceum/Baton/blob/main/doc/knip.md)).
 - **Grouped constants.** `RelativisticDynamicsConstants.ts` uses topical `as const` objects rather
   than a flat list of exports, as SpecialRelativity does.
 
