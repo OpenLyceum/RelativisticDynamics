@@ -46,11 +46,11 @@ export class AccelerateChartsNode extends Node {
     const strings = StringManager.getInstance().getAccelerateStrings();
 
     // ── Left: speed or momentum against time ─────────────────────────────────
-    const leftYLabel = new DerivedProperty(
+    const leftYLabelProperty = new DerivedProperty(
       [model.chartQuantityProperty, strings.speedAxisStringProperty, strings.momentumAxisStringProperty],
       (quantity, speed, momentum) => (quantity === "speed" ? speed : momentum),
     );
-    const leftTitle = new DerivedProperty(
+    const leftTitleProperty = new DerivedProperty(
       [model.chartQuantityProperty, strings.speedChartTitleStringProperty, strings.momentumChartTitleStringProperty],
       (quantity, speed, momentum) => (quantity === "speed" ? speed : momentum),
     );
@@ -60,7 +60,7 @@ export class AccelerateChartsNode extends Node {
       xRange: new Range(0, 1),
       yRange: new Range(0, ACCELERATE.CHART_MAX_BETA),
       xAxisLabelProperty: strings.timeAxisStringProperty,
-      yAxisLabelProperty: leftYLabel,
+      yAxisLabelProperty: leftYLabelProperty,
     });
     const tLight = new LinePlot(timeChart.chartTransform, [], {
       stroke: RelativisticDynamicsColors.lightColorProperty,
@@ -145,7 +145,7 @@ export class AccelerateChartsNode extends Node {
           chart,
         ],
       });
-    const left = titled(leftTitle, timeChart);
+    const left = titled(leftTitleProperty, timeChart);
     const right = titled(strings.betaSquaredChartTitleStringProperty, energyChart);
     right.left = left.right + ACCELERATE_VIEW.CHARTS_GAP;
     this.children = [left, right];

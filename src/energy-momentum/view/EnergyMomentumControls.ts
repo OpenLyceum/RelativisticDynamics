@@ -97,14 +97,14 @@ export class EnergyMomentumControls {
       kineticEnergy: q.kineticEnergyStringProperty,
       totalEnergy: q.totalEnergyStringProperty,
     };
-    const notMassless = new DerivedProperty([model.isMasslessProperty], (massless) => !massless);
+    const notMasslessProperty = new DerivedProperty([model.isMasslessProperty], (massless) => !massless);
     const quantityRadio = createRadioButtonGroup(
       model.drivingQuantityProperty,
       (["speed", "momentum", "kineticEnergy", "totalEnergy"] as const).map((value) => ({
         value,
         labelProperty: quantityLabels[value],
         accessibleName: quantityLabels[value],
-        ...(value === "speed" ? { enabledProperty: notMassless } : {}),
+        ...(value === "speed" ? { enabledProperty: notMasslessProperty } : {}),
       })),
       { accessibleName: a11y.setQuantityStringProperty, accessibleHelpText: a11y.setQuantityHelpStringProperty },
     );

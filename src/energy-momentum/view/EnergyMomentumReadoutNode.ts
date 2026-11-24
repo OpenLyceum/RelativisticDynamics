@@ -76,13 +76,13 @@ export class EnergyMomentumReadoutNode extends RelativisticDynamicsPanel {
       ],
     ];
     for (const row of rows) {
-      const labValue = new DerivedProperty([model.labStateProperty, model.labMomentumProperty], (s, p) =>
+      const labValueProperty = new DerivedProperty([model.labStateProperty, model.labMomentumProperty], (s, p) =>
         row.value(s, p.px),
       );
-      const frameValue = new DerivedProperty([model.frameStateProperty, model.frameMomentumProperty], (s, p) =>
+      const frameValueProperty = new DerivedProperty([model.frameStateProperty, model.frameMomentumProperty], (s, p) =>
         row.value(s, p.px),
       );
-      disposables.push(labValue, frameValue);
+      disposables.push(labValueProperty, frameValueProperty);
       const valueOptions = {
         font: FONTS.READOUT_VALUE,
         fill: row.fill ?? RelativisticDynamicsColors.textColorProperty,
@@ -94,8 +94,8 @@ export class EnergyMomentumReadoutNode extends RelativisticDynamicsPanel {
           fill: RelativisticDynamicsColors.secondaryTextColorProperty,
           maxWidth: LABEL_WIDTH,
         }),
-        new Text(labValue, valueOptions),
-        new Text(frameValue, valueOptions),
+        new Text(labValueProperty, valueOptions),
+        new Text(frameValueProperty, valueOptions),
       ]);
     }
 

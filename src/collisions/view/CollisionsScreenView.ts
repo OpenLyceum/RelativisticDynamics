@@ -75,25 +75,30 @@ export class CollisionsScreenView extends ScreenView {
     momentumDiagram.left = bounds.minX + SCREEN_VIEW_MARGIN;
     momentumDiagram.top = playArea.bottom + COLLISIONS_VIEW.DIAGRAM_TOP_GAP;
 
-    const sqrtSText = new DerivedProperty([model.invariantMassProperty], (m) =>
+    const sqrtSTextProperty = new DerivedProperty([model.invariantMassProperty], (m) =>
       formatSignificant(m, COLLISIONS_VIEW.SQRT_S_DIGITS),
     );
-    const openingText = new DerivedProperty([model.viewStateProperty], (state) => {
+    const openingTextProperty = new DerivedProperty([model.viewStateProperty], (state) => {
       const angle = openingAngle(state.outgoing);
       return angle === null
         ? "—"
         : `${formatSignificant((angle * 180) / Math.PI, COLLISIONS_VIEW.OPENING_ANGLE_DIGITS)}°`;
     });
-    const compositeText = new DerivedProperty(
+    const compositeTextProperty = new DerivedProperty(
       [model.labStateProperty, model.mass1Property, model.mass2Property],
       (s, m1, m2) =>
         `${formatSignificant(s.outgoing[0]?.mass ?? 0, COLLISIONS_VIEW.COMPOSITE_MASS_DIGITS)} (${formatSignificant(m1 + m2, COLLISIONS_VIEW.REST_MASS_SUM_DIGITS)})`,
     );
-    const newtonReferenceVisible = new DerivedProperty(
+    const newtonReferenceVisibleProperty = new DerivedProperty(
       [model.modeProperty, model.mass1Property, model.mass2Property, model.velocity2Property, model.frameProperty],
       (mode, m1, m2, u2, frame) => mode === "elastic" && m1 === m2 && u2.magnitude === 0 && frame === "lab",
     );
-    const openingRow = createReadoutRow(strings.openingAngleStringProperty, openingText, undefined, READOUT_WIDTH);
+    const openingRow = createReadoutRow(
+      strings.openingAngleStringProperty,
+      openingTextProperty,
+      undefined,
+      READOUT_WIDTH,
+    );
     openingRow.visibleProperty = new DerivedProperty([model.modeProperty], (mode) => mode === "elastic");
     const newtonRow = createReadoutRow(
       strings.newtonOpeningAngleStringProperty,
@@ -101,8 +106,13 @@ export class CollisionsScreenView extends ScreenView {
       RelativisticDynamicsColors.newtonianColorProperty,
       READOUT_WIDTH,
     );
-    newtonRow.visibleProperty = newtonReferenceVisible;
-    const compositeRow = createReadoutRow(strings.compositeMassStringProperty, compositeText, undefined, READOUT_WIDTH);
+    newtonRow.visibleProperty = newtonReferenceVisibleProperty;
+    const compositeRow = createReadoutRow(
+      strings.compositeMassStringProperty,
+      compositeTextProperty,
+      undefined,
+      READOUT_WIDTH,
+    );
     compositeRow.visibleProperty = new DerivedProperty([model.modeProperty], (mode) => mode === "inelastic");
 
     const readouts = new VBox({
@@ -112,7 +122,7 @@ export class CollisionsScreenView extends ScreenView {
         createSectionHeader(strings.readoutsHeadingStringProperty),
         createReadoutRow(
           strings.invariantMassStringProperty,
-          sqrtSText,
+          sqrtSTextProperty,
           RelativisticDynamicsColors.invariantColorProperty,
           READOUT_WIDTH,
         ),
