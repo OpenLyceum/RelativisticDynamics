@@ -9,7 +9,7 @@
  */
 
 import { Multilink, type TReadOnlyProperty } from "scenerystack/axon";
-import { Vector2 as V2, type Vector2, type Vector2Property } from "scenerystack/dot";
+import { roundSymmetric, Vector2 as V2, type Vector2, type Vector2Property } from "scenerystack/dot";
 import { ModelViewTransform2, StringUtils } from "scenerystack/phetcommon";
 import { Circle, InteractiveHighlighting, Line, Node, RichDragListener, Text, type TPaint } from "scenerystack/scenery";
 import { formatSignificant } from "../../common/view/chartUtils.js";
@@ -115,7 +115,7 @@ export class VelocityPadNode extends Node {
       handle.center = view;
       spoke.setLine(0, 0, view.x, view.y);
       const speed = formatSignificant(velocity.magnitude, COLLISIONS_VIEW.PAD_SPEED_DIGITS);
-      const angle = Math.round((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI);
+      const angle = roundSymmetric((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI);
       valueText.string = `${speed} c, ${velocity.magnitude < 1e-6 ? 0 : angle}°`;
       valueResponse = StringUtils.fillIn(pattern, { speed, angle: velocity.magnitude < 1e-6 ? 0 : angle });
     });
