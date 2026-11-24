@@ -73,3 +73,7 @@ npm run lint && npm run check && npm run build && npm test
 
 Dev server for screenshots: `npx vite --port <free port>`; screen models are reachable from the
 console as `phet.joist.sim.screens[i].model` (with `?screens=n`, index 0).
+
+## Testing
+
+See the shared Vitest setup (`vitest.config.ts`, `tests/setup.ts`) and `tests/memory-leak.test.ts` for disposal coverage. Add sim-specific unit tests under `tests/` as physics and UI logic land.
